@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart, Sparkles, BoxSelect, View } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { trackEvent } from "@/lib/analytics/events";
 import { WishlistPopup } from "./WishlistPopup";
 
 interface ProductCardProps {
@@ -49,6 +50,27 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const isBestseller = product.rating && product.rating >= 4.5;
   const stockCount = product.inStock || 5;
 
+  const handleProductClick = () => {
+    trackEvent("select_product", {
+      productId: product.id,
+      productName: product.title,
+      price: product.price,
+      category: product.category?.name
+    });
+  };
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    trackEvent("add_to_cart", {
+      productId: product.id,
+      productName: product.title,
+      price: product.price,
+      quantity: 1
+    });
+    // Assuming you have the store available, or this will be wired up later
+    // useProductStore.getState().addToCart(...)
+  };
+
   return (
     <>
       <div className="group flex flex-col w-full font-serif bg-white">
@@ -72,7 +94,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </button>
 
           {/* Product Image */}
-          <Link href={`/product/${product.slug}`} className="absolute inset-0 z-10 p-6 flex items-center justify-center">
+          <Link href={`/product/${product.slug}`} onClick={handleProductClick} className="absolute inset-0 z-10 p-6 flex items-center justify-center">
             <Image
               src={imageSrc}
               alt={product.title}
@@ -87,14 +109,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             <button className="flex items-center gap-1 bg-white text-[10px] font-sans font-medium px-2 py-1 rounded shadow-sm text-gray-700 hover:text-[#8B2C33]">
               <BoxSelect className="w-3 h-3 text-[#8B2C33]" /> Quick View
             </button>
-            <button className="flex items-center gap-1 bg-white text-[10px] font-sans font-medium px-2 py-1 rounded shadow-sm text-gray-700 hover:text-[#8B2C33]">
+            <button onClick={handleQuickAdd} className="flex items-center gap-1 bg-white text-[10px] font-sans font-medium px-2 py-1 rounded shadow-sm text-gray-700 hover:text-[#8B2C33]">
               <View className="w-3 h-3 text-[#8B2C33]" /> Add
             </button>
           </div>
         </div>
 
         {/* Product Details */}
-        <Link href={`/product/${product.slug}`} className="flex flex-col gap-1.5 px-1">
+        <Link href={`/product/${product.slug}`} onClick={handleProductClick} className="flex flex-col gap-1.5 px-1">
           <h3 className="font-serif text-[#333333] text-[18px] font-bold leading-tight line-clamp-1">
             {product.title}
           </h3>

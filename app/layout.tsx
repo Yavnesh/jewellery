@@ -27,12 +27,18 @@ export const metadata: Metadata = {
   description: `Experience premium fine jewelry and custom gemstones curated in a luxury storefront.`,
 };
 
+import CookieConsentBanner from "@/components/CookieConsentBanner";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const session = await getServerSession();
+  // Safe default or fallback for GA ID
+  const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
+  
   return (
     <html lang="en" data-theme="light">
       <body className={`${inter.variable} ${cormorant.variable} font-sans bg-luxury-bg text-luxury-text-primary antialiased`}>
@@ -43,6 +49,8 @@ export default async function RootLayout({
             {children}
           </Providers>
           <Footer />
+          <CookieConsentBanner />
+          <GoogleAnalytics ga_id={gaId} />
         </SessionProvider>
       </body>
     </html>
