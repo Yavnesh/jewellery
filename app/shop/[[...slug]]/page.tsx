@@ -1,62 +1,152 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import {
-  Breadcrumb,
-  Filters,
-  Pagination,
-  Products,
-  SortBy,
-} from "@/components";
 import React from "react";
+import prisma from "@/utils/db";
+import { CategoryBanner } from "@/components/ui/luxury/CategoryBanner";
+import { HorizontalFilterBar } from "@/components/ui/luxury/HorizontalFilterBar";
+import { FilterSidebar } from "@/components/ui/luxury/FilterSidebar";
+import { ProductCard } from "@/components/ui/luxury/ProductCard";
+import { FilterSync } from "@/components/ui/luxury/FilterSync";
+import { Pagination } from "@/components";
 import { sanitize } from "@/lib/sanitize";
 
-// improve readabillity of category text, for example category text "smart-watches" will be "smart watches"
-const improveCategoryText = (text: string): string => {
-  if (text.indexOf("-") !== -1) {
-    let textArray = text.split("-");
-
-    return textArray.join(" ");
-  } else {
-    return text;
-  }
-};
-
 const ShopPage = async ({ params, searchParams }: { params: Promise<{ slug?: string[] }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
-  // Await both params and searchParams
   const awaitedParams = await params;
   const awaitedSearchParams = await searchParams;
   
-  return (
-    <div className="text-luxury-text-primary bg-white py-8">
-      <div className="max-w-screen-2xl mx-auto px-12 max-sm:px-6">
-        <Breadcrumb />
-        <div className="grid grid-cols-[240px_1fr] gap-x-12 max-md:grid-cols-1 max-md:gap-y-8 mt-6">
-          <Filters />
-          <div>
-            <div className="flex justify-between items-center pb-4 border-b border-luxury-border/60 max-lg:flex-col max-lg:gap-y-4">
-              <h2 className="text-3xl font-serif font-light uppercase tracking-widest text-luxury-text-primary">
-                {awaitedParams?.slug && awaitedParams?.slug[0]?.length > 0
-                  ? sanitize(improveCategoryText(awaitedParams?.slug[0]))
-                  : awaitedSearchParams?.collection
-                  ? `${sanitize(awaitedSearchParams.collection as string)} Collection`
-                  : awaitedSearchParams?.occasion
-                  ? `${sanitize(awaitedSearchParams.occasion as string)} Wear`
-                  : "All products"}
-              </h2>
+  // Parse Search Params for Prisma Query
+  const categorySlug = awaitedParams?.slug?.[0];
+  const sort = awaitedSearchParams?.sort as string;
+  const page = awaitedSearchParams?.page ? Number(awaitedSearchParams.page) : 1;
+  const limit = 12;
+  const skip = (page - 1) * limit;
 
-              <SortBy />
+  // Helper to parse comma-separated arrays from URL
+  const parseArrayParam = (paramName: string) => {
+    const val = awaitedSearchParams?.[paramName] as string;
+    return val ? val.split(",") : undefined;
+  };
+
+  const collections = parseArrayParam("collections");
+  const occasions = parseArrayParam("occasions");
+  const purities = parseArrayParam("purities");
+  const metalColors = parseArrayParam("metalColors");
+  const genders = parseArrayParam("genders");
+  const jewelryTypes = parseArrayParam("jewelryTypes");
+
+  // Build Prisma Where Clause
+  const where: any = {};
+  
+  if (categorySlug) {
+    where.category = { name: { equals: categorySlug } };
+  }
+  if (collections) {
+    where.collection = { in: collections };
+  } else if (awaitedSearchParams?.collection) {
+    where.collection = { equals: awaitedSearchParams.collection as string };
+  }
+  
+  if (occasions) {
+    where.occasion = { in: occasions };
+  } else if (awaitedSearchParams?.occasion) {
+    where.occasion = { equals: awaitedSearchParams.occasion as string };
+  }
+
+  if (purities) {
+    where.purity = { in: purities };
+  }
+  
+  if (metalColors) {
+    where.metalType = { in: metalColors };
+  }
+  
+  if (genders) {
+    where.gender = { in: genders };
+  }
+
+  if (jewelryTypes) {
+    // Jewelry Types (e.g. Gold, Diamond, Platinum) span across multiple fields in our dummy data schema
+    const typeConditions = jewelryTypes.map(type => ({
+      OR: [
+        { title: { contains: type } },
+        { metalType: { contains: type } },
+        { collection: { contains: type } },
+      ]
+    }));
+    
+    where.AND = [
+      ...(where.AND || []),
+      { OR: typeConditions } // If multiple are selected, match any of them (OR)
+    ];
+  }
+  
+  // Execute Direct Prisma Query
+  const products = await prisma.product.findMany({
+    where,
+    skip,
+    take: limit,
+    include: {
+      category: true,
+    },
+    orderBy: sort === 'price-asc' ? { price: 'asc' } :
+             sort === 'price-desc' ? { price: 'desc' } :
+             { id: 'desc' } // default newest
+  });
+
+  const totalProducts = await prisma.product.count({ where });
+
+  const displayTitle = categorySlug 
+    ? sanitize(categorySlug.replace("-", " "))
+    : awaitedSearchParams?.collection
+    ? `${sanitize(awaitedSearchParams.collection as string)} Collection`
+    : "All Jewellery";
+
+  return (
+    <div className="bg-white min-h-screen pb-24">
+      <FilterSync />
+      
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12 pt-8">
+        {/* Breadcrumb / Title area matching Tanishq style */}
+        <div className="mb-4">
+          <div className="text-xs text-gray-500 font-sans mb-6 flex items-center gap-2">
+            <span>Home</span> <span className="text-gray-300">{'>'}</span> <span className="text-[#8B2C33]">{displayTitle}</span>
+          </div>
+          <div className="flex items-end gap-2">
+            <h1 className="font-serif text-3xl text-[#333333] capitalize">
+              {displayTitle}
+            </h1>
+            <span className="font-sans text-sm text-gray-500 mb-1">
+              ({totalProducts} results)
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <HorizontalFilterBar />
+          
+          {/* Product Grid (3 Columns Max) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <div className="col-span-full py-24 text-center">
+                  <h3 className="font-serif text-2xl text-[#333333] mb-4">No pieces found</h3>
+                  <p className="font-sans text-gray-500">Try adjusting your filters or search criteria.</p>
+                </div>
+              )}
             </div>
-            <div className="mt-8">
-              <Products params={awaitedParams} searchParams={awaitedSearchParams} />
-            </div>
-            <div className="mt-12 flex justify-center">
-              <Pagination />
-            </div>
+            
+            {totalProducts > limit && (
+              <div className="mt-20 flex justify-center border-t border-gray-100 pt-10">
+                <Pagination />
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

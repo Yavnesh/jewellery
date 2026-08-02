@@ -1,0 +1,69 @@
+import { PrismaClient } from "@prisma/client";
+import { faker } from "@faker-js/faker";
+
+const prisma = new PrismaClient();
+
+const metals = ["Yellow Gold", "White Gold", "Rose Gold", "Two Tone", "Platinum"];
+const purities = ["14K", "18K", "22K", "24K"];
+const occasions = ["Wedding", "Daily Wear", "Office", "Party", "Festive", "Gift"];
+const collections = ["Bridal", "Modern", "Heritage", "Minimal", "Signature", "Gemstone", "Diamond", "Emerald", "Ruby", "Sapphire", "Pearl"];
+const genders = ["Women", "Men", "Kids", "Unisex"];
+const featuresList = ["New Arrival", "Best Seller", "Virtual Try-On", "Limited Edition", "Customizable"];
+
+async function main() {
+  console.log("Starting luxury seeding...");
+
+  // Ensure category and merchant exist
+  const defaultCategory = await prisma.category.upsert({
+    where: { name: "Rings" },
+    update: {},
+    create: { name: "Rings" },
+  });
+  const defaultMerchant = await prisma.merchant.create({
+    data: { name: "Luxury Brand", status: "ACTIVE" },
+  });
+
+  for (let i = 0; i < 120; i++) {
+    const originalPrice = faker.number.int({ min: 500, max: 15000 });
+    const hasDiscount = Math.random() > 0.7;
+    const price = hasDiscount ? originalPrice * 0.8 : originalPrice;
+
+    // Pick 2 random features
+    const selectedFeatures = faker.helpers.arrayElements(featuresList, 2).join(",");
+
+    await prisma.product.create({
+      data: {
+        title: faker.commerce.productName() + " " + faker.helpers.arrayElement(["Ring", "Necklace", "Earrings", "Bracelet"]),
+        slug: faker.lorem.slug() + "-" + i,
+        description: faker.commerce.productDescription(),
+        mainImage: "/product_placeholder.jpg",
+        images: "[]",
+        price: Math.floor(price),
+        originalPrice: originalPrice,
+        rating: faker.number.int({ min: 3, max: 5 }),
+        manufacturer: "Luxury Brand",
+        inStock: faker.number.int({ min: 0, max: 20 }),
+        categoryId: defaultCategory.id,
+        merchantId: defaultMerchant.id,
+        metalType: faker.helpers.arrayElement(metals),
+        purity: faker.helpers.arrayElement(purities),
+        weight: faker.number.float({ min: 2, max: 25, fractionDigits: 2 }),
+        occasion: faker.helpers.arrayElement(occasions),
+        collection: faker.helpers.arrayElement(collections),
+        gender: faker.helpers.arrayElement(genders),
+        features: selectedFeatures,
+      },
+    });
+  }
+
+  console.log("Luxury seeding completed. 120 products created.");
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

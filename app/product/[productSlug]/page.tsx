@@ -9,16 +9,8 @@ import apiClient from "@/lib/api";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import React from "react";
-import { FaSquareFacebook } from "react-icons/fa6";
-import { FaSquareXTwitter } from "react-icons/fa6";
-import { FaSquarePinterest } from "react-icons/fa6";
 import { sanitize } from "@/lib/sanitize";
-
-interface ImageItem {
-  imageID: string;
-  productID: string;
-  image: string;
-}
+import prisma from "@/utils/db";
 
 interface SingleProductPageProps {
   params: Promise<{  productSlug: string, id: string }>;
@@ -26,21 +18,20 @@ interface SingleProductPageProps {
 
 const SingleProductPage = async ({ params }: SingleProductPageProps) => {
   const paramsAwaited = await params;
-  // sending API request for a single product with a given product slug
-  const data = await apiClient.get(
-    `/api/slugs/${paramsAwaited?.productSlug}`
-  );
-  const product = await data.json();
+  
+  // Query Prisma directly instead of hitting an API route
+  const product = await prisma.product.findUnique({
+    where: { slug: paramsAwaited?.productSlug }
+  });
 
-  // sending API request for more than 1 product image if it exists
-  const imagesData = await apiClient.get(
-    `/api/images/${paramsAwaited?.id}`
-  );
-  const images = await imagesData.json();
-
-  if (!product || product.error) {
+  if (!product) {
     notFound();
   }
+
+  // Get gallery images
+  const images = await prisma.image.findMany({
+    where: { productID: product.id }
+  });
 
   // Parse gallery images dynamically
   let galleryImages: string[] = [];
@@ -52,96 +43,210 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
     galleryImages = [product?.mainImage];
   }
 
+  // Sanitize image paths
+  galleryImages = galleryImages.map(img => 
+    img.startsWith('/') || img.startsWith('http') ? img : `/${img}`
+  );
+
   return (
-    <div className="bg-white py-12">
-      <div className="max-w-screen-2xl mx-auto px-12 max-sm:px-6">
-        <div className="flex justify-center gap-x-16 pt-6 max-lg:flex-col items-center lg:items-start gap-y-10">
-          <ProductGallery
-            mainImage={product?.mainImage}
-            title={product?.title}
-            images={galleryImages}
-          />
-          <div className="flex-1 flex flex-col gap-y-6 text-luxury-text-primary max-[500px]:text-center max-w-xl">
-            <div className="flex gap-x-2.5 flex-wrap gap-y-2">
-              {product?.collection && (
-                <span className="bg-tanishq-gold/10 text-tanishq-gold border border-tanishq-gold/20 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider font-sans">
-                  {product.collection} Collection
-                </span>
-              )}
-              {product?.occasion && (
-                <span className="bg-luxury-ivory text-luxury-text-secondary border border-luxury-border/60 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider font-sans">
-                  {product.occasion} Wear
-                </span>
-              )}
-            </div>
-            <h1 className="text-4xl font-serif font-light uppercase tracking-wider leading-snug">{sanitize(product?.title)}</h1>
-            <p className="text-2xl font-semibold text-tanishq-gold tracking-widest">${product?.price}</p>
-            <div className="w-full border-t border-luxury-border/60 my-2"></div>
-            <StockAvailabillity stock={94} inStock={product?.inStock} />
-            <SingleProductDynamicFields product={product} />
-            <div className="w-full border-t border-luxury-border/60 my-2"></div>
-            <div className="flex flex-col gap-y-3 max-[500px]:items-center text-sm text-luxury-text-secondary font-sans">
-              <p className="tracking-wide">
-                SKU: <span className="text-luxury-text-primary font-medium ml-1">abccd-18</span>
-              </p>
-              <div className="flex gap-x-3 items-center">
-                <span className="tracking-wide">Share:</span>
-                <div className="flex items-center gap-x-2 text-xl text-luxury-text-primary">
-                  <FaSquareFacebook className="hover:text-luxury-gold cursor-pointer transition-colors" />
-                  <FaSquareXTwitter className="hover:text-luxury-gold cursor-pointer transition-colors" />
-                  <FaSquarePinterest className="hover:text-luxury-gold cursor-pointer transition-colors" />
+    <div className="bg-white min-h-screen pb-24 font-sans text-[#333333]">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        
+        {/* Breadcrumbs */}
+        <div className="text-[11px] text-gray-500 font-sans mb-6 flex items-center gap-2">
+          <span>Home</span> <span className="text-gray-300">{'>'}</span> 
+          <span>All Jewellery</span> <span className="text-gray-300">{'>'}</span>
+          <span className="text-[#8B2C33]">{sanitize(product?.title)}</span>
+        </div>
+
+        {/* Hero Section Split */}
+        <div className="flex flex-col lg:flex-row gap-12 mb-16">
+          
+          {/* Left Column: 2x2 Image Grid */}
+          <div className="w-full lg:w-[60%] shrink-0">
+            <div className="grid grid-cols-2 gap-2">
+              {[1, 2, 3, 4].map((index) => (
+                <div key={index} className="aspect-square bg-[#F9F9F9] relative overflow-hidden flex items-center justify-center p-8">
+                  <Image
+                    src={galleryImages[index - 1] || galleryImages[0] || "/placeholder.jpg"}
+                    alt={`${product?.title} - view ${index}`}
+                    width={500}
+                    height={500}
+                    className="object-contain w-full h-full mix-blend-multiply transition-transform duration-500 hover:scale-105"
+                  />
                 </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column: Buy Box */}
+          <div className="flex-1 flex flex-col pt-4">
+            <h1 className="text-[22px] font-serif text-[#333333] leading-snug mb-2">
+              {sanitize(product?.title)}
+            </h1>
+            
+            {/* Reviews Summary */}
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex text-[#D1A254] text-xs">
+                {'★'.repeat(4)}{'☆'}
               </div>
-              <div className="flex gap-x-2.5 mt-2 flex-wrap max-[500px]:justify-center">
-                <Image
-                  src="/visa.svg"
-                  width={45}
-                  height={30}
-                  alt="visa icon"
-                  className="w-auto h-7 opacity-75 hover:opacity-100 transition-opacity"
+              <span className="text-xs text-gray-500 underline">Write A Review</span>
+            </div>
+            
+            {/* Price */}
+            <div className="flex items-end gap-3 mb-6">
+              <span className="font-serif text-[28px] font-bold text-[#333333] leading-none">
+                ₹ {Number(product?.price || 0).toLocaleString('en-IN')}
+              </span>
+              <span className="text-sm text-gray-400 font-serif line-through mb-1">
+                ₹ {(Number(product?.price || 0) * 1.15).toLocaleString('en-IN')}
+              </span>
+            </div>
+            
+            <p className="text-[11px] text-gray-500 mb-8 border-b border-gray-100 pb-4">
+              Price inclusive of all taxes.
+            </p>
+            
+            {/* Delivery & Pincode */}
+            <div className="mb-8">
+              <h3 className="text-sm font-bold text-[#333333] mb-3">Delivery Location</h3>
+              <div className="flex">
+                <input 
+                  type="text" 
+                  placeholder="Enter Pincode" 
+                  className="border-b border-gray-300 rounded-none py-2 px-1 text-sm w-[200px] focus:outline-none focus:border-[#8B2C33]"
                 />
-                <Image
-                  src="/mastercard.svg"
-                  width={45}
-                  height={30}
-                  alt="mastercard icon"
-                  className="h-7 w-auto opacity-75 hover:opacity-100 transition-opacity"
-                />
-                <Image
-                  src="/ae.svg"
-                  width={45}
-                  height={30}
-                  alt="american express icon"
-                  className="h-7 w-auto opacity-75 hover:opacity-100 transition-opacity"
-                />
-                <Image
-                  src="/paypal.svg"
-                  width={45}
-                  height={30}
-                  alt="paypal icon"
-                  className="w-auto h-7 opacity-75 hover:opacity-100 transition-opacity"
-                />
-                <Image
-                  src="/dinersclub.svg"
-                  width={45}
-                  height={30}
-                  alt="diners club icon"
-                  className="h-7 w-auto opacity-75 hover:opacity-100 transition-opacity"
-                />
-                <Image
-                  src="/discover.svg"
-                  width={45}
-                  height={30}
-                  alt="discover icon"
-                  className="h-7 w-auto opacity-75 hover:opacity-100 transition-opacity"
-                />
+                <button className="text-[#8B2C33] text-sm font-bold px-4">Update</button>
               </div>
+              <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                <span className="text-[#D1A254]">🚚</span> Delivery by Tomorrow, 11 AM
+              </p>
+            </div>
+
+            {/* Offer Banner */}
+            <div className="bg-[#FFF8E7] border border-[#F2E5C9] p-4 flex gap-3 items-start mb-8 rounded-sm">
+              <span className="text-[#D1A254] mt-0.5">💎</span>
+              <div>
+                <p className="text-[13px] font-bold text-[#333333]">Offer available</p>
+                <p className="text-[12px] text-gray-600 mt-1">Flat 20% off on making charges.</p>
+              </div>
+            </div>
+
+            {/* Product Details Highlights */}
+            <div className="flex flex-col gap-3 text-[13px] text-gray-600 border-t border-gray-100 pt-6 mb-8">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Weight</span>
+                <span className="font-medium text-[#333333]">12.45 g</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Purity</span>
+                <span className="font-medium text-[#333333]">{product?.purity || '18K'}</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-4 mt-auto">
+              <button className="flex-1 py-3.5 border border-[#8B2C33] text-[#8B2C33] font-bold text-sm tracking-wide hover:bg-[#8B2C33] hover:text-white transition-colors">
+                ADD TO CART
+              </button>
+              <button className="flex-1 py-3.5 bg-[#8B2C33] text-white font-bold text-sm tracking-wide hover:bg-[#6e2329] transition-colors">
+                BUY NOW
+              </button>
             </div>
           </div>
         </div>
-        <div className="mt-16 pt-8 border-t border-luxury-border/60">
-          <ProductTabs product={product} />
+
+        {/* Try It On Banner */}
+        <div className="w-full bg-[#FDF8F5] border border-[#F6EBE5] py-8 px-12 flex flex-col md:flex-row items-center justify-between mb-16 rounded-sm">
+          <div>
+            <h3 className="font-serif text-2xl text-[#8B2C33] mb-2">Virtual Try On</h3>
+            <p className="font-sans text-sm text-gray-600 max-w-md">
+              See how this beautiful piece looks on you using your phone's camera or uploading a photo.
+            </p>
+          </div>
+          <button className="bg-[#8B2C33] text-white font-sans text-sm font-bold tracking-widest uppercase px-8 py-3 mt-4 md:mt-0 hover:bg-[#6e2329] transition-colors">
+            Try It On
+          </button>
         </div>
+
+        {/* Styling Available (Cross-Sell) */}
+        <div className="mb-20">
+          <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Styling Available</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((item) => (
+              <div key={item} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors">
+                <div className="aspect-square relative mb-4">
+                  <Image 
+                    src="/placeholder.jpg" 
+                    alt="Matching item" 
+                    layout="fill" 
+                    className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">Matching Earring {item}</h4>
+                <p className="font-serif font-bold text-[#333333]">₹ 24,500</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Customers Also Viewed */}
+        <div className="mb-20">
+          <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Customers Also Viewed</h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <div key={item} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors">
+                <div className="aspect-square relative mb-4">
+                  <Image 
+                    src="/placeholder.jpg" 
+                    alt="Related item" 
+                    layout="fill" 
+                    className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">Related Ring {item}</h4>
+                <p className="font-serif font-bold text-[#333333]">₹ 18,200</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Customer Reviews */}
+        <div className="mb-20 bg-[#F9F9F9] py-16 px-8 text-center rounded-sm">
+          <h2 className="font-serif text-2xl text-[#333333] mb-6">Customer Reviews</h2>
+          <div className="bg-[#D1A254] text-white p-6 inline-block mb-6 shadow-md">
+            <p className="text-sm uppercase tracking-widest mb-2">Be the first to review</p>
+            <div className="text-xl">{'★'.repeat(5)}</div>
+          </div>
+          <br/>
+          <button className="border border-gray-400 text-gray-600 font-sans text-xs uppercase tracking-widest px-6 py-2 hover:border-[#8B2C33] hover:text-[#8B2C33] transition-colors">
+            Write a Review
+          </button>
+        </div>
+
+        {/* The Tanishq Advantage Footer */}
+        <div className="border-t border-gray-200 pt-16 pb-8 text-center">
+          <h2 className="font-serif text-2xl text-[#333333] mb-12">The Tanishq Advantage</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-3xl">⚖️</span>
+              <p className="font-serif text-sm font-bold text-[#333333]">Purity Guaranteed</p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-3xl">🔄</span>
+              <p className="font-serif text-sm font-bold text-[#333333]">Exchange Across India</p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-3xl">🛡️</span>
+              <p className="font-serif text-sm font-bold text-[#333333]">Free Shipping</p>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-3xl">💎</span>
+              <p className="font-serif text-sm font-bold text-[#333333]">Transparent Pricing</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

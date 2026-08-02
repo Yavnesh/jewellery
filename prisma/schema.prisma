@@ -30,6 +30,12 @@ model Product {
   occasion       String?
   collection     String?
   images         String?                  @db.Text
+  metalType      String?
+  purity         String?
+  weight         Float?
+  features       String?
+  gender         String?
+  originalPrice  Int?
 
   merchantId     String
   merchant       Merchant @relation(fields: [merchantId], references: [id])
