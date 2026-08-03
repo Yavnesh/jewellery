@@ -1,13 +1,22 @@
 import { NextAuthOptions } from "next-auth";
 import { Account, User as AuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import AppleProvider from "next-auth/providers/apple";
 import bcrypt from "bcryptjs";
 import prisma from "@/utils/db";
 import { nanoid } from "nanoid";
 
 export const authOptions: NextAuthOptions = {
-  // Configure one or more authentication providers
   providers: [
+    GoogleProvider({
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+    }),
+    AppleProvider({
+      clientId: process.env.AUTH_APPLE_ID!,
+      clientSecret: process.env.AUTH_APPLE_SECRET!,
+    }),
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
@@ -32,6 +41,7 @@ export const authOptions: NextAuthOptions = {
                 id: user.id,
                 email: user.email,
                 role: user.role ?? "user",
+                sessionVersion: user.sessionVersion,
               };
             }
           }
@@ -43,33 +53,65 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account }: { user: any; account: any }) {
+    async signIn({ user, account, profile }: { user: any; account: any, profile?: any }) {
       if (account?.provider === "credentials") {
         return true;
       }
       
-      // Handle OAuth providers
-      if (account?.provider === "github" || account?.provider === "google") {
+      // Handle OAuth providers safely
+      if (account && ["google", "apple", "github"].includes(account.provider)) {
         try {
-          // Check if user exists in database
-          const existingUser = await prisma.user.findFirst({
+          // 1. Check if the OAuth account is already linked
+          const linkedAccount = await prisma.account.findUnique({
             where: {
-              email: user.email!,
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId
+              }
             },
+            include: { user: true }
+          });
+
+          if (linkedAccount) {
+            // Found linked account, set user id for jwt callback
+            user.id = linkedAccount.user.id;
+            user.role = linkedAccount.user.role;
+            user.sessionVersion = linkedAccount.user.sessionVersion;
+            return true;
+          }
+
+          // 2. Check if a user exists with this email
+          // We assume OAuth providers like Google and Apple provide verified emails
+          // (Wait, Apple proxy emails might be tricky, but we proceed cautiously)
+          let existingUser = await prisma.user.findFirst({
+            where: { email: user.email! }
           });
 
           if (!existingUser) {
-            // Create new user for OAuth providers
-            await prisma.user.create({
+            // Create a new user since one doesn't exist
+            existingUser = await prisma.user.create({
               data: {
                 id: nanoid(),
                 email: user.email!,
                 role: "user",
-                // OAuth users don't have passwords
-                password: null,
+                password: null, // OAuth users don't have passwords
               },
             });
           }
+
+          // 3. Link the OAuth account to the existing (or newly created) user
+          await prisma.account.create({
+            data: {
+              userId: existingUser.id,
+              type: account.type || "oauth",
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+            }
+          });
+
+          user.id = existingUser.id;
+          user.role = existingUser.role;
+          user.sessionVersion = existingUser.sessionVersion;
           return true;
         } catch (error) {
           console.error("Error in signIn callback:", error);
@@ -83,25 +125,18 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.sessionVersion = (user as any).sessionVersion || 1;
         token.iat = Math.floor(Date.now() / 1000); // Issued at time
       }
       
-      // Check if token is expired (15 minutes)
-      const now = Math.floor(Date.now() / 1000);
-      const tokenAge = now - (token.iat as number);
-      const maxAge = 15 * 60; // 15 minutes
-      
-      if (tokenAge > maxAge) {
-        // Token expired, return empty object to force re-authentication
-        return {};
-      }
-      
+      // We removed the hard 15-minute expiration block to allow 30-day sessions
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
+        (session.user as any).sessionVersion = token.sessionVersion;
       }
       return session;
     },
@@ -112,11 +147,11 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 15 * 60, // 15 minutes in seconds
-    updateAge: 5 * 60, // Update session every 5 minutes
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
   jwt: {
-    maxAge: 15 * 60, // 15 minutes in seconds
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",

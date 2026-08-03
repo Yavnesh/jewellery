@@ -29,52 +29,74 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const email = e.target[0].value;
-    const password = e.target[1].value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const callbackUrl = searchParams.get('callbackUrl') || "/";
 
     if (!isValidEmailAddressFormat(email)) {
-      setError("Email is invalid");
-      toast.error("Email is invalid");
+      setError("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     if (!password || password.length < 8) {
-      setError("Password is invalid");
-      toast.error("Password is invalid");
+      setError("Please check your email and password.");
+      toast.error("Please check your email and password.");
       return;
     }
 
-    const res = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    // Generic error to not reveal if email exists
+    const genericErrorMsg = "We couldn’t sign you in with those details.";
 
-    if (res?.error) {
-      setError("Invalid email or password");
-      toast.error("Invalid email or password");
-      if (res?.url) router.replace("/");
-    } else {
-      setError("");
-      toast.success("Successful login");
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (res?.error) {
+        setError(genericErrorMsg);
+        toast.error(genericErrorMsg);
+      } else {
+        setError("");
+        toast.success("Welcome back!");
+        router.replace(callbackUrl);
+      }
+    } catch (err) {
+      setError(genericErrorMsg);
+      toast.error(genericErrorMsg);
     }
   };
 
+  const handleOAuthLogin = (provider: string) => {
+    const callbackUrl = searchParams.get('callbackUrl') || "/";
+    signIn(provider, { callbackUrl });
+  };
+
   if (sessionStatus === "loading") {
-    return <h1>Loading...</h1>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <p className="text-gray-500 font-medium animate-pulse">Loading securely...</p>
+      </div>
+    );
   }
+  
   return (
     <div className="bg-white">
       <SectionTitle title="Login" path="Home | Login" />
-      <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-white">
+      <div className="flex min-h-[70vh] flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-white">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-2xl font-normal leading-9 tracking-tight text-gray-900">
-            Sign in to your account
+          <h2 className="mt-6 text-center text-3xl font-medium tracking-tight text-gray-900">
+            Welcome Back
           </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Sign in to your account
+          </p>
         </div>
 
-        <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
-          <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-[480px]">
+          <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12 border border-gray-100">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
@@ -90,7 +112,7 @@ const LoginPage = () => {
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>
@@ -109,7 +131,7 @@ const LoginPage = () => {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>
@@ -133,7 +155,7 @@ const LoginPage = () => {
                 <div className="text-sm leading-6">
                   <a
                     href="#"
-                    className="font-semibold text-black hover:text-black"
+                    className="font-semibold text-tanishq-gold hover:text-amber-700 transition-colors"
                   >
                     Forgot password?
                   </a>
@@ -145,15 +167,15 @@ const LoginPage = () => {
                   buttonType="submit"
                   text="Sign in"
                   paddingX={3}
-                  paddingY={1.5}
+                  paddingY={2}
                   customWidth="full"
                   textSize="sm"
                 />
               </div>
             </form>
 
-            <div>
-              <div className="relative mt-10">
+            <div className="mt-10">
+              <div className="relative">
                 <div
                   className="absolute inset-0 flex items-center"
                   aria-hidden="true"
@@ -161,7 +183,7 @@ const LoginPage = () => {
                   <div className="w-full border-t border-gray-200" />
                 </div>
                 <div className="relative flex justify-center text-sm font-medium leading-6">
-                  <span className="bg-white px-6 text-gray-900">
+                  <span className="bg-white px-6 text-gray-500">
                     Or continue with
                   </span>
                 </div>
@@ -169,43 +191,43 @@ const LoginPage = () => {
 
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <button
-                  className="flex w-full items-center border border-gray-300 justify-center gap-3 rounded-md bg-white px-3 py-1.5 text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                  onClick={() => {
-                    signIn("google");
-                  }}
+                  type="button"
+                  aria-label="Sign in with Google"
+                  className="flex w-full items-center border border-gray-300 justify-center gap-3 rounded-md bg-white px-3 py-2 text-black hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 transition-colors"
+                  onClick={() => handleOAuthLogin("google")}
                 >
-                  <FcGoogle />
+                  <FcGoogle className="h-5 w-5" />
                   <span className="text-sm font-semibold leading-6">
                     Google
                   </span>
                 </button>
 
                 <button
-                  className="flex w-full items-center justify-center gap-3 rounded-md bg-[#24292F] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#24292F]"
-                  onClick={() => {
-                    signIn("github");
-                  }}
+                  type="button"
+                  aria-label="Sign in with Apple"
+                  className="flex w-full items-center justify-center gap-3 rounded-md bg-black px-3 py-2 text-white hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
+                  onClick={() => handleOAuthLogin("apple")}
                 >
                   <svg
                     className="h-5 w-5"
                     aria-hidden="true"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
+                    viewBox="0 0 384 512"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                      clipRule="evenodd"
-                    />
+                    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
                   </svg>
                   <span className="text-sm font-semibold leading-6">
-                    GitHub
+                    Apple
                   </span>
                 </button>
               </div>
-              <p className="text-red-600 text-center text-[16px] my-4">
-                {error && error}
-              </p>
+              {error && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-md">
+                  <p className="text-red-600 text-center text-sm font-medium">
+                    {error}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
