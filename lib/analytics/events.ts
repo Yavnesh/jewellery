@@ -11,6 +11,12 @@ const hasAnalyticsConsent = () => {
   return localStorage.getItem("cookie_consent_analytics") === "true";
 };
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 export function trackEvent(eventName: string, payload: any) {
   if (typeof window === "undefined") return;
   

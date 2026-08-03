@@ -54,6 +54,24 @@ export async function createCart(sessionId: string | null, userId: string | null
     data: {
       sessionId,
       userId,
+    },
+    include: {
+      items: {
+        include: {
+          variant: {
+            include: {
+              product: true,
+              optionValues: {
+                include: {
+                  optionValue: {
+                    include: { option: true }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   });
 }

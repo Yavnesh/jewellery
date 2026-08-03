@@ -17,8 +17,8 @@ import { revalidatePath } from "next/cache";
 const CART_SESSION_COOKIE = "cart_session_id";
 
 // Helper to get or create a cart session ID for guests
-function getCartSessionId() {
-  const cookieStore = cookies();
+async function getCartSessionId() {
+  const cookieStore = await cookies();
   let sessionId = cookieStore.get(CART_SESSION_COOKIE)?.value;
   
   if (!sessionId) {
@@ -47,7 +47,7 @@ export async function getActiveCart() {
     return cart;
   } else {
     // Guest user
-    const sessionId = getCartSessionId();
+    const sessionId = await getCartSessionId();
     let cart = await getCartBySessionId(sessionId);
     if (!cart) {
       cart = await createCart(sessionId, null);
@@ -59,6 +59,7 @@ export async function getActiveCart() {
 export async function addToCart(variantId: string, quantity: number = 1) {
   try {
     const cart = await getActiveCart();
+    if (!cart) throw new Error("Cart not found");
     await serviceAddToCart(cart.id, variantId, quantity);
     revalidatePath("/cart");
     return { success: true };
@@ -70,6 +71,7 @@ export async function addToCart(variantId: string, quantity: number = 1) {
 export async function updateQuantity(variantId: string, quantity: number) {
   try {
     const cart = await getActiveCart();
+    if (!cart) throw new Error("Cart not found");
     await serviceUpdateQuantity(cart.id, variantId, quantity);
     revalidatePath("/cart");
     return { success: true };
@@ -81,6 +83,7 @@ export async function updateQuantity(variantId: string, quantity: number) {
 export async function removeFromCart(variantId: string) {
   try {
     const cart = await getActiveCart();
+    if (!cart) throw new Error("Cart not found");
     await serviceRemoveItem(cart.id, variantId);
     revalidatePath("/cart");
     return { success: true };
@@ -93,7 +96,7 @@ export async function syncUserCart() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return;
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionId = cookieStore.get(CART_SESSION_COOKIE)?.value;
   
   if (sessionId) {

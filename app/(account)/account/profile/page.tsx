@@ -108,6 +108,8 @@ export default function ProfilePage() {
             text={isSubmitting ? "Saving..." : "Save Changes"}
             paddingX={4}
             paddingY={2}
+            customWidth="no"
+            textSize="sm"
           />
         </div>
       </form>

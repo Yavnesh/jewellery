@@ -1,0 +1,54 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    
+    # We will use a MySQL service container for integration tests eventually
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: ecommerce_test
+          MYSQL_ROOT_PASSWORD: root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type Check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit Tests
+        run: npx vitest run tests/unit
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: mysql://root:root_password@127.0.0.1:3306/ecommerce_test
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:3000

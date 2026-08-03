@@ -18,15 +18,17 @@ interface CheckoutInput {
 }
 
 export async function processCheckout(input: CheckoutInput) {
-  // 1. Fetch active cart
-  const cart = await getActiveCart();
-  
-  if (!cart || !cart.items || cart.items.length === 0) {
-    throw new Error("Cart is empty or not found");
-  }
+  let cart;
+  try {
+    // 1. Fetch active cart
+    cart = await getActiveCart();
+    
+    if (!cart || !cart.items || cart.items.length === 0) {
+      throw new Error("Cart is empty or not found");
+    }
 
-  // 2. Validate stock and calculate total securely on the server
-  let orderTotal = 0;
+    // 2. Validate stock and calculate total securely on the server
+    let orderTotal = 0;
   for (const item of cart.items) {
     const variant = await prisma.productVariant.findUnique({
       where: { id: item.variantId }
@@ -115,8 +117,38 @@ export async function processCheckout(input: CheckoutInput) {
       data: { status: CartStatus.CONVERTED }
     });
 
+    // 5. Create Transactional Outbox Event for Notification
+    await tx.outboxEvent.create({
+      data: {
+        eventType: "ORDER_CREATED",
+        aggregateType: "ORDER",
+        aggregateId: newOrder.id,
+        payload: {
+          orderId: newOrder.id,
+        },
+      }
+    });
+
     return newOrder;
   });
 
   return order;
+  } catch (error: any) {
+    // Enrich Sentry with business context on failure
+    import('@sentry/nextjs').then((Sentry) => {
+      Sentry.withScope((scope) => {
+        scope.setContext("checkout", {
+          cartId: cart?.id,
+          userId: input.userId || 'guest',
+        });
+        Sentry.captureException(error);
+      });
+    });
+    
+    // Also use Pino for structured backend logs
+    const { logger } = await import('@/src/lib/logger/logger');
+    logger.error({ cartId: cart?.id, error: error.message }, 'Checkout processing failed');
+
+    throw error;
+  }
 }

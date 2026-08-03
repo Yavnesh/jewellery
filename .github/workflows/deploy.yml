@@ -1,0 +1,57 @@
+name: Production Deployment
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      rollback_sha:
+        description: 'Commit SHA to rollback to (leave empty for standard deploy)'
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.rollback_sha || github.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and Validate
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+
+      - name: Post-Deployment Smoke Test
+        run: |
+          echo "Waiting for deployment to settle..."
+          sleep 10
+          curl -f -s ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}/api/health/ready || exit 1
+          echo "Smoke test passed!"
+
+      - name: Rollback Advisory
+        if: failure()
+        run: |
+          echo "::error::Deployment or Smoke Test failed. To rollback, trigger this workflow manually using the last known good commit SHA."
