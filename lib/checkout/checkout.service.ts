@@ -132,7 +132,18 @@ export async function processCheckout(input: CheckoutInput) {
     return newOrder;
   });
 
-  return order;
+  // 6. Generate Payment Intent using Provider
+  const { DummyPaymentProvider } = await import('@/src/modules/payments/dummy.provider');
+  const paymentProvider = new DummyPaymentProvider();
+  
+  const paymentIntent = await paymentProvider.createPaymentIntent({
+    amount: order.total,
+    currency: "USD",
+    orderId: order.id,
+    customerEmail: order.email,
+  });
+
+  return { order, paymentIntent };
   } catch (error: any) {
     // Enrich Sentry with business context on failure
     import('@sentry/nextjs').then((Sentry) => {

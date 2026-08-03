@@ -490,3 +490,19 @@ model NotificationPreference {
 
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+// -----------------------------------------------------------------------------
+// PAYMENTS ARCHITECTURE (Volume 6)
+// -----------------------------------------------------------------------------
+
+model PaymentEvent {
+  id              String    @id @default(cuid())
+  providerEventId String    @unique
+  eventType       String
+  payload         Json
+  processedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([providerEventId])
+  @@index([processedAt])
+}

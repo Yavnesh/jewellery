@@ -33,6 +33,20 @@ const nextConfig = {
               key: 'X-XSS-Protection',
               value: '1; mode=block',
             },
+            {
+              key: 'Strict-Transport-Security',
+              value: 'max-age=63072000; includeSubDomains; preload',
+            },
+            {
+              key: 'Referrer-Policy',
+              value: 'strict-origin-when-cross-origin',
+            },
+            {
+              key: 'Content-Security-Policy',
+              // Note: Using a permissive initial CSP that upgrades insecure requests and blocks framing.
+              // A strict CSP with nonces requires Next.js Middleware/headers manipulation to inject nonces into Next scripts.
+              value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self' https://js.stripe.com; upgrade-insecure-requests; frame-ancestors 'none';",
+            },
           ],
         },
       ];
