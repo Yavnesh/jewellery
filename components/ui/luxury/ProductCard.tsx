@@ -100,6 +100,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               alt={product.title}
               width={400}
               height={400}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-contain w-full h-full mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
             />
           </Link>

@@ -1,8 +1,6 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 import React from "react";
-import prisma from "@/utils/db";
+import { getProducts } from "@/src/modules/catalog/catalog.service";
+import type { Metadata } from "next";
 import { CategoryBanner } from "@/components/ui/luxury/CategoryBanner";
 import { HorizontalFilterBar } from "@/components/ui/luxury/HorizontalFilterBar";
 import { FilterSidebar } from "@/components/ui/luxury/FilterSidebar";
@@ -11,7 +9,43 @@ import { FilterSync } from "@/components/ui/luxury/FilterSync";
 import { Pagination } from "@/components";
 import { sanitize } from "@/lib/sanitize";
 
-const ShopPage = async ({ params, searchParams }: { params: Promise<{ slug?: string[] }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
+// Phase 2 caching foundation: We will rely on built-in fetch/unstable_cache next
+// Remove force-dynamic to allow ISR or native route caching to work correctly.
+
+type Props = { params: Promise<{ slug?: string[] }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> };
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const awaitedParams = await params;
+  const awaitedSearchParams = await searchParams;
+  const categorySlug = awaitedParams?.slug?.[0];
+  const collection = awaitedSearchParams?.collection as string;
+  const occasion = awaitedSearchParams?.occasion as string;
+  
+  let title = "Shop Fine Luxury Jewelry | Tanishq";
+  let description = "Discover our exclusive collection of luxury jewelry, crafted with precision and elegance.";
+
+  if (categorySlug) {
+    const cleanCat = sanitize(categorySlug.replace("-", " "));
+    title = `${cleanCat} | Tanishq`;
+    description = `Shop the finest ${cleanCat} jewelry designed for timeless moments.`;
+  } else if (collection) {
+    title = `${sanitize(collection)} Collection | Tanishq`;
+    description = `Explore the beautiful ${sanitize(collection)} collection at Tanishq.`;
+  } else if (occasion) {
+    title = `${sanitize(occasion)} Jewelry | Tanishq`;
+    description = `Find the perfect jewelry for your ${sanitize(occasion)} celebration.`;
+  }
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/shop${categorySlug ? `/${categorySlug}` : ''}`
+    }
+  };
+}
+
+const ShopPage = async ({ params, searchParams }: Props) => {
   const awaitedParams = await params;
   const awaitedSearchParams = await searchParams;
   
@@ -81,20 +115,8 @@ const ShopPage = async ({ params, searchParams }: { params: Promise<{ slug?: str
     ];
   }
   
-  // Execute Direct Prisma Query
-  const products = await prisma.product.findMany({
-    where,
-    skip,
-    take: limit,
-    include: {
-      category: true,
-    },
-    orderBy: sort === 'price-asc' ? { price: 'asc' } :
-             sort === 'price-desc' ? { price: 'desc' } :
-             { id: 'desc' } // default newest
-  });
-
-  const totalProducts = await prisma.product.count({ where });
+  // Execute via service
+  const { products, totalProducts } = await getProducts(where, skip, limit, sort);
 
   const displayTitle = categorySlug 
     ? sanitize(categorySlug.replace("-", " "))

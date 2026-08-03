@@ -59,6 +59,7 @@ const Hero = () => {
             alt={slide.title}
             fill
             priority={index === 0}
+            fetchPriority={index === 0 ? "high" : "auto"}
             className="object-cover object-center"
             sizes="100vw"
           />

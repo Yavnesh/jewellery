@@ -8,54 +8,49 @@ import {
 import { VariantSelector } from "@/components/ui/luxury/VariantSelector";
 import apiClient from "@/lib/api";
 import Image from "next/image";
+import { getProductBySlug, getProductImages } from "@/src/modules/catalog/catalog.service";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import React from "react";
 import { sanitize } from "@/lib/sanitize";
-import prisma from "@/utils/db";
+import { ProductJsonLd } from "@/src/components/seo/ProductJsonLd";
 
 interface SingleProductPageProps {
   params: Promise<{  productSlug: string, id: string }>;
 }
 
+export async function generateMetadata({ params }: SingleProductPageProps): Promise<Metadata> {
+  const paramsAwaited = await params;
+  const product = await getProductBySlug(paramsAwaited?.productSlug);
+  
+  if (!product) return {};
+
+  return {
+    title: `${product.title} | Tanishq`,
+    description: product.features || `Explore the exquisite ${product.title} at Tanishq.`,
+    alternates: {
+      canonical: `/product/${product.slug}`
+    },
+    openGraph: {
+      title: product.title,
+      description: product.features || `Explore the exquisite ${product.title} at Tanishq.`,
+      url: `/product/${product.slug}`,
+      images: [{ url: product.mainImage, alt: product.title }]
+    }
+  };
+}
+
 const SingleProductPage = async ({ params }: SingleProductPageProps) => {
   const paramsAwaited = await params;
   
-  // Query Prisma directly instead of hitting an API route
-  const product = await prisma.product.findUnique({
-    where: { slug: paramsAwaited?.productSlug },
-    include: {
-      options: {
-        include: {
-          values: {
-            orderBy: { position: 'asc' }
-          }
-        },
-        orderBy: { position: 'asc' }
-      },
-      variants: {
-        where: { status: 'ACTIVE' },
-        include: {
-          optionValues: {
-            include: {
-              optionValue: {
-                include: { option: true }
-              }
-            }
-          }
-        },
-        orderBy: { position: 'asc' }
-      }
-    }
-  });
+  const product = await getProductBySlug(paramsAwaited?.productSlug);
 
   if (!product) {
     notFound();
   }
 
   // Get gallery images
-  const images = await prisma.image.findMany({
-    where: { productID: product.id }
-  });
+  const images = await getProductImages(product.id);
 
   // Parse gallery images dynamically
   let galleryImages: string[] = [];
@@ -254,7 +249,8 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
             </div>
           </div>
         </div>
-
+        
+        <ProductJsonLd product={product} />
       </div>
     </div>
   );

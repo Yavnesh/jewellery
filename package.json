@@ -12,6 +12,8 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@datadog/browser-logs": "^7.7.0",
+    "@datadog/browser-rum": "^7.7.0",
     "@headlessui/react": "^1.7.18",
     "@prisma/client": "^6.16.1",
     "@sentry/nextjs": "^10.69.0",
