@@ -12,6 +12,14 @@ const featuresList = ["New Arrival", "Best Seller", "Virtual Try-On", "Limited E
 
 async function main() {
   console.log("Starting luxury seeding...");
+  
+  // Clear existing products to ensure clean slate for variant architecture
+  console.log("Clearing existing products...");
+  await prisma.product.deleteMany({});
+  await prisma.productOption.deleteMany({});
+  await prisma.productOptionValue.deleteMany({});
+  await prisma.productVariant.deleteMany({});
+  await prisma.category.deleteMany({});
 
   // Ensure category and merchant exist
   const defaultCategory = await prisma.category.upsert({
@@ -31,9 +39,16 @@ async function main() {
     // Pick 2 random features
     const selectedFeatures = faker.helpers.arrayElements(featuresList, 2).join(",");
 
-    await prisma.product.create({
+    const isBestseller = Math.random() > 0.8;
+    const isNewArrival = Math.random() > 0.7;
+    const featured = Math.random() > 0.9;
+
+    const productType = faker.helpers.arrayElement(["Ring", "Necklace", "Earrings", "Bracelet"]);
+    
+    // Create product
+    const product = await prisma.product.create({
       data: {
-        title: faker.commerce.productName() + " " + faker.helpers.arrayElement(["Ring", "Necklace", "Earrings", "Bracelet"]),
+        title: faker.commerce.productName() + " " + productType,
         slug: faker.lorem.slug() + "-" + i,
         description: faker.commerce.productDescription(),
         mainImage: "/product_placeholder.jpg",
@@ -52,11 +67,72 @@ async function main() {
         collection: faker.helpers.arrayElement(collections),
         gender: faker.helpers.arrayElement(genders),
         features: selectedFeatures,
+        isBestseller,
+        isNewArrival,
+        featured,
       },
     });
+
+    // Create Options based on product type
+    if (productType === "Ring") {
+      const sizeOption = await prisma.productOption.create({
+        data: {
+          productId: product.id,
+          name: "Ring Size",
+          position: 1,
+        }
+      });
+      const sizes = ["5", "6", "7", "8"];
+      
+      const optionValues = [];
+      for (const size of sizes) {
+        const ov = await prisma.productOptionValue.create({
+          data: {
+            optionId: sizeOption.id,
+            value: `Size ${size}`,
+            position: parseInt(size)
+          }
+        });
+        optionValues.push(ov);
+      }
+
+      // Create Variants
+      for (let j = 0; j < optionValues.length; j++) {
+        const sku = `SKU-${product.id.substring(0,6).toUpperCase()}-${sizes[j]}`;
+        const variantPrice = Math.floor(price) + (j * 100); // Size increases price slightly
+        
+        await prisma.productVariant.create({
+          data: {
+            productId: product.id,
+            sku,
+            price: variantPrice,
+            compareAtPrice: hasDiscount ? originalPrice + (j * 100) : null,
+            stockQuantity: faker.number.int({ min: 0, max: 10 }),
+            status: "ACTIVE",
+            optionValues: {
+              create: [
+                { optionValueId: optionValues[j].id }
+              ]
+            }
+          }
+        });
+      }
+    } else {
+      // Create a default single variant for non-rings
+      await prisma.productVariant.create({
+        data: {
+          productId: product.id,
+          sku: `SKU-${product.id.substring(0,8).toUpperCase()}-DEF`,
+          price: Math.floor(price),
+          compareAtPrice: hasDiscount ? originalPrice : null,
+          stockQuantity: faker.number.int({ min: 0, max: 10 }),
+          status: "ACTIVE"
+        }
+      });
+    }
   }
 
-  console.log("Luxury seeding completed. 120 products created.");
+  console.log("Luxury seeding completed. 120 products with variants created.");
 }
 
 main()

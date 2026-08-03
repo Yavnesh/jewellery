@@ -1,5 +1,6 @@
 "use client"
 
+import React, { useTransition } from "react";
 import { useProductStore } from "@/app/_zustand/store";
 import toast from "react-hot-toast";
 import Image from "next/image"
@@ -10,13 +11,20 @@ import { sanitize } from "@/lib/sanitize";
 
 export const CartModule = () => {
 
-  const { products, removeFromCart, calculateTotals, total } =
+  const { products, calculateTotals, total } =
     useProductStore();
+  const [isPending, startTransition] = React.useTransition();
 
   const handleRemoveItem = (id: string) => {
-    removeFromCart(id);
-    calculateTotals();
-    toast.success("Product removed from the cart");
+    startTransition(async () => {
+      const { removeFromCart } = await import("@/app/actions/cart.actions");
+      const result = await removeFromCart(id);
+      if (result.success) {
+        toast.success("Product removed from the cart");
+      } else {
+        toast.error("Failed to remove product");
+      }
+    });
   };
   return (
 

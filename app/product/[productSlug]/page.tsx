@@ -5,6 +5,7 @@ import {
   SingleProductDynamicFields,
   ProductGallery,
 } from "@/components";
+import { VariantSelector } from "@/components/ui/luxury/VariantSelector";
 import apiClient from "@/lib/api";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -21,7 +22,30 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
   
   // Query Prisma directly instead of hitting an API route
   const product = await prisma.product.findUnique({
-    where: { slug: paramsAwaited?.productSlug }
+    where: { slug: paramsAwaited?.productSlug },
+    include: {
+      options: {
+        include: {
+          values: {
+            orderBy: { position: 'asc' }
+          }
+        },
+        orderBy: { position: 'asc' }
+      },
+      variants: {
+        where: { status: 'ACTIVE' },
+        include: {
+          optionValues: {
+            include: {
+              optionValue: {
+                include: { option: true }
+              }
+            }
+          }
+        },
+        orderBy: { position: 'asc' }
+      }
+    }
   });
 
   if (!product) {
@@ -93,20 +117,6 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
               <span className="text-xs text-gray-500 underline">Write A Review</span>
             </div>
             
-            {/* Price */}
-            <div className="flex items-end gap-3 mb-6">
-              <span className="font-serif text-[28px] font-bold text-[#333333] leading-none">
-                ₹ {Number(product?.price || 0).toLocaleString('en-IN')}
-              </span>
-              <span className="text-sm text-gray-400 font-serif line-through mb-1">
-                ₹ {(Number(product?.price || 0) * 1.15).toLocaleString('en-IN')}
-              </span>
-            </div>
-            
-            <p className="text-[11px] text-gray-500 mb-8 border-b border-gray-100 pb-4">
-              Price inclusive of all taxes.
-            </p>
-            
             {/* Delivery & Pincode */}
             <div className="mb-8">
               <h3 className="text-sm font-bold text-[#333333] mb-3">Delivery Location</h3>
@@ -136,7 +146,7 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
             <div className="flex flex-col gap-3 text-[13px] text-gray-600 border-t border-gray-100 pt-6 mb-8">
               <div className="flex justify-between">
                 <span className="text-gray-400">Weight</span>
-                <span className="font-medium text-[#333333]">12.45 g</span>
+                <span className="font-medium text-[#333333]">{product?.weight || '12.45'} g</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Purity</span>
@@ -144,15 +154,13 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-4 mt-auto">
-              <button className="flex-1 py-3.5 border border-[#8B2C33] text-[#8B2C33] font-bold text-sm tracking-wide hover:bg-[#8B2C33] hover:text-white transition-colors">
-                ADD TO CART
-              </button>
-              <button className="flex-1 py-3.5 bg-[#8B2C33] text-white font-bold text-sm tracking-wide hover:bg-[#6e2329] transition-colors">
-                BUY NOW
-              </button>
-            </div>
+            {/* Variant Selector & Actions */}
+            <VariantSelector 
+              options={product.options} 
+              variants={product.variants} 
+              basePrice={product.price} 
+              baseCompareAtPrice={product.originalPrice}
+            />
           </div>
         </div>
 

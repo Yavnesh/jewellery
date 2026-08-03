@@ -1,12 +1,12 @@
 
-import {
-  SectionTitle
-} from "@/components";
-import { Loader } from "@/components/Loader";
+import { SectionTitle } from "@/components";
 import { CartModule } from "@/components/modules/cart";
-import { Suspense } from "react";
+import { getActiveCart } from "@/app/actions/cart.actions";
+import { CartHydrator } from "./CartHydrator";
 
-const CartPage = () => {
+const CartPage = async () => {
+  const serverCart = await getActiveCart();
+  
   return (
     <div className="bg-white">
       <SectionTitle title="Cart Page" path="Home | Cart" />
@@ -15,9 +15,8 @@ const CartPage = () => {
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Shopping Cart
           </h1>
-          <Suspense fallback={<Loader />}>
-            <CartModule />
-          </Suspense>
+          <CartHydrator serverCart={serverCart} />
+          <CartModule />
         </div>
       </div>
     </div>

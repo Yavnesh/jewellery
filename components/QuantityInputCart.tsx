@@ -16,20 +16,34 @@ import { FaMinus } from "react-icons/fa6";
 
 const QuantityInputCart = ({ product } : { product: ProductInCart }) => {
   const [quantityCount, setQuantityCount] = useState<number>(product.amount);
-  const { updateCartAmount, calculateTotals } = useProductStore();
+  const [isPending, startTransition] = React.useTransition();
+
+  // Keep local state in sync if product.amount changes from server
+  React.useEffect(() => {
+    setQuantityCount(product.amount);
+  }, [product.amount]);
 
   const handleQuantityChange = (actionName: string): void => {
+    let newQuantity = quantityCount;
     if (actionName === "plus") {
-      setQuantityCount(() => quantityCount + 1);
-      updateCartAmount(product.id, quantityCount + 1);
-      calculateTotals();
-
-      
-    } else if (actionName === "minus" && quantityCount !== 1) {
-      setQuantityCount(() => quantityCount - 1);
-      updateCartAmount(product.id, quantityCount - 1);
-      calculateTotals();
+      newQuantity = quantityCount + 1;
+    } else if (actionName === "minus" && quantityCount > 1) {
+      newQuantity = quantityCount - 1;
+    } else {
+      return; // Do nothing if it goes below 1
     }
+
+    setQuantityCount(newQuantity);
+    
+    startTransition(async () => {
+      const { updateQuantity } = await import("@/app/actions/cart.actions");
+      const { toast } = await import("react-hot-toast");
+      const result = await updateQuantity(product.id, newQuantity);
+      if (!result.success) {
+        toast.error("Failed to update quantity: " + result.error);
+        setQuantityCount(product.amount); // Revert on failure
+      }
+    });
   };
 
   return (

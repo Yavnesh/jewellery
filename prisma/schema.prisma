@@ -41,6 +41,16 @@ model Product {
   merchant       Merchant @relation(fields: [merchantId], references: [id])
   // Back relation for bulk upload items
   bulkUploadItems bulk_upload_item[]      @relation("ProductBulkItems")
+
+  // Merchandising Fields
+  featured       Boolean                  @default(false)
+  isNewArrival   Boolean                  @default(false)
+  isBestseller   Boolean                  @default(false)
+  sortPriority   Int                      @default(0)
+
+  // Variant Architecture Relations
+  variants       ProductVariant[]
+  options        ProductOption[]
 }
 
 model Image {
@@ -58,34 +68,49 @@ model User {
   notifications Notification[]
   // Back relation for bulk upload batches
   bulkUploadBatches bulk_upload_batch[] @relation("UserBatches")
+  
+  // Cart relation
+  cart          Cart?
 }
 
 model Customer_order {
-  id          String                   @id @default(uuid())
-  name        String
-  lastname    String
-  phone       String
-  email       String
-  company     String
-  adress      String
-  apartment   String
-  postalCode  String
-  dateTime    DateTime?                @default(now())
-  status      String
-  city        String
-  country     String
-  orderNotice String?
-  total       Int
-  products    customer_order_product[]
+  id            String                   @id @default(uuid())
+  name          String
+  lastname      String
+  phone         String
+  email         String
+  company       String
+  adress        String
+  apartment     String
+  postalCode    String
+  dateTime      DateTime?                @default(now())
+  status        String
+  city          String
+  country       String
+  orderNotice   String?
+  total         Int
+  products      customer_order_product[]
+
+  userId        String?
+  cartId        String?
+  paymentStatus PaymentStatus            @default(PENDING)
 }
 
 model customer_order_product {
   id              String         @id @default(uuid())
   customerOrder   Customer_order @relation(fields: [customerOrderId], references: [id])
   customerOrderId String
-  product         Product        @relation(fields: [productId], references: [id])
-  productId       String
+  
+  // Legacy relation, kept optional for backwards compatibility
+  product         Product?       @relation(fields: [productId], references: [id])
+  productId       String?
+  
+  // New Variant-based architecture
+  variant         ProductVariant? @relation(fields: [variantId], references: [id])
+  variantId       String?
+  
   quantity        Int
+  priceAtPurchase Int            @default(0) // Captures price at moment of sale
 }
 
 model Category {
@@ -198,3 +223,158 @@ enum BulkUploadItemStatus {
   UPDATED
   ERROR
 }
+
+// -----------------------------------------------------------------------------
+// VARIANT ARCHITECTURE (Volume 2)
+// -----------------------------------------------------------------------------
+
+enum VariantStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+}
+
+model ProductVariant {
+  id                String            @id @default(cuid())
+  productId         String
+  sku               String            @unique
+  barcode           String?           @unique
+  title             String?
+  position          Int               @default(0)
+
+  // Use Int to match existing price format (or Decimal if migrating fully)
+  price             Int
+  compareAtPrice    Int?
+
+  weight            Float?
+  
+  stockQuantity     Int               @default(0)
+  reservedQuantity  Int               @default(0)
+
+  status            VariantStatus     @default(ACTIVE)
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  product           Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  optionValues      VariantOptionValue[]
+  inventoryEvents   InventoryEvent[]
+  cartItems         CartItem[]
+  orderProducts     customer_order_product[]
+
+  @@index([productId, status])
+  @@index([status])
+}
+
+model ProductOption {
+  id        String   @id @default(cuid())
+  productId String
+  name      String   // e.g., "Ring Size", "Metal"
+  position  Int      @default(0)
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values    ProductOptionValue[]
+
+  @@unique([productId, name])
+  @@index([productId])
+}
+
+model ProductOptionValue {
+  id        String   @id @default(cuid())
+  optionId  String
+  value     String   // e.g., "Size 6", "18K Gold"
+  position  Int      @default(0)
+
+  option    ProductOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  variants  VariantOptionValue[]
+
+  @@unique([optionId, value])
+}
+
+// Join table for many-to-many relationship between Variants and OptionValues
+model VariantOptionValue {
+  variantId      String
+  optionValueId  String
+
+  variant        ProductVariant      @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  optionValue    ProductOptionValue  @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, optionValueId])
+  @@index([variantId])
+  @@index([optionValueId])
+}
+
+enum InventoryEventType {
+  INITIAL_STOCK
+  STOCK_ADJUSTMENT
+  RESERVATION
+  RESERVATION_RELEASE
+  ORDER_FULFILLMENT
+  RETURN
+}
+
+model InventoryEvent {
+  id          String              @id @default(cuid())
+  variantId   String
+  type        InventoryEventType
+  quantity    Int
+  referenceId String?             // orderId or checkoutSessionId
+  reason      String?
+  createdAt   DateTime            @default(now())
+
+  variant     ProductVariant      @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId, createdAt])
+  @@index([referenceId])
+}
+
+// -----------------------------------------------------------------------------
+// CART ARCHITECTURE (Volume 2 - Phase 2)
+// -----------------------------------------------------------------------------
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum CartStatus {
+  ACTIVE
+  CONVERTED
+  ABANDONED
+}
+
+model Cart {
+  id        String      @id @default(cuid())
+  sessionId String?     @unique // For anonymous guest carts
+  userId    String?     @unique // For authenticated users
+  status    CartStatus  @default(ACTIVE)
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  items     CartItem[]
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([userId])
+}
+
+model CartItem {
+  id        String          @id @default(cuid())
+  cartId    String
+  variantId String
+  quantity  Int             @default(1)
+
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  cart      Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant   ProductVariant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, variantId])
+  @@index([cartId])
+  @@index([variantId])
+}
+

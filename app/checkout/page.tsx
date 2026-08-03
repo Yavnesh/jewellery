@@ -97,56 +97,18 @@ const CheckoutPage = () => {
       return;
     }
 
-    // Basic client-side checks for required fields (UX only)
-    const requiredFields = [
-      'name', 'lastname', 'phone', 'email', 'company', 
-      'adress', 'apartment', 'city', 'country', 'postalCode'
-    ];
-    
-    const missingFields = requiredFields.filter(field => 
-      !checkoutForm[field as keyof typeof checkoutForm]?.trim()
-    );
-
-    if (missingFields.length > 0) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
     if (products.length === 0) {
       toast.error("Your cart is empty");
-      return;
-    }
-
-    if (total <= 0) {
-      toast.error("Invalid order total");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      console.log("🚀 Starting order creation...");
+      // Lazy import Server Action
+      const { submitCheckout } = await import("@/app/actions/checkout.actions");
       
-      // Get user ID if logged in
-      let userId = null;
-      if (session?.user?.email) {
-        try {
-          console.log("🔍 Getting user ID for logged-in user:", session.user.email);
-          const userResponse = await apiClient.get(`/api/users/email/${session.user.email}`);
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-            userId = userData.id;
-            console.log("✅ Found user ID:", userId);
-          } else {
-            console.log("❌ Could not find user with email:", session.user.email);
-          }
-        } catch (userError) {
-          console.log("⚠️  Error getting user ID:", userError);
-        }
-      }
-      
-      // Prepare the order data
-      const orderData = {
+      const result = await submitCheckout({
         name: checkoutForm.name.trim(),
         lastname: checkoutForm.lastname.trim(),
         phone: checkoutForm.phone.trim(),
@@ -154,90 +116,19 @@ const CheckoutPage = () => {
         company: checkoutForm.company.trim(),
         adress: checkoutForm.adress.trim(),
         apartment: checkoutForm.apartment.trim(),
-        postalCode: checkoutForm.postalCode.trim(),
-        status: "pending",
-        total: total,
         city: checkoutForm.city.trim(),
         country: checkoutForm.country.trim(),
+        postalCode: checkoutForm.postalCode.trim(),
         orderNotice: checkoutForm.orderNotice.trim(),
-        userId: userId // Add user ID for notifications
-      };
+      });
 
-      console.log("📋 Order data being sent:", orderData);
-
-      // Send order data to server for validation and processing
-      const response = await apiClient.post("/api/orders", orderData);
-
-      console.log("📡 API Response received:");
-      console.log("  Status:", response.status);
-      console.log("  Status Text:", response.statusText);
-      console.log("  Response OK:", response.ok);
-      
-      // Check if response is ok before parsing
-      if (!response.ok) {
-        console.error("❌ Response not OK:", response.status, response.statusText);
-        const errorText = await response.text();
-        console.error("Error response body:", errorText);
-        
-        // Try to parse as JSON to get detailed error info
-        try {
-          const errorData = JSON.parse(errorText);
-          console.error("Parsed error data:", errorData);
-          
-          // Handle different error types
-          if (response.status === 409) {
-            // Duplicate order error
-            toast.error(errorData.details || errorData.error || "Duplicate order detected");
-            return; // Don't throw, just return to stop execution
-          } else if (errorData.details && Array.isArray(errorData.details)) {
-            // Validation errors
-            errorData.details.forEach((detail: any) => {
-              toast.error(`${detail.field}: ${detail.message}`);
-            });
-          } else if (typeof errorData.details === 'string') {
-            // Single error message in details
-            toast.error(errorData.details);
-          } else {
-            // Fallback error message
-            toast.error(errorData.error || "Order creation failed");
-          }
-        } catch (parseError) {
-          console.error("Could not parse error as JSON:", parseError);
-          toast.error("Order creation failed. Please try again.");
-        }
-        
-        return; // Stop execution instead of throwing
+      if (!result.success) {
+        toast.error(result.error || "Failed to create order");
+        setIsSubmitting(false);
+        return;
       }
 
-      const data = await response.json();
-      console.log("✅ Parsed response data:", data);
-      
-      const orderId: string = data.id;
-      console.log("🆔 Extracted order ID:", orderId);
-
-      if (!orderId) {
-        console.error("❌ Order ID is missing or falsy!");
-        console.error("Full response data:", JSON.stringify(data, null, 2));
-        throw new Error("Order ID not received from server");
-      }
-
-      console.log("✅ Order ID validation passed, proceeding with product addition...");
-
-      // Add products to order
-      for (let i = 0; i < products.length; i++) {
-        console.log(`🛍️ Adding product ${i + 1}/${products.length}:`, {
-          orderId,
-          productId: products[i].id,
-          quantity: products[i].amount
-        });
-        
-        await addOrderProduct(orderId, products[i].id, products[i].amount);
-        console.log(`✅ Product ${i + 1} added successfully`);
-      }
-
-      console.log(" All products added successfully!");
-
-      // Clear form and cart
+      // Clear form and optimistic cart
       setCheckoutForm({
         name: "",
         lastname: "",
@@ -251,84 +142,18 @@ const CheckoutPage = () => {
         postalCode: "",
         orderNotice: "",
       });
-      clearCart();
       
-      // Refresh notification count if user is logged in
-      try {
-        // This will trigger a refresh of notifications in the background
-        window.dispatchEvent(new CustomEvent('orderCompleted'));
-      } catch (error) {
-        console.log('Note: Could not trigger notification refresh');
-      }
+      clearCart();
       
       toast.success("Order created successfully! You will be contacted for payment.");
       setTimeout(() => {
         router.push("/");
       }, 1000);
+      
     } catch (error: any) {
       console.error("💥 Error in makePurchase:", error);
-      
-      // Handle server validation errors
-      if (error.response?.status === 400) {
-        console.log(" Handling 400 error...");
-        try {
-          const errorData = await error.response.json();
-          console.log("Error data:", errorData);
-          if (errorData.details && Array.isArray(errorData.details)) {
-            // Show specific validation errors
-            errorData.details.forEach((detail: any) => {
-              toast.error(`${detail.field}: ${detail.message}`);
-            });
-          } else {
-            toast.error(errorData.error || "Validation failed");
-          }
-        } catch (parseError) {
-          console.error("Failed to parse error response:", parseError);
-          toast.error("Validation failed");
-        }
-      } else if (error.response?.status === 409) {
-        toast.error("Duplicate order detected. Please wait before creating another order.");
-      } else {
-        console.log("🔍 Handling generic error...");
-        toast.error("Failed to create order. Please try again.");
-      }
-    } finally {
+      toast.error("Failed to create order. Please try again.");
       setIsSubmitting(false);
-    }
-  };
-
-  const addOrderProduct = async (
-    orderId: string,
-    productId: string,
-    productQuantity: number
-  ) => {
-    try {
-      console.log("️ Adding product to order:", {
-        customerOrderId: orderId,
-        productId,
-        quantity: productQuantity
-      });
-      
-      const response = await apiClient.post("/api/order-product", {
-        customerOrderId: orderId,
-        productId: productId,
-        quantity: productQuantity,
-      });
-
-      console.log("📡 Product order response:", response);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Product order failed:", response.status, errorText);
-        throw new Error(`Product order failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("✅ Product order successful:", data);
-      
-    } catch (error) {
-      console.error("💥 Error creating product order:", error);
-      throw error;
     }
   };
 
