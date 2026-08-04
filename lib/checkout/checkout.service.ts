@@ -18,7 +18,7 @@ interface CheckoutInput {
 }
 
 export async function processCheckout(input: CheckoutInput) {
-  let cart;
+  let cart: any;
   try {
     // 1. Fetch active cart
     cart = await getActiveCart();
