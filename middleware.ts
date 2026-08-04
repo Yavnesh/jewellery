@@ -16,7 +16,7 @@ const ratelimit =
 
 export default withAuth(
   async function middleware(req: NextRequest & { nextauth: any }) {
-    const ip = req.ip ?? req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+    const ip = (req as any).ip ?? req.headers.get("x-forwarded-for") ?? "127.0.0.1";
     const path = req.nextUrl.pathname;
 
     // 1. Rate Limiting for critical routes (checkout, auth, search)

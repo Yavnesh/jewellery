@@ -30,4 +30,4 @@ if (!_env.success) {
   throw new Error('Invalid environment variables');
 }
 
-export const env = _env.data;
+export const env = _env.data as z.infer<typeof envSchema> & Partial<z.infer<typeof serverEnvSchema>>;
