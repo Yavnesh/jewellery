@@ -50,11 +50,11 @@ export const OrderConfirmationEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>Your Tanishq Order Confirmation #{orderNumber}</Preview>
+      <Preview>Your Vamika Order Confirmation #{orderNumber}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={headerTitle}>TANISHQ</Heading>
+            <Heading style={headerTitle}>VAMIKA</Heading>
           </Section>
           
           <Section style={content}>
@@ -63,7 +63,7 @@ export const OrderConfirmationEmail = ({
               Hi {customerName},
             </Text>
             <Text style={text}>
-              Thank you for shopping with Tanishq. We've received your order and are getting it ready for shipment.
+              Thank you for shopping with Vamika. We've received your order and are getting it ready for shipment.
             </Text>
             
             <Section style={orderDetailsInfo}>
@@ -112,7 +112,7 @@ export const OrderConfirmationEmail = ({
             </Text>
 
             <Section style={buttonContainer}>
-              <Link href={`https://tanishq.example.com/account/orders/${orderNumber}`} style={button}>
+              <Link href={`https://vamika.example.com/account/orders/${orderNumber}`} style={button}>
                 View Order Status
               </Link>
             </Section>
@@ -144,11 +144,11 @@ const container = {
 const header = {
   padding: '32px',
   textAlign: 'center' as const,
-  backgroundColor: '#232f3e', // Tanishq charcoal-ish
+  backgroundColor: '#232f3e', // Vamika charcoal-ish
 };
 
 const headerTitle = {
-  color: '#D4AF37', // Tanishq gold
+  color: '#D4AF37', // Vamika gold
   fontSize: '24px',
   margin: '0',
   letterSpacing: '4px',

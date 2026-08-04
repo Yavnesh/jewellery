@@ -1,4 +1,4 @@
-import { CategoryMenu, Hero, IntroducingSection, ProductsSection, OccasionGrid, TrustBanner, Newsletter, TanishqShowcase } from "@/components";
+import { CategoryMenu, Hero, IntroducingSection, ProductsSection, OccasionGrid, TrustBanner, Newsletter, VamikaShowcase } from "@/components";
 
 export default function Home() {
   return (
@@ -6,7 +6,7 @@ export default function Home() {
       <Hero />
       <IntroducingSection />
       <CategoryMenu />
-      <TanishqShowcase />
+      <VamikaShowcase />
       <OccasionGrid />
       <ProductsSection />
       <Newsletter />

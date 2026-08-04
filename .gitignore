@@ -45,3 +45,5 @@ bun.lockb
 
 # Documentation and unused assets
 docs/
+
+replace_tanishq.js

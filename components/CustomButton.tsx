@@ -38,7 +38,7 @@ const CustomButton = ({
         paddingTop: `${paddingY * 0.25}rem`,
         paddingBottom: `${paddingY * 0.25}rem`,
       }}
-      className={`${customWidth === "full" ? "w-full" : customWidth !== "no" ? `w-${customWidth}` : ""} uppercase bg-tanishq-charcoal hover:bg-tanishq-gold text-white text-${textSize} font-semibold tracking-widest transition-all duration-300 focus:outline-none rounded shadow-sm border border-tanishq-charcoal hover:border-tanishq-gold`}
+      className={`${customWidth === "full" ? "w-full" : customWidth !== "no" ? `w-${customWidth}` : ""} uppercase bg-vamika-charcoal hover:bg-vamika-gold text-white text-${textSize} font-semibold tracking-widest transition-all duration-300 focus:outline-none rounded shadow-sm border border-vamika-charcoal hover:border-vamika-gold`}
     >
       {text}
     </button>

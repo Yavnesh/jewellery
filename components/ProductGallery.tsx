@@ -35,8 +35,8 @@ export const ProductGallery = ({ mainImage, title, images }: ProductGalleryProps
               onClick={() => setActiveImage(imagePath)}
               className={`border rounded p-1 bg-white cursor-pointer transition-all duration-200 ${
                 activeImage === imagePath
-                  ? "border-tanishq-gold ring-1 ring-tanishq-gold"
-                  : "border-luxury-border hover:border-tanishq-gold/60"
+                  ? "border-vamika-gold ring-1 ring-vamika-gold"
+                  : "border-luxury-border hover:border-vamika-gold/60"
               }`}
             >
               <Image

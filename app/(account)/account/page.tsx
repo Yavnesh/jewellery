@@ -32,7 +32,7 @@ export default async function AccountDashboardPage() {
           </div>
           <Link 
             href="/account/profile" 
-            className="mt-4 flex items-center text-sm font-medium text-tanishq-gold hover:text-amber-700"
+            className="mt-4 flex items-center text-sm font-medium text-vamika-gold hover:text-amber-700"
           >
             Edit Profile
             <ArrowRight className="ml-1 h-4 w-4" />
@@ -49,7 +49,7 @@ export default async function AccountDashboardPage() {
           </div>
           <Link 
             href="/account/addresses" 
-            className="mt-4 flex items-center text-sm font-medium text-tanishq-gold hover:text-amber-700"
+            className="mt-4 flex items-center text-sm font-medium text-vamika-gold hover:text-amber-700"
           >
             Manage Addresses
             <ArrowRight className="ml-1 h-4 w-4" />
@@ -66,7 +66,7 @@ export default async function AccountDashboardPage() {
           </div>
           <Link 
             href="/account/orders" 
-            className="mt-4 flex items-center text-sm font-medium text-tanishq-gold hover:text-amber-700"
+            className="mt-4 flex items-center text-sm font-medium text-vamika-gold hover:text-amber-700"
           >
             View Order History
             <ArrowRight className="ml-1 h-4 w-4" />

@@ -67,13 +67,13 @@ const CategoryMenu = () => {
             
             {/* Content at bottom */}
             <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-              <span className="text-tanishq-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
+              <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
                 {cat.subtitle}
               </span>
-              <h3 className="text-white text-2xl font-serif font-light uppercase tracking-wider mt-1 group-hover:text-tanishq-gold-light transition-colors duration-300">
+              <h3 className="text-white text-2xl font-serif font-light uppercase tracking-wider mt-1 group-hover:text-vamika-gold-light transition-colors duration-300">
                 {cat.title}
               </h3>
-              <span className="inline-block mt-3 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium border-b border-white/40 pb-0.5 group-hover:border-tanishq-gold-light group-hover:text-tanishq-gold-light transition-all duration-300">
+              <span className="inline-block mt-3 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium border-b border-white/40 pb-0.5 group-hover:border-vamika-gold-light group-hover:text-vamika-gold-light transition-all duration-300">
                 Explore →
               </span>
             </div>

@@ -10,7 +10,7 @@ export const CategoryBanner = () => {
   const opacity = useTransform(scrollY, [0, 300], [1, 0.3]);
 
   return (
-    <div className="relative w-full h-[420px] overflow-hidden bg-tanishq-charcoal flex items-center justify-center">
+    <div className="relative w-full h-[420px] overflow-hidden bg-vamika-charcoal flex items-center justify-center">
       <motion.div style={{ y: y1, opacity }} className="absolute inset-0 z-0">
         <Image
           src="/hero-banner.png"
@@ -44,7 +44,7 @@ export const CategoryBanner = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="bg-white/10 backdrop-blur-md border border-white/30 text-white font-sans font-medium uppercase tracking-widest text-sm px-8 py-3.5 hover:bg-white hover:text-tanishq-charcoal transition-all duration-300"
+          className="bg-white/10 backdrop-blur-md border border-white/30 text-white font-sans font-medium uppercase tracking-widest text-sm px-8 py-3.5 hover:bg-white hover:text-vamika-charcoal transition-all duration-300"
         >
           Explore New Arrivals
         </motion.button>

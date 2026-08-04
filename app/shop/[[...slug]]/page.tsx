@@ -21,18 +21,18 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const collection = awaitedSearchParams?.collection as string;
   const occasion = awaitedSearchParams?.occasion as string;
   
-  let title = "Shop Fine Luxury Jewelry | Tanishq";
+  let title = "Shop Fine Luxury Jewelry | Vamika";
   let description = "Discover our exclusive collection of luxury jewelry, crafted with precision and elegance.";
 
   if (categorySlug) {
     const cleanCat = sanitize(categorySlug.replace("-", " "));
-    title = `${cleanCat} | Tanishq`;
+    title = `${cleanCat} | Vamika`;
     description = `Shop the finest ${cleanCat} jewelry designed for timeless moments.`;
   } else if (collection) {
-    title = `${sanitize(collection)} Collection | Tanishq`;
-    description = `Explore the beautiful ${sanitize(collection)} collection at Tanishq.`;
+    title = `${sanitize(collection)} Collection | Vamika`;
+    description = `Explore the beautiful ${sanitize(collection)} collection at Vamika.`;
   } else if (occasion) {
-    title = `${sanitize(occasion)} Jewelry | Tanishq`;
+    title = `${sanitize(occasion)} Jewelry | Vamika`;
     description = `Find the perfect jewelry for your ${sanitize(occasion)} celebration.`;
   }
 
@@ -129,7 +129,7 @@ const ShopPage = async ({ params, searchParams }: Props) => {
       <FilterSync />
       
       <div className="max-w-[1600px] mx-auto px-6 md:px-12 pt-8">
-        {/* Breadcrumb / Title area matching Tanishq style */}
+        {/* Breadcrumb / Title area matching Vamika style */}
         <div className="mb-4">
           <div className="text-xs text-gray-500 font-sans mb-6 flex items-center gap-2">
             <span>Home</span> <span className="text-gray-300">{'>'}</span> <span className="text-[#8B2C33]">{displayTitle}</span>

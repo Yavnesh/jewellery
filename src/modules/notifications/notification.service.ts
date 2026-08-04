@@ -49,7 +49,7 @@ export async function sendOrderConfirmation(orderId: string) {
   // Send Email
   const { providerMessageId } = await emailProvider.send({
     to: order.email,
-    subject: `Your Tanishq Order Confirmation #${order.id.slice(0, 8).toUpperCase()}`,
+    subject: `Your Vamika Order Confirmation #${order.id.slice(0, 8).toUpperCase()}`,
     html
   });
 
@@ -62,7 +62,7 @@ export async function sendOrderConfirmation(orderId: string) {
       channel: 'EMAIL',
       status: 'SENT',
       recipient: order.email,
-      subject: `Your Tanishq Order Confirmation #${order.id.slice(0, 8).toUpperCase()}`,
+      subject: `Your Vamika Order Confirmation #${order.id.slice(0, 8).toUpperCase()}`,
       payload: { items, total: order.total },
       providerMessageId,
       sentAt: new Date(),

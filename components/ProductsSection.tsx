@@ -38,13 +38,13 @@ const ProductsSection = async () => {
       <div className="max-w-screen-2xl mx-auto">
         {/* Editorial section header */}
         <div className="text-center mb-14">
-          <span className="text-tanishq-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
+          <span className="text-vamika-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
             Handpicked For You
           </span>
           <h2 className="text-luxury-text-primary text-4xl font-serif font-light uppercase tracking-widest mt-3 max-lg:text-3xl">
             Featured Products
           </h2>
-          <div className="w-12 h-px bg-tanishq-gold mx-auto mt-4" />
+          <div className="w-12 h-px bg-vamika-gold mx-auto mt-4" />
         </div>
         <div className="grid grid-cols-4 justify-items-center max-w-screen-2xl mx-auto py-10 gap-x-6 px-10 gap-y-12 max-xl:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
           {products.length > 0 ? (

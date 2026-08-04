@@ -13,7 +13,7 @@ export default function DatadogInit() {
         applicationId: process.env.NEXT_PUBLIC_DATADOG_APP_ID || "dummy-app-id",
         clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN || "dummy-token",
         site: "datadoghq.com",
-        service: "tanishq-ecommerce",
+        service: "vamika-ecommerce",
         env: process.env.NODE_ENV || "development",
         version: "1.0.0",
         sessionSampleRate: 100,

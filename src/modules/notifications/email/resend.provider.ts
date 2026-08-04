@@ -19,7 +19,7 @@ export class ResendEmailProvider implements EmailProvider {
 
     try {
       const sendPromise = resend.emails.send({
-        from: 'Tanishq Orders <orders@example.com>',
+        from: 'Vamika Orders <orders@example.com>',
         to: [input.to],
         subject: input.subject,
         html: input.html,

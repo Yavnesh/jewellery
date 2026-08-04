@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Terms of Service | Tanishq',
-  description: 'Terms and conditions for using the Tanishq e-commerce platform.',
+  title: 'Terms of Service | Vamika',
+  description: 'Terms and conditions for using the Vamika e-commerce platform.',
 };
 
 export default function TermsOfServicePage() {

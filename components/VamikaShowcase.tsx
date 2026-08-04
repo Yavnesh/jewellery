@@ -2,18 +2,18 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-export const TanishqShowcase = () => {
+export const VamikaShowcase = () => {
   return (
     <div className="py-20 bg-[#FAF7F2]">
       {/* Section header */}
       <div className="text-center mb-14">
-        <span className="text-tanishq-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
+        <span className="text-vamika-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
           Curated For You
         </span>
         <h2 className="text-luxury-text-primary text-4xl font-serif font-light uppercase tracking-widest mt-3 max-lg:text-3xl">
           The Lookbook
         </h2>
-        <div className="w-12 h-px bg-tanishq-gold mx-auto mt-4" />
+        <div className="w-12 h-px bg-vamika-gold mx-auto mt-4" />
       </div>
       
       <div className="max-w-screen-2xl mx-auto px-16 max-md:px-6">
@@ -34,7 +34,7 @@ export const TanishqShowcase = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-8">
-              <span className="text-tanishq-gold-light text-[10px] font-sans tracking-[0.25em] uppercase font-semibold">
+              <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.25em] uppercase font-semibold">
                 Wedding Edit
               </span>
               <h3 className="text-white text-3xl font-serif font-light uppercase tracking-wide mt-2">
@@ -43,7 +43,7 @@ export const TanishqShowcase = () => {
               <p className="text-white/70 text-sm mt-2 font-sans max-w-md">
                 Grand bridal sets handcrafted with heritage artistry for the most precious day of your life.
               </p>
-              <span className="inline-block mt-4 text-white text-[10px] font-sans tracking-widest uppercase font-semibold border-b border-white/50 pb-1 group-hover:text-tanishq-gold-light group-hover:border-tanishq-gold-light transition-colors">
+              <span className="inline-block mt-4 text-white text-[10px] font-sans tracking-widest uppercase font-semibold border-b border-white/50 pb-1 group-hover:text-vamika-gold-light group-hover:border-vamika-gold-light transition-colors">
                 Explore Bridal →
               </span>
             </div>
@@ -65,13 +65,13 @@ export const TanishqShowcase = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
-                <span className="text-tanishq-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
+                <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
                   Trending
                 </span>
                 <h3 className="text-white text-xl font-serif font-light uppercase tracking-wide mt-1">
                   Diamond Essentials
                 </h3>
-                <span className="inline-block mt-2 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium group-hover:text-tanishq-gold-light transition-colors">
+                <span className="inline-block mt-2 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium group-hover:text-vamika-gold-light transition-colors">
                   Shop Now →
                 </span>
               </div>
@@ -91,13 +91,13 @@ export const TanishqShowcase = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
-                <span className="text-tanishq-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
+                <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
                   Heritage
                 </span>
                 <h3 className="text-white text-xl font-serif font-light uppercase tracking-wide mt-1">
                   Gold Traditions
                 </h3>
-                <span className="inline-block mt-2 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium group-hover:text-tanishq-gold-light transition-colors">
+                <span className="inline-block mt-2 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium group-hover:text-vamika-gold-light transition-colors">
                   Discover →
                 </span>
               </div>
@@ -110,4 +110,4 @@ export const TanishqShowcase = () => {
   );
 };
 
-export default TanishqShowcase;
+export default VamikaShowcase;

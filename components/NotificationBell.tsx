@@ -38,7 +38,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = "" }) =
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-tanishq-gold focus:ring-offset-1"
+        className="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-vamika-gold focus:ring-offset-1"
         aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
       >
         <FaBell className="w-6 h-6" />
@@ -70,7 +70,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = "" }) =
               <Link
                 href="/notifications"
                 onClick={() => setIsDropdownOpen(false)}
-                className="flex-1 px-3 py-2 text-sm font-medium text-center text-tanishq-gold bg-tanishq-gold/10 border border-tanishq-gold/20 rounded-md hover:bg-tanishq-gold/20 focus:outline-none focus:ring-2 focus:ring-tanishq-gold focus:ring-offset-1 transition-colors"
+                className="flex-1 px-3 py-2 text-sm font-medium text-center text-vamika-gold bg-vamika-gold/10 border border-vamika-gold/20 rounded-md hover:bg-vamika-gold/20 focus:outline-none focus:ring-2 focus:ring-vamika-gold focus:ring-offset-1 transition-colors"
               >
                 View All
               </Link>
@@ -106,7 +106,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = "" }) =
                   <Link
                     href="/notifications"
                     onClick={() => setIsDropdownOpen(false)}
-                    className="inline-flex items-center px-3 py-1 text-xs font-medium text-tanishq-gold bg-tanishq-gold/10 border border-tanishq-gold/20 rounded-full hover:bg-tanishq-gold/20 focus:outline-none focus:ring-2 focus:ring-tanishq-gold focus:ring-offset-1 transition-colors"
+                    className="inline-flex items-center px-3 py-1 text-xs font-medium text-vamika-gold bg-vamika-gold/10 border border-vamika-gold/20 rounded-full hover:bg-vamika-gold/20 focus:outline-none focus:ring-2 focus:ring-vamika-gold focus:ring-offset-1 transition-colors"
                   >
                     View in Notification Center →
                   </Link>
@@ -120,7 +120,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ className = "" }) =
             <Link
               href="/notifications"
               onClick={() => setIsDropdownOpen(false)}
-              className="block w-full text-center text-sm text-gray-600 hover:text-tanishq-gold transition-colors"
+              className="block w-full text-center text-sm text-gray-600 hover:text-vamika-gold transition-colors"
             >
               Go to Notification Center
             </Link>

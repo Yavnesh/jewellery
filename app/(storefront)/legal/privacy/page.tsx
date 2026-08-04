@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Privacy Policy | Tanishq',
+  title: 'Privacy Policy | Vamika',
   description: 'Our privacy policy detailing how we manage your data securely.',
 };
 

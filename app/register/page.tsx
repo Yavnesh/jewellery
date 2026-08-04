@@ -127,7 +127,7 @@ const RegisterPage = () => {
                       name="name"
                       type="text"
                       required
-                      className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6 transition-shadow"
+                      className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                     />
                   </div>
                 </div>
@@ -142,7 +142,7 @@ const RegisterPage = () => {
                       name="lastname"
                       type="text"
                       required
-                      className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6 transition-shadow"
+                      className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                     />
                   </div>
                 </div>
@@ -159,7 +159,7 @@ const RegisterPage = () => {
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6 transition-shadow"
+                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>
@@ -175,7 +175,7 @@ const RegisterPage = () => {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6 transition-shadow"
+                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>
@@ -191,7 +191,7 @@ const RegisterPage = () => {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6 transition-shadow"
+                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>

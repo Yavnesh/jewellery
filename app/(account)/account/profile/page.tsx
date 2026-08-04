@@ -65,7 +65,7 @@ export default function ProfilePage() {
                 id="firstName"
                 defaultValue={profile?.firstName || ""}
                 required
-                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6"
               />
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function ProfilePage() {
                 id="lastName"
                 defaultValue={profile?.lastName || ""}
                 required
-                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6"
               />
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function ProfilePage() {
                 name="phone"
                 id="phone"
                 defaultValue={profile?.phone || ""}
-                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-tanishq-gold sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6"
               />
             </div>
           </div>

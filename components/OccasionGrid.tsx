@@ -38,13 +38,13 @@ export const OccasionGrid = () => {
     <div className="py-20 bg-white">
       {/* Section header */}
       <div className="text-center mb-14">
-        <span className="text-tanishq-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
+        <span className="text-vamika-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
           Find Your Moment
         </span>
         <h2 className="text-luxury-text-primary text-4xl font-serif font-light uppercase tracking-widest mt-3 max-lg:text-3xl">
           Shop by Occasion
         </h2>
-        <div className="w-12 h-px bg-tanishq-gold mx-auto mt-4" />
+        <div className="w-12 h-px bg-vamika-gold mx-auto mt-4" />
       </div>
       
       <div className="max-w-screen-2xl mx-auto px-16 max-md:px-6 grid grid-cols-4 max-lg:grid-cols-2 max-[450px]:grid-cols-1 gap-5">
@@ -68,16 +68,16 @@ export const OccasionGrid = () => {
             
             {/* Content */}
             <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-              <span className="text-tanishq-gold-light text-[9px] font-sans tracking-[0.2em] uppercase font-semibold">
+              <span className="text-vamika-gold-light text-[9px] font-sans tracking-[0.2em] uppercase font-semibold">
                 {occ.tagline}
               </span>
-              <h3 className="font-serif font-light text-2xl uppercase tracking-wider text-white mt-1 group-hover:text-tanishq-gold-light transition-colors duration-300">
+              <h3 className="font-serif font-light text-2xl uppercase tracking-wider text-white mt-1 group-hover:text-vamika-gold-light transition-colors duration-300">
                 {occ.name}
               </h3>
               <p className="text-white/60 text-xs mt-1 font-sans tracking-wide">
                 {occ.desc}
               </p>
-              <span className="inline-block mt-3 text-[10px] font-sans font-semibold tracking-widest uppercase text-white/80 group-hover:text-tanishq-gold-light transition-colors duration-300">
+              <span className="inline-block mt-3 text-[10px] font-sans font-semibold tracking-widest uppercase text-white/80 group-hover:text-vamika-gold-light transition-colors duration-300">
                 Browse Collection →
               </span>
             </div>

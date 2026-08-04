@@ -18,11 +18,11 @@ test.describe('Critical Business Flows', () => {
     
     // Navigate to cart
     await page.goto('http://localhost:3000/cart');
-    await expect(page).toHaveTitle(/Cart | Tanishq/i);
+    await expect(page).toHaveTitle(/Cart | Vamika/i);
     
     // Navigate to checkout
     await page.goto('http://localhost:3000/checkout');
-    await expect(page).toHaveTitle(/Checkout | Tanishq/i);
+    await expect(page).toHaveTitle(/Checkout | Vamika/i);
     
     // Check form fields exist
     await expect(page.locator('input[name="email"]')).toBeVisible();

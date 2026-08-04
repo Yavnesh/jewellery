@@ -4,22 +4,22 @@ import { BRAND_NAME } from "@/utils/brand";
 
 const trustItems = [
   {
-    icon: <FaAward className="text-2xl text-tanishq-gold-light" />,
+    icon: <FaAward className="text-2xl text-vamika-gold-light" />,
     title: "100% Certified",
     desc: "Every diamond and gemstone is certified by leading international gemological laboratories.",
   },
   {
-    icon: <FaGem className="text-2xl text-tanishq-gold-light" />,
+    icon: <FaGem className="text-2xl text-vamika-gold-light" />,
     title: "Hallmarked Gold",
     desc: "Strictly using BIS hallmarked pure gold to ensure absolute authenticity and resale value.",
   },
   {
-    icon: <FaRotateLeft className="text-2xl text-tanishq-gold-light" />,
+    icon: <FaRotateLeft className="text-2xl text-vamika-gold-light" />,
     title: "30-Day Returns",
     desc: "Enjoy complete peace of mind with our hassle-free return and exchange policy.",
   },
   {
-    icon: <FaLock className="text-2xl text-tanishq-gold-light" />,
+    icon: <FaLock className="text-2xl text-vamika-gold-light" />,
     title: "Secure Checkout",
     desc: "Encrypted checkout integration to protect transaction privacy and credentials.",
   }
@@ -30,19 +30,19 @@ export const TrustBanner = () => {
     <div className="py-20 bg-[#2B0E0A]">
       {/* Section header */}
       <div className="text-center mb-14">
-        <span className="text-tanishq-gold-light uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
+        <span className="text-vamika-gold-light uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
           Our Commitment
         </span>
         <h2 className="text-white text-4xl font-serif font-light uppercase tracking-widest mt-3 max-lg:text-3xl">
           The {BRAND_NAME} Promise
         </h2>
-        <div className="w-12 h-px bg-tanishq-gold-light/50 mx-auto mt-4" />
+        <div className="w-12 h-px bg-vamika-gold-light/50 mx-auto mt-4" />
       </div>
       
       <div className="max-w-screen-2xl mx-auto px-16 max-md:px-8 grid grid-cols-4 max-lg:grid-cols-2 max-sm:grid-cols-1 gap-10">
         {trustItems.map((item, index) => (
-          <div key={index} className="flex flex-col items-center text-center p-6 border border-[#441913] rounded-sm hover:border-tanishq-gold-light/30 transition-all duration-300 group">
-            <div className="mb-5 bg-[#441913] p-4 rounded-full group-hover:bg-tanishq-gold-light/10 transition-colors duration-300">
+          <div key={index} className="flex flex-col items-center text-center p-6 border border-[#441913] rounded-sm hover:border-vamika-gold-light/30 transition-all duration-300 group">
+            <div className="mb-5 bg-[#441913] p-4 rounded-full group-hover:bg-vamika-gold-light/10 transition-colors duration-300">
               {item.icon}
             </div>
             <h3 className="font-serif font-medium text-lg uppercase tracking-wider text-white mb-2">

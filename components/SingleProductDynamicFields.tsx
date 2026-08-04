@@ -60,7 +60,7 @@ const SingleProductDynamicFields = ({ product }: { product: Product }) => {
             className={`flex items-center justify-center gap-x-2 border tracking-widest px-8 py-4 text-xs font-semibold uppercase transition-all duration-300 rounded shadow-sm max-[500px]:w-full min-w-[180px] ${
               isInWishlist
                 ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
-                : "border-tanishq-charcoal text-tanishq-charcoal hover:bg-tanishq-charcoal hover:text-white"
+                : "border-vamika-charcoal text-vamika-charcoal hover:bg-vamika-charcoal hover:text-white"
             }`}
           >
             {isInWishlist ? <FaHeart className="text-sm" /> : <FaRegHeart className="text-sm" />}

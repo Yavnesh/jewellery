@@ -85,7 +85,7 @@ const Header = () => {
         <>
           <div className="h-24 flex items-center justify-between px-16 max-[1320px]:px-12 max-md:px-6 max-lg:flex-col max-lg:gap-y-4 max-lg:justify-center max-lg:h-52 max-w-screen-2xl mx-auto">
             <Link href="/" className="transition-opacity duration-200 hover:opacity-80 flex items-center">
-              <span className="text-2xl font-serif font-semibold tracking-widest text-tanishq-gold uppercase">{BRAND_NAME}</span>
+              <span className="text-2xl font-serif font-semibold tracking-widest text-vamika-gold uppercase">{BRAND_NAME}</span>
             </Link>
             <div className="w-[45%] max-lg:w-full">
               <SearchInput />

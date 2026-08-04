@@ -1,7 +1,7 @@
 import { safeJsonLd } from "@/src/lib/seo/json-ld";
 
 export const ProductJsonLd = ({ product }: { product: any }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.tanishq.example.com';
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.vamika.example.com';
   
   const schema = {
     "@context": "https://schema.org",
@@ -12,7 +12,7 @@ export const ProductJsonLd = ({ product }: { product: any }) => {
     "sku": product.id,
     "brand": {
       "@type": "Brand",
-      "name": "Tanishq"
+      "name": "Vamika"
     },
     "offers": {
       "@type": "Offer",

@@ -51,4 +51,4 @@ export { default as WishItem } from "./WishItem";
 export { default as OccasionGrid } from "./OccasionGrid";
 export { default as TrustBanner } from "./TrustBanner";
 export { default as ProductGallery } from "./ProductGallery";
-export { default as TanishqShowcase } from "./TanishqShowcase";
+export { default as VamikaShowcase } from "./VamikaShowcase";

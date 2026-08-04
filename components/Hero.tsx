@@ -72,7 +72,7 @@ const Hero = () => {
           <div className="relative z-10 h-full flex items-center">
             <div className="max-w-screen-2xl mx-auto px-16 max-md:px-8 w-full">
               <div className="max-w-xl">
-                <span className="inline-block text-tanishq-gold-light uppercase tracking-[0.3em] text-[10px] font-sans font-semibold mb-4 border border-tanishq-gold-light/30 px-4 py-1.5 rounded-full backdrop-blur-sm bg-white/5">
+                <span className="inline-block text-vamika-gold-light uppercase tracking-[0.3em] text-[10px] font-sans font-semibold mb-4 border border-vamika-gold-light/30 px-4 py-1.5 rounded-full backdrop-blur-sm bg-white/5">
                   {slide.subtitle}
                 </span>
                 <h1 className="text-6xl max-xl:text-5xl max-md:text-4xl text-white font-serif font-light uppercase tracking-wide leading-[1.15] mb-5">
@@ -84,7 +84,7 @@ const Hero = () => {
                 <div className="flex gap-4">
                   <Link
                     href={slide.ctaLink}
-                    className="inline-block bg-white text-tanishq-charcoal tracking-widest px-10 py-4 hover:bg-tanishq-gold-light hover:text-white transition-all duration-300 uppercase text-xs font-semibold rounded-sm shadow-lg"
+                    className="inline-block bg-white text-vamika-charcoal tracking-widest px-10 py-4 hover:bg-vamika-gold-light hover:text-white transition-all duration-300 uppercase text-xs font-semibold rounded-sm shadow-lg"
                   >
                     {slide.ctaText}
                   </Link>
@@ -109,7 +109,7 @@ const Hero = () => {
             onClick={() => setCurrent(index)}
             className={`transition-all duration-300 rounded-full ${
               index === current 
-                ? "bg-tanishq-gold-light w-2.5 h-8" 
+                ? "bg-vamika-gold-light w-2.5 h-8" 
                 : "bg-white/40 hover:bg-white/60 w-2.5 h-2.5"
             }`}
             aria-label={`Go to slide ${index + 1}`}
@@ -118,7 +118,7 @@ const Hero = () => {
       </div>
       
       {/* Bottom decorative line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tanishq-gold-light/40 to-transparent z-20" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-vamika-gold-light/40 to-transparent z-20" />
     </div>
   );
 };

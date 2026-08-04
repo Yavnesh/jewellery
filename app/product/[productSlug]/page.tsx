@@ -26,14 +26,14 @@ export async function generateMetadata({ params }: SingleProductPageProps): Prom
   if (!product) return {};
 
   return {
-    title: `${product.title} | Tanishq`,
-    description: product.features || `Explore the exquisite ${product.title} at Tanishq.`,
+    title: `${product.title} | Vamika`,
+    description: product.features || `Explore the exquisite ${product.title} at Vamika.`,
     alternates: {
       canonical: `/product/${product.slug}`
     },
     openGraph: {
       title: product.title,
-      description: product.features || `Explore the exquisite ${product.title} at Tanishq.`,
+      description: product.features || `Explore the exquisite ${product.title} at Vamika.`,
       url: `/product/${product.slug}`,
       images: [{ url: product.mainImage, alt: product.title }]
     }
@@ -227,9 +227,9 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
           </button>
         </div>
 
-        {/* The Tanishq Advantage Footer */}
+        {/* The Vamika Advantage Footer */}
         <div className="border-t border-gray-200 pt-16 pb-8 text-center">
-          <h2 className="font-serif text-2xl text-[#333333] mb-12">The Tanishq Advantage</h2>
+          <h2 className="font-serif text-2xl text-[#333333] mb-12">The Vamika Advantage</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center gap-3">
               <span className="text-3xl">⚖️</span>

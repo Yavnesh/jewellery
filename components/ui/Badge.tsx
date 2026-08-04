@@ -8,7 +8,7 @@ export const Badge = ({ children, variant = "gold", className = "", ...props }: 
   const baseStyle = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wider uppercase font-sans";
   
   const variants = {
-    gold: "bg-tanishq-gold/10 text-tanishq-gold border border-tanishq-gold/20",
+    gold: "bg-vamika-gold/10 text-vamika-gold border border-vamika-gold/20",
     outline: "border border-luxury-border text-luxury-text-secondary bg-transparent",
     secondary: "bg-luxury-ivory text-luxury-text-secondary border border-luxury-border/40",
     danger: "bg-red-50 text-red-600 border border-red-100",

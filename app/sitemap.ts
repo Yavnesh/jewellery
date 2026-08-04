@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import prisma from "@/utils/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.tanishq.example.com'
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.vamika.example.com'
 
   // Fetch all products
   const products = await prisma.product.findMany({
