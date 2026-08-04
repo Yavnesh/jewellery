@@ -47,11 +47,19 @@ class Logger {
   }
 
   public error(context: LogContext, message: string | Error) {
-    pinoLogger.error(context, message);
+    if (message instanceof Error) {
+      pinoLogger.error({ ...context, err: message }, message.message);
+    } else {
+      pinoLogger.error(context, message);
+    }
   }
 
   public fatal(context: LogContext, message: string | Error) {
-    pinoLogger.fatal(context, message);
+    if (message instanceof Error) {
+      pinoLogger.fatal({ ...context, err: message }, message.message);
+    } else {
+      pinoLogger.fatal(context, message);
+    }
   }
 }
 

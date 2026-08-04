@@ -23,8 +23,7 @@ export async function processOutboxEvents() {
         where: { id: event.id },
         data: { 
           status: 'PROCESSING',
-          attempts: { increment: 1 },
-          lastAttemptAt: new Date()
+          attempts: { increment: 1 }
         }
       });
 
