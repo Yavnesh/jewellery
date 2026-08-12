@@ -11,6 +11,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import apiClient from "@/lib/api";
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -51,7 +52,7 @@ const BulkUploadHistory = () => {
   const fetchBatchHistory = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3001/api/bulk-upload");
+      const response = await apiClient.get("/api/bulk-upload");
 
       if (response.ok) {
         const data = await response.json();
@@ -184,8 +185,8 @@ const BulkUploadHistory = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold mb-4">📜 Upload History</h2>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-serif text-vamika-charcoal tracking-wide mb-6">Upload History</h2>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && batchToDelete && (
@@ -245,29 +246,30 @@ const BulkUploadHistory = () => {
       {batches.map((batch) => (
         <div
           key={batch.id}
-          className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+          className="bg-white border border-luxury-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
         >
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              {getStatusIcon(batch.status)}
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-luxury-bg rounded-full border border-luxury-border">
+                {getStatusIcon(batch.status)}
+              </div>
               <div>
-                <h3 className="font-semibold text-lg">{batch.fileName}</h3>
-                <p className="text-sm text-gray-500">
-                  Uploaded by {batch.uploadedBy} •{" "}
-                  {formatDate(batch.uploadedAt)}
+                <h3 className="font-serif font-medium text-lg text-vamika-charcoal">{batch.fileName}</h3>
+                <p className="text-xs text-luxury-text-secondary tracking-wider uppercase mt-1">
+                  Uploaded by {batch.uploadedBy} • {formatDate(batch.uploadedAt)}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                className={`px-4 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase ${
                   batch.status === "COMPLETED"
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
                     : batch.status === "FAILED"
-                    ? "bg-red-100 text-red-700"
+                    ? "bg-rose-50 text-rose-600 border border-rose-200"
                     : batch.status === "PARTIAL"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-gray-100 text-gray-700"
+                    ? "bg-amber-50 text-amber-600 border border-amber-200"
+                    : "bg-gray-50 text-gray-600 border border-gray-200"
                 }`}
               >
                 {batch.status}
@@ -275,39 +277,39 @@ const BulkUploadHistory = () => {
               <button
                 onClick={() => handleDeleteClick(batch.id, batch.fileName)}
                 disabled={deletingBatchId === batch.id}
-                className="p-2 text-red-500 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-rose-500 hover:bg-rose-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-rose-100"
                 title="Delete batch"
               >
                 {deletingBatchId === batch.id ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-rose-500"></div>
                 ) : (
-                  <FaTrash />
+                  <FaTrash size={14} />
                 )}
               </button>
             </div>
           </div>
 
           <div className="grid grid-cols-4 gap-4 mb-4">
-            <div className="bg-gray-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-gray-700">
+            <div className="bg-luxury-bg border border-luxury-border/50 rounded-md p-4 text-center">
+              <p className="text-2xl font-serif text-vamika-charcoal">
                 {batch.totalRecords}
               </p>
-              <p className="text-xs text-gray-500">Total</p>
+              <p className="text-xs text-luxury-text-secondary uppercase tracking-widest mt-1">Total</p>
             </div>
-            <div className="bg-green-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-green-600">
+            <div className="bg-emerald-50/50 border border-emerald-100/50 rounded-md p-4 text-center">
+              <p className="text-2xl font-serif text-emerald-600">
                 {batch.successfulRecords}
               </p>
-              <p className="text-xs text-gray-500">Success</p>
+              <p className="text-xs text-emerald-600/70 uppercase tracking-widest mt-1">Success</p>
             </div>
-            <div className="bg-red-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-red-600">
+            <div className="bg-rose-50/50 border border-rose-100/50 rounded-md p-4 text-center">
+              <p className="text-2xl font-serif text-rose-600">
                 {batch.failedRecords}
               </p>
-              <p className="text-xs text-gray-500">Failed</p>
+              <p className="text-xs text-rose-600/70 uppercase tracking-widest mt-1">Failed</p>
             </div>
-            <div className="bg-blue-50 rounded p-3 text-center">
-              <p className="text-2xl font-bold text-blue-600">
+            <div className="bg-luxury-ivory border border-luxury-gold/20 rounded-md p-4 text-center">
+              <p className="text-2xl font-serif text-luxury-gold">
                 {batch.totalRecords > 0
                   ? Math.round(
                       (batch.successfulRecords / batch.totalRecords) * 100
@@ -315,7 +317,7 @@ const BulkUploadHistory = () => {
                   : 0}
                 %
               </p>
-              <p className="text-xs text-gray-500">Success Rate</p>
+              <p className="text-xs text-luxury-gold/70 uppercase tracking-widest mt-1">Success Rate</p>
             </div>
           </div>
 

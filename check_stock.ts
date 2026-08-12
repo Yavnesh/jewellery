@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const variant = await prisma.productVariant.findFirst({ where: { product: { slug: 'conduco-earum-deficio-11' } } }); console.log(variant); } main();

@@ -8,69 +8,56 @@
 // Output: sidebar for admin dashboard page
 // *********************
 
+"use client";
 import React from "react";
-import { MdDashboard } from "react-icons/md";
-import { FaTable } from "react-icons/fa6";
-import { FaRegUser } from "react-icons/fa6";
-import { FaGear } from "react-icons/fa6";
-import { FaBagShopping } from "react-icons/fa6";
-import { FaStore } from "react-icons/fa6";
-import { MdCategory } from "react-icons/md";
-import { FaFileUpload } from "react-icons/fa";
-
+import { MdDashboard, MdCategory } from "react-icons/md";
+import { FaTable, FaRegUser, FaGear, FaBagShopping, FaStore, FaUpload } from "react-icons/fa6";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
 
 const DashboardSidebar = () => {
+  const pathname = usePathname();
+
+  const navItems = [
+    { name: "Dashboard", href: "/admin", icon: MdDashboard, exact: true },
+    { name: "Orders", href: "/admin/orders", icon: FaBagShopping },
+    { name: "Products", href: "/admin/products", icon: FaTable },
+    { name: "Categories", href: "/admin/categories", icon: MdCategory },
+    { name: "Users", href: "/admin/users", icon: FaRegUser },
+    { name: "Merchant", href: "/admin/merchant", icon: FaStore },
+    { name: "Bulk Upload", href: "/admin/bulk-upload", icon: FaUpload },
+    { name: "Settings", href: "/admin/settings", icon: FaGear },
+  ];
+
   return (
-    <div className="xl:w-[300px] bg-luxury-sidebar border-r border-luxury-border/60 h-full max-xl:w-full flex flex-col font-sans py-6">
-      <Link href="/admin">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <MdDashboard className="text-xl" />
-          <span>Dashboard</span>
-        </div>
-      </Link>
-      <Link href="/admin/orders">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <FaBagShopping className="text-xl" />
-          <span>Orders</span>
-        </div>
-      </Link>
-      <Link href="/admin/products">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <FaTable className="text-xl" />
-          <span>Products</span>
-        </div>
-      </Link>
-      <Link href="/admin/bulk-upload">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <FaFileUpload className="text-xl" />
-          <span>Bulk Upload</span>
-        </div>
-      </Link>
-      <Link href="/admin/categories">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <MdCategory className="text-xl" />
-          <span>Categories</span>
-        </div>
-      </Link>
-      <Link href="/admin/users">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <FaRegUser className="text-xl" />
-          <span>Users</span>
-        </div>
-      </Link>
-      <Link href="/admin/merchant">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <FaStore className="text-xl" />
-          <span>Merchant</span>
-        </div>
-      </Link>
-      <Link href="/admin/settings">
-        <div className="flex gap-x-3 w-full hover:bg-luxury-ivory hover:text-luxury-gold text-luxury-text-primary cursor-pointer items-center py-4 pl-6 text-base font-medium transition-all duration-200 border-l-4 border-transparent hover:border-luxury-gold">
-          <FaGear className="text-xl" />
-          <span>Settings</span>
-        </div>
-      </Link>
+    <div className="xl:w-[280px] bg-white border-r border-luxury-border shadow-sm h-[calc(100vh-80px)] sticky top-[80px] max-xl:w-full max-xl:h-auto max-xl:static max-xl:border-b max-xl:border-r-0 flex flex-col font-sans">
+      <div className="p-6 hidden xl:block border-b border-luxury-border/50">
+        <h2 className="font-serif text-2xl text-vamika-charcoal tracking-wide">Admin <span className="text-luxury-gold">Portal</span></h2>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto py-4 max-xl:flex max-xl:overflow-x-auto max-xl:py-2 scrollbar-hide">
+        {navItems.map((item) => {
+          const isActive = item.exact ? pathname === item.href : pathname?.startsWith(item.href);
+          const Icon = item.icon;
+
+          return (
+            <Link key={item.name} href={item.href}>
+              <div 
+                className={clsx(
+                  "flex items-center gap-x-4 w-full cursor-pointer py-3 pl-8 max-xl:pl-4 max-xl:pr-4 text-sm font-medium uppercase tracking-wider transition-all duration-300 border-l-4 max-xl:border-l-0 max-xl:border-b-4 max-xl:flex-shrink-0",
+                  isActive 
+                    ? "bg-vamika-ivory text-luxury-gold border-luxury-gold" 
+                    : "text-luxury-text-secondary border-transparent hover:bg-vamika-ivory/50 hover:text-vamika-charcoal"
+                )}
+              >
+                <Icon className={clsx("text-xl", isActive ? "text-luxury-gold" : "text-luxury-text-secondary/70")} />
+                <span className="whitespace-nowrap">{item.name}</span>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -52,3 +52,4 @@ export { default as OccasionGrid } from "./OccasionGrid";
 export { default as TrustBanner } from "./TrustBanner";
 export { default as ProductGallery } from "./ProductGallery";
 export { default as VamikaShowcase } from "./VamikaShowcase";
+export { default as CheckoutSuccessPopup } from "./CheckoutSuccessPopup";

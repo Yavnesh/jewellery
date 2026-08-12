@@ -27,7 +27,7 @@ export async function processOutboxEvents() {
         }
       });
 
-      if (event.eventType === 'ORDER_CREATED') {
+      if (event.eventType === 'ORDER_PAID') {
         const payload = event.payload as { orderId: string };
         await sendOrderConfirmation(payload.orderId);
       }

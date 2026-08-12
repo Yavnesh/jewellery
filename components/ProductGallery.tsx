@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { sanitize } from "@/lib/sanitize";
+import { getImagePath } from "@/lib/utils";
 
 interface ProductGalleryProps {
   mainImage: string;
@@ -20,7 +21,7 @@ export const ProductGallery = ({ mainImage, title, images }: ProductGalleryProps
     <div className="w-full max-w-[550px]">
       <div className="bg-luxury-ivory p-8 rounded border border-luxury-border/60 flex items-center justify-center min-h-[400px]">
         <Image
-          src={activeImage ? `/${activeImage}` : "/product_placeholder.jpg"}
+          src={getImagePath(activeImage)}
           width={500}
           height={500}
           alt={sanitize(title)}
@@ -40,7 +41,7 @@ export const ProductGallery = ({ mainImage, title, images }: ProductGalleryProps
               }`}
             >
               <Image
-                src={`/${imagePath}`}
+                src={getImagePath(imagePath)}
                 width={90}
                 height={90}
                 alt={`${sanitize(title)} gallery ${key + 1}`}

@@ -4,6 +4,7 @@ import { processCheckout } from "@/lib/checkout/checkout.service";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 interface CheckoutInputPayload {
   name: string;
@@ -40,10 +41,13 @@ export async function submitCheckout(inputData: CheckoutInputPayload) {
     // or just rely on the cart being marked as CONVERTED.
     // The next call to getActiveCart will create a new one automatically.
     
+    // Revalidate the entire site cache to update stock quantities on product pages
+    revalidatePath("/", "layout");
+
     return { 
       success: true, 
       orderId: order.id, 
-      clientSecret: paymentIntent?.clientSecret 
+      clientAction: paymentIntent.clientAction 
     };
   } catch (error: any) {
     console.error("Checkout error:", error);

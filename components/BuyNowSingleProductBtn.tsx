@@ -10,35 +10,44 @@
 
 "use client";
 import { useProductStore } from "@/app/_zustand/store";
-import React from "react";
+import React, { useTransition } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { addToCart } from "@/app/actions/cart.actions";
 
 const BuyNowSingleProductBtn = ({
   product,
   quantityCount,
 }: SingleProductBtnProps) => {
   const router = useRouter();
-  const { addToCart, calculateTotals } = useProductStore();
+  const { syncCart } = useProductStore();
+  const [isPending, startTransition] = useTransition();
 
-  const handleAddToCart = () => {
-    addToCart({
-      id: product?.id.toString(),
-      title: product?.title,
-      price: product?.price,
-      image: product?.mainImage,
-      amount: quantityCount,
+  const handleBuyNow = () => {
+    startTransition(async () => {
+      const variantId = product?.variants?.[0]?.id;
+      if (!variantId) {
+        toast.error("No variant found for this product.");
+        return;
+      }
+      
+      const result = await addToCart(variantId, quantityCount);
+      if (result.success && result.cart) {
+        syncCart(result.cart);
+        router.push("/cart"); // Usually Buy Now goes to cart or checkout. The user is having issues with cart, so let's redirect to cart for now.
+      } else {
+        toast.error(result.error || "Failed to add to cart");
+      }
     });
-    calculateTotals();
-    toast.success("Product added to the cart");
-    router.push("/checkout");
   };
+
   return (
     <button
-      onClick={handleAddToCart}
-      className="btn w-[200px] text-lg border border-blue-500 hover:border-blue-500 border-1 font-normal bg-blue-500 text-white hover:bg-white hover:scale-110 hover:text-blue-500 transition-all uppercase ease-in max-[500px]:w-full"
+      onClick={handleBuyNow}
+      disabled={isPending}
+      className="btn w-[200px] text-[13px] tracking-wide border border-luxury-gold font-bold bg-luxury-gold text-white hover:bg-luxury-gold/90 transition-colors uppercase max-[500px]:w-full disabled:opacity-50"
     >
-      Buy Now
+      {isPending ? "Adding..." : "Buy Now"}
     </button>
   );
 };

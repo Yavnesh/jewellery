@@ -1,5 +1,10 @@
 import { BRAND_NAME } from "@/utils/brand";
 
+export function getImagePath(image: string | null | undefined): string {
+  if (!image) return "/product_placeholder.jpg";
+  if (image.startsWith("http")) return image;
+  return image.startsWith("/") ? image : `/${image}`;
+}
 export const categoryMenuList = [
   {
     id: 1,
@@ -50,26 +55,26 @@ export const incentives = [
 
 export const navigation = {
   sale: [
-    { name: "Discounts", href: "#" },
-    { name: "News", href: "#" },
-    { name: "Register Discounts", href: "#" },
+    { name: "Discounts", href: "/sale/discounts" },
+    { name: "News", href: "/sale/news" },
+    { name: "Register Discounts", href: "/sale/register-discounts" },
   ],
   about: [
-    { name: `About ${BRAND_NAME}`, href: "#" },
-    { name: "Work With Us", href: "#" },
-    { name: "Company Profile", href: "#" },
+    { name: `About ${BRAND_NAME}`, href: "/about" },
+    { name: "Work With Us", href: "/about/careers" },
+    { name: "Company Profile", href: "/about/company-profile" },
   ],
   buy: [
-    { name: `${BRAND_NAME} Loyalty Card`, href: "#" },
-    { name: "Terms Of Use", href: "#" },
-    { name: "Privacy Policy", href: "#" },
-    { name: "Complaints", href: "#" },
-    { name: "Partners", href: "#" },
+    { name: `${BRAND_NAME} Loyalty Card`, href: "/buying/loyalty-card" },
+    { name: "Terms Of Use", href: "/legal/terms" },
+    { name: "Privacy Policy", href: "/legal/privacy" },
+    { name: "Complaints", href: "/buying/complaints" },
+    { name: "Partners", href: "/buying/partners" },
   ],
   help: [
-    { name: "Contact", href: "#" },
-    { name: `How to Buy at ${BRAND_NAME}`, href: "#" },
-    { name: "FAQ", href: "#" },
+    { name: "Contact", href: "/support/contact" },
+    { name: `How to Buy at ${BRAND_NAME}`, href: "/support/how-to-buy" },
+    { name: "FAQ", href: "/support/faq" },
   ],
 };
 

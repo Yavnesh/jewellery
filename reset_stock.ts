@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { await prisma.productVariant.updateMany({ where: { product: { slug: 'conduco-earum-deficio-11' } }, data: { stockQuantity: 10 } }); console.log('Updated'); } main();

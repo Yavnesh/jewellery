@@ -6,6 +6,7 @@ export type ProductInCart = {
   price: number;
   image: string;
   amount: number;
+  stock: number;
 };
 
 export type State = {
@@ -41,13 +42,15 @@ export const useProductStore = create<State & Actions>()((set, get) => ({
         .join(" / ");
       
       const fullTitle = optionsString ? `${productTitle} (${optionsString})` : productTitle;
+      const stock = item.variant.stockQuantity - item.variant.reservedQuantity;
       
       return {
         id: item.variantId,
         title: fullTitle,
         price: item.variant.price,
         image: item.variant.product.mainImage,
-        amount: item.quantity
+        amount: item.quantity,
+        stock: stock
       };
     });
 
@@ -71,6 +74,7 @@ export const useProductStore = create<State & Actions>()((set, get) => ({
         return { products: newProducts };
       }
     });
+    get().calculateTotals();
   },
   clearCart: () => {
     set({
@@ -85,6 +89,7 @@ export const useProductStore = create<State & Actions>()((set, get) => ({
         (product: ProductInCart) => product.id !== id
       )
     }));
+    get().calculateTotals();
   },
   calculateTotals: () => {
     set((state) => {
@@ -112,5 +117,6 @@ export const useProductStore = create<State & Actions>()((set, get) => ({
       });
       return { products: newProducts };
     });
+    get().calculateTotals();
   },
 }));

@@ -8,6 +8,7 @@ import { useProductStore } from "@/app/_zustand/store";
 import toast from "react-hot-toast";
 import { FaTrashCan } from "react-icons/fa6";
 import { sanitize } from "@/lib/sanitize";
+import { getImagePath } from "@/lib/utils";
 
 interface WishItemProps {
   id: string;
@@ -27,18 +28,21 @@ const WishItem = ({
   stockAvailabillity,
 }: WishItemProps) => {
   const { removeFromWishlist } = useWishlistStore();
-  const { addToCart, calculateTotals } = useProductStore();
+  const { syncCart } = useProductStore();
+  const [isPending, startTransition] = React.useTransition();
 
   const handleAddToCart = () => {
-    addToCart({
-      id: id,
-      title,
-      price,
-      image,
-      amount: 1,
+    startTransition(async () => {
+      // Find the first variant to add, assuming legacy fallback
+      const { addToCart } = await import("@/app/actions/cart.actions");
+      const result = await addToCart(id, 1);
+      if (result.success && result.cart) {
+        syncCart(result.cart);
+        toast.success("Product added to the cart");
+      } else {
+        toast.error(result.error || "Failed to add to cart");
+      }
     });
-    calculateTotals();
-    toast.success("Product added to the cart");
   };
 
   const handleRemove = () => {
@@ -60,7 +64,7 @@ const WishItem = ({
       <td className="py-4 flex justify-center">
         <Link href={`/product/${slug}`} className="block w-20 h-20 bg-luxury-ivory rounded p-1 border border-luxury-border/40">
           <Image
-            src={image ? `/${image}` : "/product_placeholder.jpg"}
+            src={getImagePath(image)}
             width={80}
             height={80}
             alt={sanitize(title)}
@@ -83,10 +87,10 @@ const WishItem = ({
       <td className="py-4">
         <button
           onClick={handleAddToCart}
-          disabled={stockAvailabillity <= 0}
+          disabled={stockAvailabillity <= 0 || isPending}
           className="bg-luxury-text-primary text-white border border-luxury-text-primary hover:bg-luxury-gold hover:border-luxury-gold disabled:opacity-40 disabled:hover:bg-luxury-text-primary disabled:hover:border-luxury-text-primary tracking-widest px-6 py-2.5 text-xs font-semibold uppercase transition-all duration-300 rounded shadow-sm"
         >
-          Add to Cart
+          {isPending ? "Adding..." : "Add to Cart"}
         </button>
       </td>
     </tr>

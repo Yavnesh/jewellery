@@ -32,27 +32,42 @@ export const POST = async (request: Request) => {
       where: { email } 
     });
 
-    if (existingUser) {
+    if (existingUser && existingUser.role !== "guest") {
       throw new AppError("Email is already in use", 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 14);
 
-    // Create user with proper error handling
-    const newUser = await prisma.user.create({
-      data: {
-        id: nanoid(),
-        email,
-        password: hashedPassword,
-        role: "user",
-      },
-    });
+    let userId;
+    // If the user already exists but is a guest (shadow account from checkout),
+    // convert it to a full account.
+    if (existingUser && existingUser.role === "guest") {
+      const updatedUser = await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          password: hashedPassword,
+          role: "user",
+        }
+      });
+      userId = updatedUser.id;
+    } else {
+      // Create user with proper error handling
+      const newUser = await prisma.user.create({
+        data: {
+          id: nanoid(),
+          email,
+          password: hashedPassword,
+          role: "user",
+        },
+      });
+      userId = newUser.id;
+    }
 
     // Return success response without sensitive data
     return new NextResponse(
       JSON.stringify({ 
         message: "User registered successfully",
-        userId: newUser.id 
+        userId: userId 
       }),
       { 
         status: 200,

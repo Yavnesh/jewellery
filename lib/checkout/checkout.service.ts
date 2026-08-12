@@ -50,6 +50,21 @@ export async function processCheckout(input: CheckoutInput) {
   const tax = orderTotal / 5;
   const finalTotal = Math.round(orderTotal + tax + shipping);
 
+  // Check or create shadow user for guest
+  let finalUserId = input.userId;
+  if (!finalUserId && input.email) {
+    let user = await prisma.user.findUnique({ where: { email: input.email } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: input.email,
+          role: "guest",
+        }
+      });
+    }
+    finalUserId = user.id;
+  }
+
   // 3. Process Transaction
   const order = await prisma.$transaction(async (tx) => {
     // Create the order
@@ -66,7 +81,7 @@ export async function processCheckout(input: CheckoutInput) {
         city: input.city,
         country: input.country,
         orderNotice: input.orderNotice,
-        userId: input.userId || null,
+        userId: finalUserId || null,
         cartId: cart.id,
         total: finalTotal,
         status: "processing", // Legacy status field
@@ -91,11 +106,11 @@ export async function processCheckout(input: CheckoutInput) {
         }
       });
 
-      // Deduct stock safely (prevent negative stock)
+      // Reserve stock (temporary hold)
       await tx.productVariant.update({
         where: { id: variant.id },
         data: {
-          stockQuantity: { decrement: item.quantity }
+          reservedQuantity: { increment: item.quantity }
         }
       });
 
@@ -103,19 +118,15 @@ export async function processCheckout(input: CheckoutInput) {
       await tx.inventoryEvent.create({
         data: {
           variantId: variant.id,
-          type: InventoryEventType.ORDER_FULFILLMENT,
-          quantity: -item.quantity,
+          type: InventoryEventType.RESERVATION,
+          quantity: item.quantity,
           referenceId: newOrder.id,
-          reason: "Checkout completed"
+          reason: "Checkout started"
         }
       });
     }
 
-    // 4. Mark Cart as converted
-    await tx.cart.update({
-      where: { id: cart.id },
-      data: { status: CartStatus.CONVERTED }
-    });
+    // Cart is NOT cleared here; it will be cleared upon successful payment.
 
     // 5. Create Transactional Outbox Event for Notification
     await tx.outboxEvent.create({
@@ -132,19 +143,28 @@ export async function processCheckout(input: CheckoutInput) {
     return newOrder;
   });
 
-  // 6. Generate Payment Intent using Provider
-  const { DummyPaymentProvider } = await import('@/src/modules/payments/dummy.provider');
-  const paymentProvider = new DummyPaymentProvider();
+  // 6. Generate Payment Intent using Orchestrator
+  const { paymentOrchestrator } = await import('@/src/modules/payments/application/payment-orchestrator.service');
   
-  const paymentIntent = await paymentProvider.createPaymentIntent({
-    amount: order.total,
-    currency: "USD",
+  const paymentIntent = await paymentOrchestrator.initiatePayment({
     orderId: order.id,
-    customerEmail: order.email,
+    userId: finalUserId || 'guest',
+    idempotencyKey: `checkout_${order.id}`,
   });
 
   return { order, paymentIntent };
   } catch (error: any) {
+    console.error("CHECKOUT ERROR STACK:", error.stack);
+    
+    // Check if prisma objects are undefined to debug
+    console.error("DEBUG PRISMA:", {
+      prisma: !!prisma,
+      productVariant: !!prisma?.productVariant,
+      user: !!prisma?.user,
+      customer_order: !!prisma?.customer_order,
+      payment: !!prisma?.payment
+    });
+
     // Enrich Sentry with business context on failure
     import('@sentry/nextjs').then((Sentry) => {
       Sentry.withScope((scope) => {

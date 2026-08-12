@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import apiClient from "@/lib/api";
 import { sanitize } from "@/lib/sanitize";
+import { getImagePath } from "@/lib/utils";
 
 const DashboardProductTable = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,89 +32,82 @@ const DashboardProductTable = () => {
   }, []);
 
   return (
-    <div className="w-full">
-      <h1 className="text-3xl font-semibold text-center mb-5">All products</h1>
-      <div className="flex justify-end mb-5">
+    <div className="flex-1 w-full bg-white rounded-lg shadow-sm border border-luxury-border p-6 overflow-hidden max-xl:mt-5">
+      <div className="flex justify-between items-center mb-6 border-b border-luxury-border/50 pb-4">
+        <h1 className="text-2xl font-serif text-vamika-charcoal">All Products</h1>
         <Link href="/admin/products/new">
           <CustomButton
             buttonType="button"
-            customWidth="110px"
-            paddingX={10}
-            paddingY={5}
-            textSize="base"
-            text="Add new product"
+            customWidth="150px"
+            paddingX={20}
+            paddingY={10}
+            textSize="sm"
+            text="Add New Product"
           />
         </Link>
       </div>
 
-      <div className="xl:ml-5 w-full max-xl:mt-5 overflow-auto w-full h-[80vh]">
-        <table className="table table-md table-pin-cols">
-          {/* head */}
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-left border-collapse">
           <thead>
-            <tr>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
-              <th>Product</th>
-              <th>Stock Availability</th>
-              <th>Price</th>
-              <th></th>
+            <tr className="border-b border-luxury-border">
+              <th className="py-4 px-4 font-serif text-sm text-luxury-text-secondary uppercase tracking-wider font-medium">Product</th>
+              <th className="py-4 px-4 font-serif text-sm text-luxury-text-secondary uppercase tracking-wider font-medium">Stock Status</th>
+              <th className="py-4 px-4 font-serif text-sm text-luxury-text-secondary uppercase tracking-wider font-medium">Price</th>
+              <th className="py-4 px-4 text-right"></th>
             </tr>
           </thead>
           <tbody>
-            {/* row 1 */}
-            {products &&
+            {products && products.length > 0 ? (
               products.map((product) => (
-                <tr key={nanoid()}>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle w-12 h-12">
-                          <Image
-                            width={48}
-                            height={48}
-                            src={product?.mainImage ? `/${product?.mainImage}` : "/product_placeholder.jpg"}
-                            alt={sanitize(product?.title) || "Product image"}
-                            className="w-auto h-auto"
-                          />
-                        </div>
+                <tr key={nanoid()} className="border-b border-luxury-border/30 hover:bg-vamika-ivory/30 transition-colors">
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 relative rounded overflow-hidden border border-luxury-border/50 bg-luxury-bg flex-shrink-0">
+                        <Image
+                          fill
+                          src={getImagePath(product?.mainImage)}
+                          alt={sanitize(product?.title) || "Product image"}
+                          className="object-cover"
+                        />
                       </div>
                       <div>
-                        <div className="font-bold">{sanitize(product?.title)}</div>
-                        <div className="text-sm opacity-50">
+                        <div className="font-medium text-vamika-charcoal line-clamp-1">{sanitize(product?.title)}</div>
+                        <div className="text-xs text-luxury-text-secondary mt-1 tracking-wider uppercase">
                           {sanitize(product?.manufacturer)}
                         </div>
                       </div>
                     </div>
                   </td>
-
-                  <td>
-                    { product?.inStock ? (<span className="badge badge-success text-white badge-sm">
-                      In stock
-                    </span>) : (<span className="badge badge-error text-white badge-sm">
-                      Out of stock
-                    </span>) }
-                    
+                  <td className="py-4 px-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase ${
+                      product?.inStock 
+                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200" 
+                        : "bg-rose-50 text-rose-600 border border-rose-200"
+                    }`}>
+                      {product?.inStock ? "In Stock" : "Out of Stock"}
+                    </span>
                   </td>
-                  <td>${product?.price}</td>
-                  <th>
+                  <td className="py-4 px-4">
+                    <p className="font-medium text-luxury-gold tracking-wide">₹{product?.price}</p>
+                  </td>
+                  <td className="py-4 px-4 text-right">
                     <Link
-                      href={`/admin/products/${product.id}`}
-                      className="btn btn-ghost btn-xs"
+                      href={`/admin/products/${product?.id}`}
+                      className="text-xs font-medium tracking-widest uppercase text-luxury-gold hover:text-luxury-gold-dark transition-colors border border-luxury-gold hover:bg-luxury-gold/5 px-4 py-2 rounded"
                     >
-                      details
+                      Edit
                     </Link>
-                  </th>
+                  </td>
                 </tr>
-              ))}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="py-8 text-center text-luxury-text-secondary">
+                  No products found.
+                </td>
+              </tr>
+            )}
           </tbody>
           {/* foot */}
           <tfoot>

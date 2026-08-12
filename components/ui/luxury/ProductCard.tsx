@@ -7,6 +7,7 @@ import { Heart, Sparkles, BoxSelect, View } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { trackEvent } from "@/lib/analytics/events";
 import { WishlistPopup } from "./WishlistPopup";
+import { getImagePath } from "@/lib/utils";
 
 interface ProductCardProps {
   product: {
@@ -31,9 +32,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   
   // Format image path
-  const imageSrc = product.mainImage.startsWith('/') || product.mainImage.startsWith('http') 
-    ? product.mainImage 
-    : `/${product.mainImage}`;
+  const imageSrc = getImagePath(product.mainImage);
 
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.preventDefault();

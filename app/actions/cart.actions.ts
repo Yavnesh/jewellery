@@ -62,7 +62,8 @@ export async function addToCart(variantId: string, quantity: number = 1) {
     if (!cart) throw new Error("Cart not found");
     await serviceAddToCart(cart.id, variantId, quantity);
     revalidatePath("/cart");
-    return { success: true };
+    const updatedCart = await getActiveCart();
+    return { success: true, cart: updatedCart };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to add to cart" };
   }
@@ -74,7 +75,8 @@ export async function updateQuantity(variantId: string, quantity: number) {
     if (!cart) throw new Error("Cart not found");
     await serviceUpdateQuantity(cart.id, variantId, quantity);
     revalidatePath("/cart");
-    return { success: true };
+    const updatedCart = await getActiveCart();
+    return { success: true, cart: updatedCart };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to update quantity" };
   }
@@ -86,7 +88,8 @@ export async function removeFromCart(variantId: string) {
     if (!cart) throw new Error("Cart not found");
     await serviceRemoveItem(cart.id, variantId);
     revalidatePath("/cart");
-    return { success: true };
+    const updatedCart = await getActiveCart();
+    return { success: true, cart: updatedCart };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to remove item" };
   }

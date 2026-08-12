@@ -1,4 +1,6 @@
-import { CategoryMenu, Hero, IntroducingSection, ProductsSection, OccasionGrid, TrustBanner, Newsletter, VamikaShowcase } from "@/components";
+import { CategoryMenu, Hero, IntroducingSection, ProductsSection, OccasionGrid, TrustBanner, Newsletter, VamikaShowcase, CheckoutSuccessPopup } from "@/components";
+
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -11,6 +13,9 @@ export default function Home() {
       <ProductsSection />
       <Newsletter />
       <TrustBanner />
+      <Suspense fallback={null}>
+        <CheckoutSuccessPopup />
+      </Suspense>
     </>
   );
 }

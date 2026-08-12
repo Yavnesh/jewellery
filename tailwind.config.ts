@@ -24,6 +24,7 @@ const config: Config = {
         'vamika-gold-light': '#C5A880',
         'vamika-charcoal': '#1C1B1A',
         'vamika-ivory': '#FAF8F5',
+        'luxury-ivory': '#FAF8F5',
       },
       fontFamily: {
         serif: ['var(--font-playfair)', 'serif'],

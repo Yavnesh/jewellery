@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useTransition } from "react";
 import { addToCart } from "@/app/actions/cart.actions";
+import { useProductStore } from "@/app/_zustand/store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -70,7 +71,8 @@ export const VariantSelector = ({ options, variants, basePrice, baseCompareAtPri
     
     startTransition(async () => {
       const result = await addToCart(selectedVariant.id, 1);
-      if (result.success) {
+      if (result.success && result.cart) {
+        useProductStore.getState().syncCart(result.cart);
         toast.success("Added to cart");
         // Optionally open a minicart or navigate
         // router.push("/cart");
@@ -93,10 +95,16 @@ export const VariantSelector = ({ options, variants, basePrice, baseCompareAtPri
     });
   };
 
+  const { products } = useProductStore();
+  const cartItem = products.find(p => p.id === selectedVariant?.id);
+  const cartAmount = cartItem ? cartItem.amount : 0;
+  
   const currentPrice = selectedVariant?.price || basePrice;
   const currentCompareAtPrice = selectedVariant?.compareAtPrice || baseCompareAtPrice;
   const stock = selectedVariant ? (selectedVariant.stockQuantity - selectedVariant.reservedQuantity) : 0;
+  const availableToBuy = Math.max(0, stock - cartAmount);
   const isOutOfStock = stock <= 0;
+  const isMaxReached = availableToBuy <= 0 && stock > 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -146,6 +154,21 @@ export const VariantSelector = ({ options, variants, basePrice, baseCompareAtPri
           <div className="py-3.5 bg-gray-200 text-gray-500 font-bold text-sm tracking-wide text-center">
             OUT OF STOCK
           </div>
+        ) : isMaxReached ? (
+          <div className="flex gap-4">
+            <button 
+              disabled
+              className="flex-1 py-3.5 bg-gray-200 text-gray-600 font-bold text-sm tracking-wide text-center cursor-not-allowed"
+            >
+              MAX QUANTITY IN CART
+            </button>
+            <button 
+              onClick={() => router.push("/cart")}
+              className="flex-1 py-3.5 bg-[#8B2C33] text-white font-bold text-sm tracking-wide hover:bg-[#6e2329] transition-colors"
+            >
+              GO TO CART
+            </button>
+          </div>
         ) : (
           <div className="flex gap-4">
             <button 
@@ -165,9 +188,9 @@ export const VariantSelector = ({ options, variants, basePrice, baseCompareAtPri
           </div>
         )}
         
-        {stock > 0 && stock <= 3 && (
+        {availableToBuy > 0 && availableToBuy <= 3 && (
           <p className="text-[12px] text-orange-600 font-bold">
-            Only {stock} left in stock!
+            Only {availableToBuy} left in stock!
           </p>
         )}
       </div>

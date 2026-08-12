@@ -9,34 +9,41 @@
 // *********************
 "use client";
 
-
-
-import React from "react";
+import React, { useTransition } from "react";
 import { useProductStore } from "@/app/_zustand/store";
 import toast from "react-hot-toast";
-
-
+import { addToCart } from "@/app/actions/cart.actions";
 
 const AddToCartSingleProductBtn = ({ product, quantityCount } : SingleProductBtnProps) => {
-  const { addToCart, calculateTotals } = useProductStore();
+  const { syncCart } = useProductStore();
+  const [isPending, startTransition] = useTransition();
 
   const handleAddToCart = () => {
-    addToCart({
-      id: product?.id.toString(),
-      title: product?.title,
-      price: product?.price,
-      image: product?.mainImage,
-      amount: quantityCount
+    startTransition(async () => {
+      // Find the first variant to add, assuming default or legacy setup
+      const variantId = product?.variants?.[0]?.id;
+      if (!variantId) {
+        toast.error("No variant found for this product.");
+        return;
+      }
+      
+      const result = await addToCart(variantId, quantityCount);
+      if (result.success && result.cart) {
+        syncCart(result.cart);
+        toast.success("Product added to the cart");
+      } else {
+        toast.error(result.error || "Failed to add to cart");
+      }
     });
-    calculateTotals();
-    toast.success("Product added to the cart");
   };
+
   return (
     <button
       onClick={handleAddToCart}
-      className="btn w-[200px] text-lg border border-gray-300 border-1 font-normal bg-white text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:scale-110 transition-all uppercase ease-in max-[500px]:w-full"
+      disabled={isPending}
+      className="btn w-[200px] text-[13px] tracking-wide border border-luxury-gold font-bold bg-white text-luxury-gold hover:bg-luxury-gold hover:text-white transition-colors uppercase max-[500px]:w-full disabled:opacity-50"
     >
-      Add to cart
+      {isPending ? "Adding..." : "Add to cart"}
     </button>
   );
 };

@@ -13,6 +13,7 @@ import React from "react";
 import Link from "next/link";
 
 import { sanitize } from "@/lib/sanitize";
+import { getImagePath } from "@/lib/utils";
 
 const ProductItem = ({
   product,
@@ -25,11 +26,7 @@ const ProductItem = ({
     <div className="flex flex-col items-center w-full max-w-sm group border border-luxury-border/40 p-4 bg-white rounded transition-all duration-300 hover:shadow-md hover:border-luxury-gold/40">
       <Link href={`/product/${product.slug}`} className="w-full overflow-hidden flex justify-center items-center h-[260px] bg-luxury-ivory rounded mb-4">
         <Image
-          src={
-            product.mainImage
-              ? `/${product.mainImage}`
-              : "/product_placeholder.jpg"
-          }
+          src={getImagePath(product.mainImage)}
           width="0"
           height="0"
           sizes="100vw"
