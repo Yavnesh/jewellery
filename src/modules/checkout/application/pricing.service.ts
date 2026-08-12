@@ -1,4 +1,4 @@
-import { Money } from "@/modules/payments/domain/payment.types";
+import { Money } from "@/src/modules/payments/domain/payment.types";
 
 export type PricingInput = {
   items: Array<{

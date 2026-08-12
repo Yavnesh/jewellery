@@ -42,7 +42,7 @@ export class RazorpayPaymentAdapter implements PaymentProviderAdapter {
         status: "REQUIRES_ACTION", // Requires client to complete the payment via SDK
         clientAction: {
           type: "SDK",
-          publicKey: env.RAZORPAY_KEY_ID,
+          publicKey: env.RAZORPAY_KEY_ID || "",
           sessionId: order.id, // In Razorpay, order.id acts as session
         },
         providerMetadata: {
@@ -61,7 +61,7 @@ export class RazorpayPaymentAdapter implements PaymentProviderAdapter {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = input.providerPayload as any;
       
       const generatedSignature = crypto
-        .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
+        .createHmac("sha256", env.RAZORPAY_KEY_SECRET || "")
         .update(razorpay_order_id + "|" + razorpay_payment_id)
         .digest("hex");
 

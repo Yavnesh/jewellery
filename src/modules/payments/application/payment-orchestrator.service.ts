@@ -35,12 +35,12 @@ export class PaymentOrchestratorService {
     // Ensure we use the correct snapshot field. In customer_order_product it might be price or priceAtPurchase
     // Looking at checkout.service.ts it uses priceAtPurchase and quantity. Let's assume total is handled by order.total
     const totalAmountMinor = order.total * 100; // customer_order.total is in major currency units.
-    const amount = { amountMinor: totalAmountMinor, currency: env.PAYMENT_ROUTING_CURRENCY };
+    const amount = { amountMinor: totalAmountMinor, currency: env.PAYMENT_ROUTING_CURRENCY || "INR" };
 
     // Route payment
     const provider = this.routingPolicy.selectProvider({
       amount,
-      customerId: input.userId,
+      customerId: input.userId || 'guest',
       orderId: order.id,
     });
 
@@ -70,7 +70,7 @@ export class PaymentOrchestratorService {
       orderNumber: order.id, // Or generating a specific order number
       amount,
       customer: {
-        id: input.userId,
+        id: input.userId || 'guest',
         email: order.email,
         name: `${order.name} ${order.lastname}`.trim(),
       },
@@ -79,7 +79,7 @@ export class PaymentOrchestratorService {
         orderId: order.id,
       },
       idempotencyKey: payment.idempotencyKey,
-      returnUrl: env.PAYMENT_RETURN_URL,
+      returnUrl: env.PAYMENT_RETURN_URL || "http://localhost:3000/api/payments/return",
     });
 
     await prisma.payment.update({

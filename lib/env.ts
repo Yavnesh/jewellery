@@ -20,6 +20,7 @@ const serverEnvSchema = z.object({
   SKYDO_CLIENT_ID: z.string().optional(),
   SKYDO_CLIENT_SECRET: z.string().optional(),
   SKYDO_API_URL: z.string().optional(),
+  SKYDO_WEBHOOK_SECRET: z.string().optional(),
 });
 
 const schema = isServer ? envSchema.merge(serverEnvSchema) : envSchema;
@@ -40,6 +41,7 @@ const _env = schema.safeParse({
     SKYDO_CLIENT_ID: process.env.SKYDO_CLIENT_ID,
     SKYDO_CLIENT_SECRET: process.env.SKYDO_CLIENT_SECRET,
     SKYDO_API_URL: process.env.SKYDO_API_URL,
+    SKYDO_WEBHOOK_SECRET: process.env.SKYDO_WEBHOOK_SECRET,
   } : {})
 });
 

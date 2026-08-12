@@ -10,6 +10,7 @@ interface Product {
   categoryId: string;
   category: {name: string}?;
   inStock: number;
+  variants?: { id: string }[];
 }
 
 interface Merchant {

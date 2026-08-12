@@ -61,11 +61,11 @@ const AdminOrders = () => {
                   </td>
                   <td className="py-4 px-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium tracking-wide uppercase ${
-                      order?.status === "PAID" || order?.status === "DELIVERED" 
+                      order?.status === "delivered" 
                         ? "bg-emerald-50 text-emerald-600 border border-emerald-200" 
                         : "bg-amber-50 text-amber-600 border border-amber-200"
                     }`}>
-                      {order?.status || "PENDING"}
+                      {order?.status || "processing"}
                     </span>
                   </td>
                   <td className="py-4 px-4">

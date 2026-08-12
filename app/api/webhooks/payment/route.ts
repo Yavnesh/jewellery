@@ -18,6 +18,7 @@ export async function POST(req: Request) {
     try {
       await prisma.paymentEvent.create({
         data: {
+          provider: 'RAZORPAY',
           providerEventId: event.providerEventId,
           eventType: event.type,
           payload: event.data,
@@ -38,12 +39,17 @@ export async function POST(req: Request) {
       if (orderId) {
         await prisma.customer_order.update({
           where: { id: orderId },
-          data: { paymentStatus: 'PAID' }
+          data: { paymentStatus: 'SUCCEEDED' }
         });
         
         // Mark event as fully processed
         await prisma.paymentEvent.update({
-          where: { providerEventId: event.providerEventId },
+          where: {
+            provider_providerEventId: {
+              provider: 'RAZORPAY',
+              providerEventId: event.providerEventId
+            }
+          },
           data: { processedAt: new Date() }
         });
       }

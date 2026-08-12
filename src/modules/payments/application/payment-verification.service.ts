@@ -1,6 +1,6 @@
 import prisma from "@/utils/db";
 import { ProviderWebhookEvent } from "../domain/payment.types";
-import { PaymentStatus, OrderStatus } from "@prisma/client";
+import { PaymentStatus, OrderStatus, PaymentProvider } from "@prisma/client";
 
 export class PaymentWebhookProcessor {
   async process(event: ProviderWebhookEvent): Promise<void> {
@@ -156,7 +156,7 @@ import { VerifyPaymentInput } from "../domain/payment.types";
 
 export class ClientPaymentVerificationService {
   async verifyPayment(input: VerifyPaymentInput & { provider: PaymentProvider }) {
-    const adapter = paymentProviderRegistry.get(input.provider);
+    const adapter = paymentProviderRegistry.get(input.provider as any);
     
     // 1. Verify cryptographic signature via adapter
     const verification = await adapter.verifyPayment(input);
@@ -171,7 +171,7 @@ export class ClientPaymentVerificationService {
     const syntheticEvent: ProviderWebhookEvent = {
       eventId: `client_verify_${input.paymentId}_${Date.now()}`,
       type: "payment.captured", // Razorpay specific success event type mapping
-      provider: input.provider,
+      provider: input.provider as any,
       payload: {
         payload: {
           payment: {
