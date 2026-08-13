@@ -14,6 +14,7 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { sanitize } from "@/lib/sanitize";
 import { ProductJsonLd } from "@/src/components/seo/ProductJsonLd";
+import prisma from "@/utils/db";
 
 interface SingleProductPageProps {
   params: Promise<{  productSlug: string, id: string }>;
@@ -52,14 +53,61 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
   // Get gallery images
   const images = await getProductImages(product.id);
 
+  // Fetch related products (same category)
+  const relatedProducts = await prisma.product.findMany({
+    where: {
+      categoryId: product.categoryId,
+      id: { not: product.id }
+    },
+    take: 5,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      price: true,
+      mainImage: true
+    }
+  });
+
+  // Fetch cross-sell products (different category)
+  const crossSellProducts = await prisma.product.findMany({
+    where: {
+      categoryId: { not: product.categoryId }
+    },
+    take: 4,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      price: true,
+      mainImage: true
+    }
+  });
+
   // Parse gallery images dynamically
   let galleryImages: string[] = [];
   if (images && images.length > 0) {
     galleryImages = images.map((img: any) => img.image);
   } else if (product?.images) {
-    galleryImages = product.images.split(",");
-  } else {
-    galleryImages = [product?.mainImage];
+    try {
+      const parsed = JSON.parse(product.images);
+      if (Array.isArray(parsed)) {
+        galleryImages = parsed;
+      } else {
+        galleryImages = product.images.split(",");
+      }
+    } catch (e) {
+      galleryImages = product.images.split(",");
+    }
+  }
+
+  // Clean up quotes, brackets, whitespace, and filter empty strings
+  galleryImages = galleryImages
+    .map(img => img ? img.trim().replace(/^["'\[]+|["'\]]+$/g, "") : "")
+    .filter(Boolean);
+
+  if (galleryImages.length === 0 && product?.mainImage) {
+    galleryImages = [product.mainImage];
   }
 
   // Sanitize image paths
@@ -98,121 +146,87 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
             </div>
           </div>
 
-          {/* Right Column: Buy Box */}
-          <div className="flex-1 flex flex-col pt-4">
-            <h1 className="text-[22px] font-serif text-[#333333] leading-snug mb-2">
-              {sanitize(product?.title)}
-            </h1>
-            
-            {/* Reviews Summary */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex text-[#D1A254] text-xs">
-                {'★'.repeat(4)}{'☆'}
-              </div>
-              <span className="text-xs text-gray-500 underline">Write A Review</span>
-            </div>
-            
-            {/* Delivery & Pincode */}
-            <div className="mb-8">
-              <h3 className="text-sm font-bold text-[#333333] mb-3">Delivery Location</h3>
-              <div className="flex">
-                <input 
-                  type="text" 
-                  placeholder="Enter Pincode" 
-                  className="border-b border-gray-300 rounded-none py-2 px-1 text-sm w-[200px] focus:outline-none focus:border-[#8B2C33]"
-                />
-                <button className="text-[#8B2C33] text-sm font-bold px-4">Update</button>
-              </div>
-              <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                <span className="text-[#D1A254]">🚚</span> Delivery by Tomorrow, 11 AM
-              </p>
-            </div>
-
-            {/* Offer Banner */}
-            <div className="bg-[#FFF8E7] border border-[#F2E5C9] p-4 flex gap-3 items-start mb-8 rounded-sm">
-              <span className="text-[#D1A254] mt-0.5">💎</span>
-              <div>
-                <p className="text-[13px] font-bold text-[#333333]">Offer available</p>
-                <p className="text-[12px] text-gray-600 mt-1">Flat 20% off on making charges.</p>
+          {/* Right Column: Title / Price / ATC */}
+          <div className="w-full lg:w-[40%] flex flex-col gap-6">
+            <div>
+              <h1 className="font-serif text-2xl md:text-3xl text-[#333333] leading-tight mb-2">
+                {sanitize(product?.title)}
+              </h1>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="flex text-[#D1A254] text-xs">
+                  {'★'.repeat(Math.round(product?.rating || 5))}
+                  {'☆'.repeat(5 - Math.round(product?.rating || 5))}
+                </div>
+                <span className="text-xs text-gray-400 font-sans cursor-pointer hover:underline">Write A Review</span>
               </div>
             </div>
 
-            {/* Product Details Highlights */}
-            <div className="flex flex-col gap-3 text-[13px] text-gray-600 border-t border-gray-100 pt-6 mb-8">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Weight</span>
-                <span className="font-medium text-[#333333]">{product?.weight || '12.45'} g</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Purity</span>
-                <span className="font-medium text-[#333333]">{product?.purity || '18K'}</span>
-              </div>
-            </div>
-
-            {/* Variant Selector & Actions */}
             <VariantSelector 
               options={product.options} 
               variants={product.variants} 
               basePrice={product.price} 
               baseCompareAtPrice={product.originalPrice}
             />
+
+            <SingleProductDynamicFields product={product} />
+
+            <StockAvailabillity stock={product?.variants?.[0]?.stockQuantity || 0} inStock={product?.inStock ? 1 : 0} />
+            <UrgencyText stock={product?.variants?.[0]?.stockQuantity || 0} />
           </div>
         </div>
 
-        {/* Try It On Banner */}
-        <div className="w-full bg-[#FDF8F5] border border-[#F6EBE5] py-8 px-12 flex flex-col md:flex-row items-center justify-between mb-16 rounded-sm">
-          <div>
-            <h3 className="font-serif text-2xl text-[#8B2C33] mb-2">Virtual Try On</h3>
-            <p className="font-sans text-sm text-gray-600 max-w-md">
-              See how this beautiful piece looks on you using your phone's camera or uploading a photo.
-            </p>
-          </div>
-          <button className="bg-[#8B2C33] text-white font-sans text-sm font-bold tracking-widest uppercase px-8 py-3 mt-4 md:mt-0 hover:bg-[#6e2329] transition-colors">
-            Try It On
-          </button>
+        {/* Tab section: Description, specs etc */}
+        <div className="mb-20">
+          <ProductTabs product={product} />
         </div>
+
+
 
         {/* Styling Available (Cross-Sell) */}
-        <div className="mb-20">
-          <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Styling Available</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors">
-                <div className="aspect-square relative mb-4">
-                  <Image 
-                    src="/placeholder.jpg" 
-                    alt="Matching item" 
-                    layout="fill" 
-                    className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">Matching Earring {item}</h4>
-                <p className="font-serif font-bold text-[#333333]">₹ 24,500</p>
-              </div>
-            ))}
+        {crossSellProducts.length > 0 && (
+          <div className="mb-20">
+            <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Styling Available</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {crossSellProducts.map((item) => (
+                <a href={`/product/${item.slug}`} key={item.id} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors block">
+                  <div className="aspect-square relative mb-4">
+                    <Image 
+                      src={item.mainImage || "/placeholder.jpg"} 
+                      alt={item.title} 
+                      layout="fill" 
+                      className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">{sanitize(item.title)}</h4>
+                  <p className="font-serif font-bold text-[#333333]">₹ {item.price.toLocaleString("en-IN")}</p>
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Customers Also Viewed */}
-        <div className="mb-20">
-          <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Customers Also Viewed</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors">
-                <div className="aspect-square relative mb-4">
-                  <Image 
-                    src="/placeholder.jpg" 
-                    alt="Related item" 
-                    layout="fill" 
-                    className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">Related Ring {item}</h4>
-                <p className="font-serif font-bold text-[#333333]">₹ 18,200</p>
-              </div>
-            ))}
+        {relatedProducts.length > 0 && (
+          <div className="mb-20">
+            <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Customers Also Viewed</h2>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {relatedProducts.map((item) => (
+                <a href={`/product/${item.slug}`} key={item.id} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors block">
+                  <div className="aspect-square relative mb-4">
+                    <Image 
+                      src={item.mainImage || "/placeholder.jpg"} 
+                      alt={item.title} 
+                      layout="fill" 
+                      className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">{sanitize(item.title)}</h4>
+                  <p className="font-serif font-bold text-[#333333]">₹ {item.price.toLocaleString("en-IN")}</p>
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Customer Reviews */}
         <div className="mb-20 bg-[#F9F9F9] py-16 px-8 text-center rounded-sm">

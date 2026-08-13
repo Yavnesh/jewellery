@@ -18,7 +18,6 @@ import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import toast from "react-hot-toast";
 
 const SingleProductDynamicFields = ({ product }: { product: Product }) => {
-  const [quantityCount, setQuantityCount] = useState<number>(1);
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
   const isInWishlist = wishlist.some((item) => item.id === product.id);
 
@@ -40,35 +39,19 @@ const SingleProductDynamicFields = ({ product }: { product: Product }) => {
   };
 
   return (
-    <>
-      <QuantityInput
-        quantityCount={quantityCount}
-        setQuantityCount={setQuantityCount}
-      />
-      {Boolean(product.inStock) && (
-        <div className="flex gap-x-4 max-[500px]:flex-col max-[500px]:items-center max-[500px]:gap-y-3 mt-4 flex-wrap">
-          <AddToCartSingleProductBtn
-            quantityCount={quantityCount}
-            product={product}
-          />
-          <BuyNowSingleProductBtn
-            quantityCount={quantityCount}
-            product={product}
-          />
-          <button
-            onClick={handleWishlistToggle}
-            className={`flex items-center justify-center gap-x-2 border tracking-widest px-8 py-4 text-xs font-semibold uppercase transition-all duration-300 rounded shadow-sm max-[500px]:w-full min-w-[180px] ${
-              isInWishlist
-                ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
-                : "border-vamika-charcoal text-vamika-charcoal hover:bg-vamika-charcoal hover:text-white"
-            }`}
-          >
-            {isInWishlist ? <FaHeart className="text-sm" /> : <FaRegHeart className="text-sm" />}
-            {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
-          </button>
-        </div>
-      )}
-    </>
+    <div className="mt-2">
+      <button
+        onClick={handleWishlistToggle}
+        className={`w-full flex items-center justify-center gap-x-2 border py-3.5 text-xs font-semibold uppercase tracking-widest transition-all duration-300 ${
+          isInWishlist
+            ? "bg-[#FFF0F0] border-red-100 text-red-600 hover:bg-red-100"
+            : "border-gray-200 text-gray-500 hover:border-black hover:text-black"
+        }`}
+      >
+        {isInWishlist ? <FaHeart className="text-sm" /> : <FaRegHeart className="text-sm" />}
+        {isInWishlist ? "In Wishlist" : "Add to Wishlist"}
+      </button>
+    </div>
   );
 };
 

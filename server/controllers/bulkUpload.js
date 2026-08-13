@@ -20,7 +20,7 @@ const uploadCsvAndCreateBatch = asyncHandler(async (req, res) => {
   const csvFile = req.files?.file;
   if (!csvFile) {
     console.log("❌ No file uploaded");
-    throw new AppError("CSV file is required (field name: 'file')", 400);
+    throw new AppError("Excel or CSV file is required (field name: 'file')", 400);
   }
 
   console.log("✅ File received:", csvFile.name, csvFile.size, "bytes");

@@ -53,7 +53,7 @@ const ShopPage = async ({ params, searchParams }: Props) => {
   const categorySlug = awaitedParams?.slug?.[0];
   const sort = awaitedSearchParams?.sort as string;
   const page = awaitedSearchParams?.page ? Number(awaitedSearchParams.page) : 1;
-  const limit = 12;
+  const limit = 20;
   const skip = (page - 1) * limit;
 
   // Helper to parse comma-separated arrays from URL
@@ -163,7 +163,7 @@ const ShopPage = async ({ params, searchParams }: Props) => {
             
             {totalProducts > limit && (
               <div className="mt-20 flex justify-center border-t border-gray-100 pt-10">
-                <Pagination />
+                <Pagination totalProducts={totalProducts} limit={limit} />
               </div>
             )}
           </div>
