@@ -9,8 +9,8 @@ import { FilterSync } from "@/components/ui/luxury/FilterSync";
 import { Pagination } from "@/components";
 import { sanitize } from "@/lib/sanitize";
 
-// Phase 2 caching foundation: We will rely on built-in fetch/unstable_cache next
-// Remove force-dynamic to allow ISR or native route caching to work correctly.
+// Force dynamic rendering to ensure the shop page reads live database values on Vercel
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug?: string[] }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> };
 
