@@ -70,18 +70,18 @@ export const WishlistPopup = ({ isOpen, onClose }: WishlistPopupProps) => {
               </p>
 
               <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                <div className="flex border border-gray-300 rounded-full overflow-hidden focus-within:border-[#8B2C33] transition-colors bg-white shadow-sm">
+                <div className="flex flex-col gap-3">
                   <input 
                     type="email"
                     placeholder="Enter email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="flex-1 px-5 py-3 outline-none text-sm font-sans placeholder-gray-400"
+                    className="w-full px-5 py-3 border border-gray-300 rounded-full outline-none text-sm font-sans placeholder-gray-400 focus:border-[#8B2C33] transition-colors bg-white shadow-sm"
                   />
                   <button 
                     type="submit"
-                    className="bg-[#8B2C33] text-white px-6 py-3 font-sans text-sm hover:bg-[#6e2329] transition-colors whitespace-nowrap"
+                    className="w-full bg-[#8B2C33] text-white px-6 py-3 font-sans text-sm font-semibold hover:bg-[#6e2329] transition-colors rounded-full shadow-sm tracking-wider"
                   >
                     Login to Continue
                   </button>

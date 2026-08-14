@@ -1,64 +1,12 @@
-import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond } from "next/font/google";
-import "./globals.css";
-import { getServerSession } from "next-auth/next";
-import SessionProvider from "@/utils/SessionProvider";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Providers from "@/Providers";
-import SessionTimeoutWrapper from "@/components/SessionTimeoutWrapper";
+import { ReactNode } from 'react';
+import './globals.css';
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-cormorant",
-});
-
-import { BRAND_NAME } from "@/utils/brand";
-
-export const metadata: Metadata = {
-  title: `${BRAND_NAME} - Fine Luxury Jewelry`,
-  description: `Experience premium fine jewelry and custom gemstones curated in a luxury storefront.`,
+type Props = {
+  children: ReactNode;
 };
 
-import CookieConsentBanner from "@/components/CookieConsentBanner";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
-import DatadogInit from "@/components/DatadogInit";
-
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const session = await getServerSession();
-  // Safe default or fallback for GA ID
-  const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
-  
-  return (
-    <html lang="en" data-theme="light">
-      <body className={`${inter.variable} ${cormorant.variable} font-sans bg-luxury-bg text-luxury-text-primary antialiased`}>
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-white text-black p-4 z-50 rounded-sm outline-2 outline-black outline-offset-2">
-          Skip to main content
-        </a>
-        <SessionProvider session={session}>
-          <SessionTimeoutWrapper />
-          <Header />
-          <Providers>
-            <main id="main-content">
-              {children}
-            </main>
-          </Providers>
-          <Footer />
-          <CookieConsentBanner />
-          <GoogleAnalytics ga_id={gaId} />
-          <DatadogInit />
-        </SessionProvider>
-      </body>
-    </html>
-  );
+// Next.js requires a root layout even if we have dynamic subpath routing.
+// We simply pass children through so they can be handled by app/[locale]/layout.tsx.
+export default function RootLayout({ children }: Props) {
+  return children;
 }

@@ -17,24 +17,25 @@ import { ProductJsonLd } from "@/src/components/seo/ProductJsonLd";
 import prisma from "@/utils/db";
 
 interface SingleProductPageProps {
-  params: Promise<{  productSlug: string, id: string }>;
+  params: Promise<{ locale: string; productSlug: string; id: string }>;
 }
 
 export async function generateMetadata({ params }: SingleProductPageProps): Promise<Metadata> {
   const paramsAwaited = await params;
-  const product = await getProductBySlug(paramsAwaited?.productSlug);
+  const { locale, productSlug } = paramsAwaited;
+  const product = await getProductBySlug(productSlug, locale);
   
   if (!product) return {};
 
   return {
     title: `${product.title} | Vamika`,
-    description: product.features || `Explore the exquisite ${product.title} at Vamika.`,
+    description: product.description || `Explore the exquisite ${product.title} at Vamika.`,
     alternates: {
       canonical: `/product/${product.slug}`
     },
     openGraph: {
       title: product.title,
-      description: product.features || `Explore the exquisite ${product.title} at Vamika.`,
+      description: product.description || `Explore the exquisite ${product.title} at Vamika.`,
       url: `/product/${product.slug}`,
       images: [{ url: product.mainImage, alt: product.title }]
     }
@@ -43,8 +44,9 @@ export async function generateMetadata({ params }: SingleProductPageProps): Prom
 
 const SingleProductPage = async ({ params }: SingleProductPageProps) => {
   const paramsAwaited = await params;
+  const { locale, productSlug } = paramsAwaited;
   
-  const product = await getProductBySlug(paramsAwaited?.productSlug);
+  const product = await getProductBySlug(productSlug, locale);
 
   if (!product) {
     notFound();

@@ -55,26 +55,26 @@ export const incentives = [
 
 export const navigation = {
   sale: [
-    { name: "Discounts", href: "/sale/discounts" },
-    { name: "News", href: "/sale/news" },
-    { name: "Register Discounts", href: "/sale/register-discounts" },
+    { key: "discounts", name: "Discounts", href: "/sale/discounts" },
+    { key: "news", name: "News", href: "/sale/news" },
+    { key: "registerDiscounts", name: "Register Discounts", href: "/sale/register-discounts" },
   ],
   about: [
-    { name: `About ${BRAND_NAME}`, href: "/about" },
-    { name: "Work With Us", href: "/about/careers" },
-    { name: "Company Profile", href: "/about/company-profile" },
+    { key: "aboutBrand", name: `About ${BRAND_NAME}`, href: "/about" },
+    { key: "workWithUs", name: "Work With Us", href: "/about/careers" },
+    { key: "companyProfile", name: "Company Profile", href: "/about/company-profile" },
   ],
   buy: [
-    { name: `${BRAND_NAME} Loyalty Card`, href: "/buying/loyalty-card" },
-    { name: "Terms Of Use", href: "/legal/terms" },
-    { name: "Privacy Policy", href: "/legal/privacy" },
-    { name: "Complaints", href: "/buying/complaints" },
-    { name: "Partners", href: "/buying/partners" },
+    { key: "loyaltyCard", name: `${BRAND_NAME} Loyalty Card`, href: "/buying/loyalty-card" },
+    { key: "termsOfUse", name: "Terms Of Use", href: "/legal/terms" },
+    { key: "privacyPolicy", name: "Privacy Policy", href: "/legal/privacy" },
+    { key: "complaints", name: "Complaints", href: "/buying/complaints" },
+    { key: "partners", name: "Partners", href: "/buying/partners" },
   ],
   help: [
-    { name: "Contact", href: "/support/contact" },
-    { name: `How to Buy at ${BRAND_NAME}`, href: "/support/how-to-buy" },
-    { name: "FAQ", href: "/support/faq" },
+    { key: "contact", name: "Contact", href: "/support/contact" },
+    { key: "howToBuy", name: `How to Buy at ${BRAND_NAME}`, href: "/support/how-to-buy" },
+    { key: "faq", name: "FAQ", href: "/support/faq" },
   ],
 };
 

@@ -1,0 +1,377 @@
+{
+  "Header": {
+    "searchPlaceholder": "Rechercher des bijoux fins...",
+    "searchButton": "Rechercher",
+    "allJewellery": "Bijoux",
+    "gold": "Or",
+    "diamond": "Diamant",
+    "earrings": "Boucles d'oreilles",
+    "rings": "Bagues",
+    "dailyWear": "Usage quotidien",
+    "wedding": "Mariage",
+    "gifting": "Cadeaux",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion"
+  },
+  "Wishlist": {
+    "title": "Ma liste d'envies",
+    "empty": "Votre liste d'envies est actuellement vide.",
+    "noItems": "Aucun article trouvé dans la liste d'envies",
+    "table": {
+      "image": "Image",
+      "name": "Nom",
+      "stockStatus": "Statut du stock",
+      "action": "Action"
+    },
+    "addToCart": "Ajouter au panier",
+    "adding": "Ajout...",
+    "inStock": "En stock",
+    "outOfStock": "Rupture de stock"
+  },
+  "Filters": {
+    "title": "Filtres",
+    "clearAll": "Effacer tout",
+    "activeOptions": "Options actives",
+    "priceRange": "Gamme de prix",
+    "minPrice": "Prix min (₹)",
+    "maxPrice": "Prix max (₹)",
+    "sort": "Trier",
+    "sortBy": "Trier par",
+    "defaultSort": "Par défaut",
+    "priceLowHigh": "Prix: Croissant",
+    "priceHighLow": "Prix: Décroissant"
+  },
+  "Hero": {
+    "viewAll": "Voir tout",
+    "slide1": {
+      "title": "L'Essence Nuptiale",
+      "subtitle": "Collection Mariage",
+      "description": "Dévoilez notre collection exquise de parures de mariée fabriquées à la main, conçues pour rendre votre journée spéciale éternelle.",
+      "ctaText": "Explorer Mariage"
+    },
+    "slide2": {
+      "title": "Or Éternel",
+      "subtitle": "Collection Signature",
+      "description": "Laissez-vous séduire par l'élégance intemporelle de bijoux en or façonnés de main de maître, conçus pour être chéris pendant des générations.",
+      "ctaText": "Acheter maintenant"
+    },
+    "slide3": {
+      "title": "Éclat Quotidien",
+      "subtitle": "Usage quotidien",
+      "description": "Des pièces légères et élégantes conçues pour la femme moderne — le luxe à porter au quotidien.",
+      "ctaText": "Explorer l'Usage Quotidien"
+    }
+  },
+  "Introducing": {
+    "since": "Depuis 2024",
+    "welcome": "BIENVENUE CHEZ",
+    "description": "Où l'élégance intemporelle rencontre le savoir-faire artisanal. Chaque pièce de notre collection témoigne de l'art de la haute joaillerie — conçue pour être chérie, portée et transmise de génération en génération.",
+    "cta": "EXPLORER LES COLLECTIONS"
+  },
+  "Product": {
+    "viewProduct": "Voir le produit"
+  },
+  "Header": {
+    "collections": "Collections",
+    "allJewellery": "Tous les bijoux",
+    "gold": "Or",
+    "diamond": "Diamant",
+    "rings": "Bagues",
+    "earrings": "Boucles d'oreilles",
+    "necklaces": "Colliers et Chaînes",
+    "user": "Utilisateur",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "searchPlaceholder": "Rechercher des bijoux fins...",
+    "searchButton": "Rechercher",
+    "daily": "Usage quotidien",
+    "wedding": "Mariage",
+    "gifting": "Cadeaux"
+  },
+  "MegaMenu": {
+    "filters": {
+      "category": "Catégorie",
+      "price": "Prix",
+      "occasion": "Occasion",
+      "gender": "Genre"
+    },
+    "subcategories": {
+      "alljewellery": "Tous les bijoux",
+      "earrings": "Boucles d'oreilles",
+      "pendants": "Pendentifs",
+      "fingerrings": "Bagues",
+      "mangalsutra": "Mangalsutra",
+      "chains": "Chaînes",
+      "nosepins": "Clous de nez",
+      "necklaces": "Colliers",
+      "necklacesets": "Parures de colliers",
+      "bangles": "Bracelets rigides",
+      "bracelets": "Bracelets",
+      "pendant&earringsets": "Parures pendentif et boucles",
+      "allgold": "Tout en or",
+      "goldbangles": "Bracelets rigides en or",
+      "goldbracelets": "Bracelets en or",
+      "goldearrings": "Boucles d'oreilles en or",
+      "goldchains": "Chaînes en or",
+      "goldpendants": "Pendentifs en or",
+      "goldrings": "Bagues en or",
+      "goldengagementrings": "Bagues de fiançailles en or",
+      "goldnecklaces": "Colliers en or",
+      "goldnosepins": "Clous de nez en or",
+      "goldkadas": "Kadas en or",
+      "goldmangalsutras": "Mangalsutras en or",
+      "alldiamond": "Tout en diamant",
+      "diamondrings": "Bagues en diamant",
+      "diamondearrings": "Boucles d'oreilles en diamant",
+      "diamondpendants": "Pendentifs en diamant",
+      "diamondnecklaces": "Colliers en diamant",
+      "diamondbracelets": "Bracelets en diamant",
+      "diamondbangles": "Bracelets rigides en diamant",
+      "solitairerings": "Solitaires",
+      "tennisbracelets": "Bracelets tennis",
+      "drop&danglers": "Pendantes",
+      "hoop&huggies": "Créoles",
+      "jhumkas": "Jhumkas",
+      "studs&tops": "Puces d'oreilles",
+      "allrings": "Toutes les bagues",
+      "engagementrings": "Bagues de fiançailles",
+      "couplebands": "Alliances duo",
+      "cocktailrings": "Bagues cocktail",
+      "eternitybands": "Alliances éternité",
+      "statementrings": "Bagues imposantes",
+      "alldailywear": "Tout pour le quotidien",
+      "lightweightearrings": "Boucles d'oreilles légères",
+      "thinchains": "Chaînes fines",
+      "simplerings": "Bagues simples",
+      "delicatebracelets": "Bracelets délicats",
+      "studearrings": "Puces d'oreilles",
+      "allwedding": "Tout pour le mariage",
+      "bridalsets": "Parures de mariée",
+      "chokernecklaces": "Rras-de-cou",
+      "bridalbangles": "Bracelets de mariée",
+      "maangtikka": "Maang Tikka",
+      "bridalearrings": "Boucles d'oreilles de mariée",
+      "allgifts": "Tous les cadeaux",
+      "anniversarygifts": "Cadeaux d'anniversaire",
+      "birthdaygifts": "Cadeaux d'anniversaire de naissance",
+      "engagementgifts": "Cadeaux de fiançailles",
+      "festivegifts": "Cadeaux de fête",
+      "giftsunder₹10,000": "Cadeaux à moins de ₹10 000"
+    },
+    "banners": {
+      "all": {
+        "title": "Des bijoux pour chaque instant — Découvrez tout ici !",
+        "subtitle": "Plus de 14 000 modèles au choix"
+      },
+      "gold": {
+        "title": "Du classique au contemporain.",
+        "subtitle": "Explorez plus de 6 000 modèles magnifiques."
+      },
+      "diamond": {
+        "title": "Des diamants qui racontent votre histoire.",
+        "subtitle": "Plus de 3 000 modèles en diamant certifié."
+      },
+      "earrings": {
+        "title": "Des boucles d'oreilles pour vous — façonnées avec précision, conçues pour l'élégance.",
+        "subtitle": "Explorez plus de 3 500 styles magnifiques."
+      },
+      "rings": {
+        "title": "Des bagues qui en disent long.",
+        "subtitle": "Plus de 2 500 modèles pour chaque instant."
+      },
+      "daily": {
+        "title": "De l'éclat quotidien à la brillance extraordinaire.",
+        "subtitle": "Plus de 3 000 modèles vous attendent."
+      },
+      "wedding": {
+        "title": "Pour le jour le plus précieux de votre vie.",
+        "subtitle": "Découvrez notre trousseau de mariée."
+      },
+      "gifting": {
+        "title": "Offrez un moment de joie.",
+        "subtitle": "Collections de cadeaux sélectionnées."
+      }
+    },
+    "lifestyles": {
+      "all": {
+        "tagline": "L'élégance réinventée pour la femme moderne.",
+        "cta": "Explorer maintenant"
+      },
+      "gold": {
+        "tagline": "Chefs-d'œuvre en or finement façonnés à la main qui inspirent de nouveaux récits.",
+        "cta": "Explorer maintenant"
+      },
+      "diamond": {
+        "tagline": "Éclat singulier, charme infini.",
+        "cta": "Acheter maintenant"
+      },
+      "earrings": {
+        "tagline": "Éclat singulier, charme infini.",
+        "cta": "Acheter maintenant"
+      },
+      "rings": {
+        "tagline": "Une bague pour chaque promesse, chaque célébration.",
+        "cta": "Acheter maintenant"
+      },
+      "daily": {
+        "tagline": "Un style sans effort pour faire briller chaque jour.",
+        "cta": "Acheter maintenant"
+      },
+      "wedding": {
+        "tagline": "Parures de mariée majestueuses façonnées avec un savoir-faire patrimonial.",
+        "cta": "Découvrir Mariée"
+      },
+      "gifting": {
+        "tagline": "Marquez chaque instant dans l'or.",
+        "cta": "Découvrir Cadeaux"
+      }
+    },
+    "viewAll": "Voir tout"
+  },
+  "CategoryMenu": {
+    "title": "ACHETER PAR CATÉGORIE",
+    "subtitle": "Explorez nos collections sélectionnées",
+    "explore": "Explorer →",
+    "items": {
+      "rings": {
+        "title": "Bagues",
+        "subtitle": "Solitaires & Alliances"
+      },
+      "necklaces": {
+        "title": "Colliers",
+        "subtitle": "Rras-de-cou & Pendentifs"
+      },
+      "earrings": {
+        "title": "Boucles d'oreilles",
+        "subtitle": "Jhumkas & Puces"
+      },
+      "bracelets": {
+        "title": "Bracelets",
+        "subtitle": "Gourmettes & Chaînes"
+      }
+    }
+  },
+  "OccasionGrid": {
+    "title": "Acheter par occasion",
+    "moment": "Trouvez votre moment",
+    "browse": "Découvrir la collection →",
+    "items": {
+      "wedding": {
+        "name": "Mariage",
+        "desc": "Parures de mariée majestueuses",
+        "tagline": "Pour le jour le plus précieux"
+      },
+      "anniversary": {
+        "name": "Anniversaire",
+        "desc": "Célébrer les étapes de la vie",
+        "tagline": "Marquez chaque instant dans l'or"
+      },
+      "engagement": {
+        "name": "Fiançailles",
+        "desc": "Dévoiler de nouveaux départs",
+        "tagline": "Dites oui à l'éclat"
+      },
+      "dailywear": {
+        "name": "Usage quotidien",
+        "desc": "Éclat quotidien sans effort",
+        "tagline": "Le luxe pour tous les jours"
+      }
+    }
+  },
+  "VamikaShowcase": {
+    "title": "Le Lookbook",
+    "curated": "Sélectionné pour vous",
+    "bridal": {
+      "title": "Le Trousseau de Mariée",
+      "tagline": "Édition Mariage",
+      "desc": "Majestueuses parures de mariée façonnées à la main pour le jour le plus précieux de votre vie.",
+      "cta": "Découvrir Mariée →"
+    },
+    "diamond": {
+      "title": "Essentiels en Diamant",
+      "tagline": "Tendances",
+      "desc": "Éclat singulier, charme infini.",
+      "cta": "Acheter maintenant →"
+    },
+    "gold": {
+      "title": "Traditions en Or",
+      "tagline": "Patrimoine",
+      "desc": "Chefs-d'œuvre en or finement façonnés à la main.",
+      "cta": "Découvrir →"
+    }
+  },
+  "Newsletter": {
+    "stayConnected": "Restez connecté",
+    "joinCircle": "Rejoignez le cercle {brand}",
+    "description": "Soyez le premier à découvrir nos nouvelles collections, recevez des offres exclusives et des invitations à nos événements privés.",
+    "emailPlaceholder": "Entrez votre adresse e-mail",
+    "subscribeButton": "S'abonner maintenant",
+    "policyNotice": "En vous abonnant, vous acceptez notre",
+    "privacyPolicy": "politique de confidentialité"
+  },
+  "TrustBanner": {
+    "commitment": "Notre engagement",
+    "promise": "La promesse {brand}",
+    "items": {
+      "certified": {
+        "title": "100% certifié",
+        "desc": "Chaque diamant et pierre précieuse est certifié par les plus grands laboratoires de gemmologie."
+      },
+      "gold": {
+        "title": "Or poinçonné",
+        "desc": "Utilisation exclusive d'or pur poinçonné BIS pour garantir l'authenticité et la valeur de revente."
+      },
+      "returns": {
+        "title": "Retours sous 30 jours",
+        "desc": "Profitez d'une tranquillité d'esprit totale grâce à notre politique de retour et d'échange simplifiée."
+      },
+      "checkout": {
+        "title": "Paiement sécurisé",
+        "desc": "Intégration de paiement crypté pour protéger la confidentialité des transactions."
+      }
+    }
+  },
+  "Footer": {
+    "description": "Joaillerie de luxe exquise façonnée avec précision, passion et perfection depuis 2024.",
+    "columns": {
+      "sale": {
+        "title": "Ventes",
+        "items": {
+          "discounts": "Remises",
+          "news": "Actualités",
+          "registerDiscounts": "Remises d'inscription"
+        }
+      },
+      "about": {
+        "title": "À propos",
+        "items": {
+          "aboutBrand": "À propos de Vamika Jewels",
+          "workWithUs": "Travaillez avec nous",
+          "companyProfile": "Profil de l'entreprise"
+        }
+      },
+      "buying": {
+        "title": "Achat",
+        "items": {
+          "loyaltyCard": "Carte de fidélité Vamika Jewels",
+          "termsOfUse": "Conditions d'utilisation",
+          "privacyPolicy": "Politique de confidentialité",
+          "complaints": "Réclamations",
+          "partners": "Partenaires"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "items": {
+          "contact": "Contact",
+          "howToBuy": "Comment acheter chez Vamika Jewels",
+          "faq": "FAQ"
+        }
+      }
+    },
+    "copyright": "© {year} {brand}. Tous droits réservés.",
+    "tagline": "Conçu pour l'excellence"
+  }
+}

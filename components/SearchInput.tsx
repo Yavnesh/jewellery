@@ -13,9 +13,12 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { sanitize } from "@/lib/sanitize";
 
+import { useTranslations } from "next-intl";
+
 const SearchInput = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const router = useRouter();
+  const t = useTranslations("Header");
 
   // function for modifying URL for searching products
   const searchProducts = (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,11 +35,11 @@ const SearchInput = () => {
         type="text"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
-        placeholder="Search fine jewelry..."
+        placeholder={t("searchPlaceholder")}
         className="bg-luxury-ivory text-luxury-text-primary border border-luxury-border border-r-0 w-[70%] px-4 py-2 rounded-l focus:outline-none focus:border-luxury-gold max-sm:w-full font-sans text-sm transition-colors duration-200"
       />
       <button type="submit" className="bg-luxury-text-primary text-white border border-luxury-text-primary px-6 py-2 rounded-r hover:bg-luxury-gold hover:border-luxury-gold transition-colors duration-300 font-sans text-sm tracking-wider uppercase">
-        Search
+        {t("searchButton")}
       </button>
     </form>
   );

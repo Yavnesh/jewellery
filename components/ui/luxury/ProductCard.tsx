@@ -9,6 +9,10 @@ import { trackEvent } from "@/lib/analytics/events";
 import { WishlistPopup } from "./WishlistPopup";
 import { getImagePath } from "@/lib/utils";
 
+import { useWishlistStore } from "@/app/_zustand/wishlistStore";
+import toast from "react-hot-toast";
+import apiClient from "@/lib/api";
+
 interface ProductCardProps {
   product: {
     id: string;
@@ -29,19 +33,44 @@ interface ProductCardProps {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { data: session } = useSession();
   const [isWishlistPopupOpen, setIsWishlistPopupOpen] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { wishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const isWishlisted = wishlist.some((item) => item.id === product.id);
   
   // Format image path
   const imageSrc = getImagePath(product.mainImage);
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
+  const handleWishlistClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (!session) {
       setIsWishlistPopupOpen(true);
     } else {
-      setIsWishlisted(!isWishlisted);
+      const userId = (session.user as any).id;
+      if (isWishlisted) {
+        removeFromWishlist(product.id);
+        toast.success("Removed from wishlist");
+        try {
+          await apiClient.delete(`/api/wishlist/${userId}?productId=${product.id}`);
+        } catch (err) {
+          console.error("Failed to sync wishlist deletion to db:", err);
+        }
+      } else {
+        addToWishlist({
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.mainImage,
+          slug: product.slug,
+          stockAvailabillity: product.inStock || 5,
+        });
+        toast.success("Added to wishlist");
+        try {
+          await apiClient.post(`/api/wishlist/${userId}`, { productId: product.id });
+        } catch (err) {
+          console.error("Failed to sync wishlist addition to db:", err);
+        }
+      }
     }
   };
 

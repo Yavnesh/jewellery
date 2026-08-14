@@ -1,0 +1,377 @@
+{
+  "Header": {
+    "searchPlaceholder": "Search fine jewelry...",
+    "searchButton": "Search",
+    "allJewellery": "All Jewellery",
+    "gold": "Gold",
+    "diamond": "Diamond",
+    "earrings": "Earrings",
+    "rings": "Rings",
+    "dailyWear": "Daily Wear",
+    "wedding": "Wedding",
+    "gifting": "Gifting",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Log out"
+  },
+  "Wishlist": {
+    "title": "My Wishlist",
+    "empty": "Your wishlist is currently empty.",
+    "noItems": "No items found in the wishlist",
+    "table": {
+      "image": "Image",
+      "name": "Name",
+      "stockStatus": "Stock Status",
+      "action": "Action"
+    },
+    "addToCart": "Add to Cart",
+    "adding": "Adding...",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "Filters": {
+    "title": "Filters",
+    "clearAll": "Clear All",
+    "activeOptions": "Active Options",
+    "priceRange": "Price Range",
+    "minPrice": "Min Price (₹)",
+    "maxPrice": "Max Price (₹)",
+    "sort": "Sort",
+    "sortBy": "Sort By",
+    "defaultSort": "Default",
+    "priceLowHigh": "Price: Low to High",
+    "priceHighLow": "Price: High to Low"
+  },
+  "Hero": {
+    "viewAll": "View All",
+    "slide1": {
+      "title": "The Bridal Essence",
+      "subtitle": "Wedding Collection",
+      "description": "Unveil our exquisite collection of hand-crafted bridal sets, designed to make your special day eternal.",
+      "ctaText": "Explore Bridal"
+    },
+    "slide2": {
+      "title": "Timeless Gold",
+      "subtitle": "Signature Collection",
+      "description": "Indulge in the timeless elegance of masterfully crafted gold jewelry, designed to be treasured for generations.",
+      "ctaText": "Shop Now"
+    },
+    "slide3": {
+      "title": "Everyday Radiance",
+      "subtitle": "Daily Wear",
+      "description": "Lightweight, elegant pieces curated for the modern woman — luxury you can wear every day.",
+      "ctaText": "Explore Daily Wear"
+    }
+  },
+  "Introducing": {
+    "since": "Since 2024",
+    "welcome": "WELCOME TO",
+    "description": "Where timeless elegance meets master craftsmanship. Every piece in our collection is a testament to the art of fine jewelry making — designed to be treasured, worn, and passed down through generations.",
+    "cta": "EXPLORE COLLECTIONS"
+  },
+  "Product": {
+    "viewProduct": "View Product"
+  },
+  "Header": {
+    "collections": "Collections",
+    "allJewellery": "All Jewellery",
+    "gold": "Gold",
+    "diamond": "Diamond",
+    "rings": "Rings",
+    "earrings": "Earrings",
+    "necklaces": "Necklaces & Chains",
+    "user": "User",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "searchPlaceholder": "Search fine jewelry...",
+    "searchButton": "Search",
+    "daily": "Daily Wear",
+    "wedding": "Wedding",
+    "gifting": "Gifting"
+  },
+  "MegaMenu": {
+    "filters": {
+      "category": "Category",
+      "price": "Price",
+      "occasion": "Occasion",
+      "gender": "Gender"
+    },
+    "subcategories": {
+      "alljewellery": "All Jewellery",
+      "earrings": "Earrings",
+      "pendants": "Pendants",
+      "fingerrings": "Finger Rings",
+      "mangalsutra": "Mangalsutra",
+      "chains": "Chains",
+      "nosepins": "Nose Pins",
+      "necklaces": "Necklaces",
+      "necklacesets": "Necklace Sets",
+      "bangles": "Bangles",
+      "bracelets": "Bracelets",
+      "pendant&earringsets": "Pendant & Earring Sets",
+      "allgold": "All Gold",
+      "goldbangles": "Gold Bangles",
+      "goldbracelets": "Gold Bracelets",
+      "goldearrings": "Gold Earrings",
+      "goldchains": "Gold Chains",
+      "goldpendants": "Gold Pendants",
+      "goldrings": "Gold Rings",
+      "goldengagementrings": "Gold Engagement Rings",
+      "goldnecklaces": "Gold Necklaces",
+      "goldnosepins": "Gold Nose Pins",
+      "goldkadas": "Gold Kadas",
+      "goldmangalsutras": "Gold Mangalsutras",
+      "alldiamond": "All Diamond",
+      "diamondrings": "Diamond Rings",
+      "diamondearrings": "Diamond Earrings",
+      "diamondpendants": "Diamond Pendants",
+      "diamondnecklaces": "Diamond Necklaces",
+      "diamondbracelets": "Diamond Bracelets",
+      "diamondbangles": "Diamond Bangles",
+      "solitairerings": "Solitaire Rings",
+      "tennisbracelets": "Tennis Bracelets",
+      "drop&danglers": "Drop & Danglers",
+      "hoop&huggies": "Hoop & Huggies",
+      "jhumkas": "Jhumkas",
+      "studs&tops": "Studs & Tops",
+      "allrings": "All Rings",
+      "engagementrings": "Engagement Rings",
+      "couplebands": "Couple Bands",
+      "cocktailrings": "Cocktail Rings",
+      "eternitybands": "Eternity Bands",
+      "statementrings": "Statement Rings",
+      "alldailywear": "All Daily Wear",
+      "lightweightearrings": "Lightweight Earrings",
+      "thinchains": "Thin Chains",
+      "simplerings": "Simple Rings",
+      "delicatebracelets": "Delicate Bracelets",
+      "studearrings": "Stud Earrings",
+      "allwedding": "All Wedding",
+      "bridalsets": "Bridal Sets",
+      "chokernecklaces": "Choker Necklaces",
+      "bridalbangles": "Bridal Bangles",
+      "maangtikka": "Maang Tikka",
+      "bridalearrings": "Bridal Earrings",
+      "allgifts": "All Gifts",
+      "anniversarygifts": "Anniversary Gifts",
+      "birthdaygifts": "Birthday Gifts",
+      "engagementgifts": "Engagement Gifts",
+      "festivegifts": "Festive Gifts",
+      "giftsunder₹10,000": "Gifts Under ₹10,000"
+    },
+    "banners": {
+      "all": {
+        "title": "Jewellery for Every Moment — See It All Here!",
+        "subtitle": "14,000+ designs to choose from"
+      },
+      "gold": {
+        "title": "From Classic to Contemporary.",
+        "subtitle": "Explore 6000+ Stunning Designs."
+      },
+      "diamond": {
+        "title": "Diamonds that Tell Your Story.",
+        "subtitle": "3000+ certified diamond designs."
+      },
+      "earrings": {
+        "title": "Earrings for You — Crafted with Precision, Designed for Elegance.",
+        "subtitle": "Explore 3500+ Stunning Styles."
+      },
+      "rings": {
+        "title": "Rings That Speak Volumes.",
+        "subtitle": "2500+ designs for every moment."
+      },
+      "daily": {
+        "title": "From Everyday Glow to Extraordinary Sparkle.",
+        "subtitle": "3000+ Designs Await."
+      },
+      "wedding": {
+        "title": "For the Most Precious Day of Your Life.",
+        "subtitle": "Explore our bridal trousseau."
+      },
+      "gifting": {
+        "title": "Gift a Moment of Joy.",
+        "subtitle": "Curated gifting collections."
+      }
+    },
+    "lifestyles": {
+      "all": {
+        "tagline": "Elegance redefined for the modern woman.",
+        "cta": "Explore Now"
+      },
+      "gold": {
+        "tagline": "Intricately handcrafted gold masterpieces that inspire new narratives.",
+        "cta": "Explore Now"
+      },
+      "diamond": {
+        "tagline": "Singular brilliance, infinite charm.",
+        "cta": "Shop Now"
+      },
+      "earrings": {
+        "tagline": "Singular brilliance, infinite charm.",
+        "cta": "Shop Now"
+      },
+      "rings": {
+        "tagline": "A ring for every promise, every celebration.",
+        "cta": "Shop Now"
+      },
+      "daily": {
+        "tagline": "Effortless style to make everyday sparkle.",
+        "cta": "Shop Now"
+      },
+      "wedding": {
+        "tagline": "Grand bridal ornaments handcrafted with heritage artistry.",
+        "cta": "Explore Bridal"
+      },
+      "gifting": {
+        "tagline": "Mark every moment in gold.",
+        "cta": "Explore Gifts"
+      }
+    },
+    "viewAll": "View All"
+  },
+  "CategoryMenu": {
+    "title": "SHOP BY CATEGORY",
+    "subtitle": "Explore our curated collections",
+    "explore": "Explore →",
+    "items": {
+      "rings": {
+        "title": "Rings",
+        "subtitle": "Solitaires & Bands"
+      },
+      "necklaces": {
+        "title": "Necklaces",
+        "subtitle": "Chokers & Pendants"
+      },
+      "earrings": {
+        "title": "Earrings",
+        "subtitle": "Jhumkas & Studs"
+      },
+      "bracelets": {
+        "title": "Bracelets",
+        "subtitle": "Bangles & Chains"
+      }
+    }
+  },
+  "OccasionGrid": {
+    "title": "Shop by Occasion",
+    "moment": "Find Your Moment",
+    "browse": "Browse Collection →",
+    "items": {
+      "wedding": {
+        "name": "Wedding",
+        "desc": "Grand Bridal Ornaments",
+        "tagline": "For the most precious day"
+      },
+      "anniversary": {
+        "name": "Anniversary",
+        "desc": "Celebrate Milestones",
+        "tagline": "Mark every moment in gold"
+      },
+      "engagement": {
+        "name": "Engagement",
+        "desc": "Unveil New Beginnings",
+        "tagline": "Say yes to brilliance"
+      },
+      "dailywear": {
+        "name": "Daily Wear",
+        "desc": "Effortless Everyday Sparkle",
+        "tagline": "Luxury for every day"
+      }
+    }
+  },
+  "VamikaShowcase": {
+    "title": "The Lookbook",
+    "curated": "Curated For You",
+    "bridal": {
+      "title": "The Bridal Trousseau",
+      "tagline": "Wedding Edit",
+      "desc": "Grand bridal sets handcrafted with heritage artistry for the most precious day of your life.",
+      "cta": "Explore Bridal →"
+    },
+    "diamond": {
+      "title": "Diamond Essentials",
+      "tagline": "Trending",
+      "desc": "Singular brilliance, infinite charm.",
+      "cta": "Shop Now →"
+    },
+    "gold": {
+      "title": "Gold Traditions",
+      "tagline": "Heritage",
+      "desc": "Intricately handcrafted gold masterpieces.",
+      "cta": "Discover →"
+    }
+  },
+  "Newsletter": {
+    "stayConnected": "Stay Connected",
+    "joinCircle": "Join the {brand} Circle",
+    "description": "Be the first to discover new collections, receive exclusive offers, and get invited to our private events. Join our community of jewelry connoisseurs.",
+    "emailPlaceholder": "Enter your email address",
+    "subscribeButton": "Subscribe Now",
+    "policyNotice": "By subscribing, you agree to our",
+    "privacyPolicy": "privacy policy"
+  },
+  "TrustBanner": {
+    "commitment": "Our Commitment",
+    "promise": "The {brand} Promise",
+    "items": {
+      "certified": {
+        "title": "100% Certified",
+        "desc": "Every diamond and gemstone is certified by leading international gemological laboratories."
+      },
+      "gold": {
+        "title": "Hallmarked Gold",
+        "desc": "Strictly using BIS hallmarked pure gold to ensure absolute authenticity and resale value."
+      },
+      "returns": {
+        "title": "30-Day Returns",
+        "desc": "Enjoy complete peace of mind with our hassle-free return and exchange policy."
+      },
+      "checkout": {
+        "title": "Secure Checkout",
+        "desc": "Encrypted checkout integration to protect transaction privacy and credentials."
+      }
+    }
+  },
+  "Footer": {
+    "description": "Exquisite luxury jewellery crafted with precision, passion, and perfection since 2024.",
+    "columns": {
+      "sale": {
+        "title": "Sale",
+        "items": {
+          "discounts": "Discounts",
+          "news": "News",
+          "registerDiscounts": "Register Discounts"
+        }
+      },
+      "about": {
+        "title": "About Us",
+        "items": {
+          "aboutBrand": "About Vamika Jewels",
+          "workWithUs": "Work With Us",
+          "companyProfile": "Company Profile"
+        }
+      },
+      "buying": {
+        "title": "Buying",
+        "items": {
+          "loyaltyCard": "Vamika Jewels Loyalty Card",
+          "termsOfUse": "Terms Of Use",
+          "privacyPolicy": "Privacy Policy",
+          "complaints": "Complaints",
+          "partners": "Partners"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "items": {
+          "contact": "Contact",
+          "howToBuy": "How to Buy at Vamika Jewels",
+          "faq": "FAQ"
+        }
+      }
+    },
+    "copyright": "© {year} {brand}. All rights reserved.",
+    "tagline": "Designed for excellence"
+  }
+}

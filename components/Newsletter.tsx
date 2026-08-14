@@ -6,8 +6,11 @@
 import React from 'react'
 import Image from 'next/image'
 import { BRAND_NAME } from "@/utils/brand";
+import { useTranslations } from 'next-intl'
 
 const Newsletter = () => {
+  const t = useTranslations("Newsletter");
+
   return (
     <div className="relative py-24 overflow-hidden">
       {/* Background image */}
@@ -25,14 +28,14 @@ const Newsletter = () => {
         {/* Left — brand text */}
         <div>
           <span className="text-vamika-gold-light uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
-            Stay Connected
+            {t("stayConnected")}
           </span>
           <h2 className="text-3xl lg:text-4xl font-serif font-light text-white uppercase tracking-wider mt-3 leading-tight">
-            Join the {BRAND_NAME} Circle
+            {t("joinCircle", { brand: BRAND_NAME })}
           </h2>
           <div className="w-12 h-px bg-vamika-gold-light/50 mt-5 mb-5" />
           <p className="text-sm text-stone-300 font-sans leading-relaxed max-w-md">
-            Be the first to discover new collections, receive exclusive offers, and get invited to our private events. Join our community of jewelry connoisseurs.
+            {t("description")}
           </p>
         </div>
         
@@ -47,21 +50,21 @@ const Newsletter = () => {
                 autoComplete="email"
                 required
                 className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-sm px-5 py-4 text-white placeholder:text-white/40 focus:outline-none focus:border-vamika-gold-light focus:ring-1 focus:ring-vamika-gold-light/30 text-sm font-sans transition-all duration-300"
-                placeholder="Enter your email address"
+                placeholder={t("emailPlaceholder")}
               />
               <button
                 type="submit"
                 className="bg-vamika-gold-light text-vamika-charcoal px-8 py-4 text-xs font-semibold uppercase tracking-widest rounded-sm hover:bg-white transition-all duration-300 shadow-lg"
               >
-                Subscribe Now
+                {t("subscribeButton")}
               </button>
             </div>
             <p className="mt-4 text-[10px] leading-5 text-stone-400 font-sans">
-              By subscribing, you agree to our{' '}
+              {t("policyNotice")}{' '}
               <a href="#" className="font-semibold text-vamika-gold-light/80 hover:text-vamika-gold-light transition-colors">
-                privacy&nbsp;policy
+                {t("privacyPolicy")}
               </a>
-              . Unsubscribe at any time.
+              .
             </p>
           </form>
         </div>

@@ -4,45 +4,48 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const slides = [
-  {
-    id: 1,
-    title: "The Bridal Essence",
-    subtitle: "Wedding Collection",
-    description: "Unveil our exquisite collection of hand-crafted bridal sets, designed to make your special day eternal.",
-    image: "/bridal-occasion.png",
-    ctaText: "Explore Bridal",
-    ctaLink: "/shop?occasion=Wedding",
-  },
-  {
-    id: 2,
-    title: "Timeless Gold",
-    subtitle: "Signature Collection",
-    description: "Indulge in the timeless elegance of masterfully crafted gold jewelry, designed to be treasured for generations.",
-    image: "/hero-banner.png",
-    ctaText: "Shop Now",
-    ctaLink: "/shop",
-  },
-  {
-    id: 3,
-    title: "Everyday Radiance",
-    subtitle: "Daily Wear",
-    description: "Lightweight, elegant pieces curated for the modern woman — luxury you can wear every day.",
-    image: "/daily-wear-lifestyle.png",
-    ctaText: "Explore Daily Wear",
-    ctaLink: "/shop?occasion=Daily+Wear",
-  }
-];
+import { useTranslations } from "next-intl";
 
 const Hero = () => {
+  const t = useTranslations("Hero");
   const [current, setCurrent] = useState(0);
+
+  const slides = [
+    {
+      id: 1,
+      title: t("slide1.title"),
+      subtitle: t("slide1.subtitle"),
+      description: t("slide1.description"),
+      image: "/bridal-occasion.png",
+      ctaText: t("slide1.ctaText"),
+      ctaLink: "/shop?occasion=Wedding",
+    },
+    {
+      id: 2,
+      title: t("slide2.title"),
+      subtitle: t("slide2.subtitle"),
+      description: t("slide2.description"),
+      image: "/hero-banner.png",
+      ctaText: t("slide2.ctaText"),
+      ctaLink: "/shop",
+    },
+    {
+      id: 3,
+      title: t("slide3.title"),
+      subtitle: t("slide3.subtitle"),
+      description: t("slide3.description"),
+      image: "/daily-wear-lifestyle.png",
+      ctaText: t("slide3.ctaText"),
+      ctaLink: "/shop?occasion=Daily+Wear",
+    }
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <div className="relative w-full h-[85vh] min-h-[550px] max-h-[750px] overflow-hidden">
@@ -92,7 +95,7 @@ const Hero = () => {
                     href="/shop"
                     className="inline-block bg-transparent text-white border border-white/40 tracking-widest px-10 py-4 hover:bg-white/10 hover:border-white/70 transition-all duration-300 uppercase text-xs font-semibold rounded-sm backdrop-blur-sm"
                   >
-                    View All
+                    {t("viewAll")}
                   </Link>
                 </div>
               </div>

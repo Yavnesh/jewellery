@@ -1,0 +1,377 @@
+{
+  "Header": {
+    "searchPlaceholder": "Feinen Schmuck suchen...",
+    "searchButton": "Suchen",
+    "allJewellery": "Schmuck",
+    "gold": "Gold",
+    "diamond": "Diamant",
+    "earrings": "Ohrringe",
+    "rings": "Ringe",
+    "dailyWear": "Täglicher Bedarf",
+    "wedding": "Hochzeit",
+    "gifting": "Geschenke",
+    "login": "Einloggen",
+    "register": "Registrieren",
+    "logout": "Ausloggen"
+  },
+  "Wishlist": {
+    "title": "Mein Wunschzettel",
+    "empty": "Ihr Wunschzettel ist derzeit leer.",
+    "noItems": "Keine Artikel auf dem Wunschzettel gefunden",
+    "table": {
+      "image": "Bild",
+      "name": "Name",
+      "stockStatus": "Lagerbestand",
+      "action": "Aktion"
+    },
+    "addToCart": "In den Warenkorb",
+    "adding": "Wird hinzugefügt...",
+    "inStock": "Auf Lager",
+    "outOfStock": "Nicht vorrätig"
+  },
+  "Filters": {
+    "title": "Filter",
+    "clearAll": "Alle löschen",
+    "activeOptions": "Aktive Optionen",
+    "priceRange": "Preisspanne",
+    "minPrice": "Mindestpreis (₹)",
+    "maxPrice": "Höchstpreis (₹)",
+    "sort": "Sortieren",
+    "sortBy": "Sortieren nach",
+    "defaultSort": "Standard",
+    "priceLowHigh": "Preis: Aufsteigend",
+    "priceHighLow": "Preis: Absteigend"
+  },
+  "Hero": {
+    "viewAll": "Alle ansehen",
+    "slide1": {
+      "title": "Die Brautessenz",
+      "subtitle": "Hochzeitskollektion",
+      "description": "Enthüllen Sie unsere exquisite Kollektion handgefertigter Brautsets, die Ihren besonderen Tag ewig machen sollen.",
+      "ctaText": "Brautkollektion erkunden"
+    },
+    "slide2": {
+      "title": "Zeitloses Gold",
+      "subtitle": "Signatur-Kollektion",
+      "description": "Gönnen Sie sich die zeitlose Eleganz von meisterhaft gefertigtem Goldschmuck, der über Generationen hinweg geschätzt werden soll.",
+      "ctaText": "Jetzt einkaufen"
+    },
+    "slide3": {
+      "title": "Tägliches Strahlen",
+      "subtitle": "Täglicher Bedarf",
+      "description": "Leichte, elegante Stücke, kuratiert für die moderne Frau – Luxus, den Sie jeden Tag tragen können.",
+      "ctaText": "Täglichen Bedarf erkunden"
+    }
+  },
+  "Introducing": {
+    "since": "Seit 2024",
+    "welcome": "WILLKOMMEN BEI",
+    "description": "Wo zeitlose Eleganz auf meisterhafte Handwerkskunst trifft. Jedes Stück in unserer Kollektion ist ein Beweis für die Kunst der feinen Schmuckherstellung – entworfen, um geschätzt, getragen und über Generationen hinweg weitergegeben zu werden.",
+    "cta": "KOLLEKTIONEN ERKUNDEN"
+  },
+  "Product": {
+    "viewProduct": "Produkt anzeigen"
+  },
+  "Header": {
+    "collections": "Kollektionen",
+    "allJewellery": "Alle Schmuckstücke",
+    "gold": "Gold",
+    "diamond": "Diamant",
+    "rings": "Ringe",
+    "earrings": "Ohrringe",
+    "necklaces": "Halsketten & Ketten",
+    "user": "Benutzer",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "searchPlaceholder": "Feinen Schmuck suchen...",
+    "searchButton": "Suchen",
+    "daily": "Täglicher Bedarf",
+    "wedding": "Hochzeit",
+    "gifting": "Geschenke"
+  },
+  "MegaMenu": {
+    "filters": {
+      "category": "Kategorie",
+      "price": "Preis",
+      "occasion": "Anlass",
+      "gender": "Geschlecht"
+    },
+    "subcategories": {
+      "alljewellery": "Alle Schmuckstücke",
+      "earrings": "Ohrringe",
+      "pendants": "Anhänger",
+      "fingerrings": "Fingerringe",
+      "mangalsutra": "Mangalsutra",
+      "chains": "Ketten",
+      "nosepins": "Nasenstecker",
+      "necklaces": "Halsketten",
+      "necklacesets": "Halskettensets",
+      "bangles": "Armreifen",
+      "bracelets": "Armbänder",
+      "pendant&earringsets": "Anhänger- & Ohrring-Sets",
+      "allgold": "Alles aus Gold",
+      "goldbangles": "Goldarmreifen",
+      "goldbracelets": "Goldarmbänder",
+      "goldearrings": "Goldohrringe",
+      "goldchains": "Goldketten",
+      "goldpendants": "Goldanhänger",
+      "goldrings": "Goldringe",
+      "goldengagementrings": "Gold-Verlobungsringe",
+      "goldnecklaces": "Goldhalsketten",
+      "goldnosepins": "Goldnasenstecker",
+      "goldkadas": "Goldkadas",
+      "goldmangalsutras": "Goldmangalsutras",
+      "alldiamond": "Alles aus Diamant",
+      "diamondrings": "Diamantringe",
+      "diamondearrings": "Diamantohrringe",
+      "diamondpendants": "Diamantanhänger",
+      "diamondnecklaces": "Diamanthalsketten",
+      "diamondbracelets": "Diamantarmbänder",
+      "diamondbangles": "Diamantarmreifen",
+      "solitairerings": "Solitärringe",
+      "tennisbracelets": "Tennisarmbänder",
+      "drop&danglers": "Hängeohrringe",
+      "hoop&huggies": "Creolen",
+      "jhumkas": "Jhumkas",
+      "studs&tops": "Ohrstecker",
+      "allrings": "Alle Ringe",
+      "engagementrings": "Verlobungsringe",
+      "couplebands": "Partnerringe",
+      "cocktailrings": "Cocktailringe",
+      "eternitybands": "Eternity-Ringe",
+      "statementrings": "Statement-Ringe",
+      "alldailywear": "Alles für den Alltag",
+      "lightweightearrings": "Leichte Ohrringe",
+      "thinchains": "Dünne Ketten",
+      "simplerings": "Einfache Ringe",
+      "delicatebracelets": "Filigrane Armbänder",
+      "studearrings": "Ohrstecker",
+      "allwedding": "Alles für die Hochzeit",
+      "bridalsets": "Brautsets",
+      "chokernecklaces": "Choker-Ketten",
+      "bridalbangles": "Brautarmreifen",
+      "maangtikka": "Maang Tikka",
+      "bridalearrings": "Brautohrringe",
+      "allgifts": "Alle Geschenke",
+      "anniversarygifts": "Jubiläumsgeschenke",
+      "birthdaygifts": "Geburtstagsgeschenke",
+      "engagementgifts": "Verlobungsgeschenke",
+      "festivegifts": "Festtagsgeschenke",
+      "giftsunder₹10,000": "Geschenke unter ₹10.000"
+    },
+    "banners": {
+      "all": {
+        "title": "Schmuck für jeden Moment — Sehen Sie alles hier!",
+        "subtitle": "Über 14.000 Designs zur Auswahl"
+      },
+      "gold": {
+        "title": "Von klassisch bis modern.",
+        "subtitle": "Entdecken Sie über 6.000 atemberaubende Designs."
+      },
+      "diamond": {
+        "title": "Diamanten, die Ihre Geschichte erzählen.",
+        "subtitle": "Über 3.000 zertifizierte Diamantdesigns."
+      },
+      "earrings": {
+        "title": "Ohrringe für Sie — mit Präzision gefertigt, auf Eleganz ausgelegt.",
+        "subtitle": "Entdecken Sie über 3.500 atemberaubende Stile."
+      },
+      "rings": {
+        "title": "Ringe, die Bände sprechen.",
+        "subtitle": "Über 2.500 Designs für jeden Moment."
+      },
+      "daily": {
+        "title": "Vom alltäglichen Glanz bis zum außergewöhnlichen Funkeln.",
+        "subtitle": "Über 3.000 Designs warten auf Sie."
+      },
+      "wedding": {
+        "title": "Für den wertvollsten Tag in Ihrem Leben.",
+        "subtitle": "Entdecken Sie unsere Brautkollektion."
+      },
+      "gifting": {
+        "title": "Schenken Sie einen Moment der Freude.",
+        "subtitle": "Kuratierte Geschenk-Kollektionen."
+      }
+    },
+    "lifestyles": {
+      "all": {
+        "tagline": "Eleganz neu definiert für die moderne Frau.",
+        "cta": "Jetzt entdecken"
+      },
+      "gold": {
+        "tagline": "Kunstvoll handgefertigte Gold-Meisterwerke, die neue Geschichten inspirieren.",
+        "cta": "Jetzt entdecken"
+      },
+      "diamond": {
+        "tagline": "Einzigartige Brillanz, unendlicher Charme.",
+        "cta": "Jetzt shoppen"
+      },
+      "earrings": {
+        "tagline": "Einzigartige Brillanz, unendlicher Charme.",
+        "cta": "Jetzt shoppen"
+      },
+      "rings": {
+        "tagline": "Ein Ring für jedes Versprechen, jede Feier.",
+        "cta": "Jetzt shoppen"
+      },
+      "daily": {
+        "tagline": "Müheloser Stil, der den Alltag erstrahlen lässt.",
+        "cta": "Jetzt shoppen"
+      },
+      "wedding": {
+        "tagline": "Prachtvoller Brautschmuck, handgefertigt mit traditioneller Kunstfertigkeit.",
+        "cta": "Brautkollektion entdecken"
+      },
+      "gifting": {
+        "tagline": "Markieren Sie jeden Moment in Gold.",
+        "cta": "Geschenke entdecken"
+      }
+    },
+    "viewAll": "Alle ansehen"
+  },
+  "CategoryMenu": {
+    "title": "NACH KATEGORIE SHOPPEN",
+    "subtitle": "Entdecken Sie unsere kuratierten Kollektionen",
+    "explore": "Entdecken →",
+    "items": {
+      "rings": {
+        "title": "Ringe",
+        "subtitle": "Solitäre & Bänder"
+      },
+      "necklaces": {
+        "title": "Halsketten",
+        "subtitle": "Choker & Anhänger"
+      },
+      "earrings": {
+        "title": "Ohrringe",
+        "subtitle": "Jhumkas & Stecker"
+      },
+      "bracelets": {
+        "title": "Armbänder",
+        "subtitle": "Armreifen & Ketten"
+      }
+    }
+  },
+  "OccasionGrid": {
+    "title": "Nach Anlass shoppen",
+    "moment": "Finden Sie Ihren Moment",
+    "browse": "Kollektion durchsuchen →",
+    "items": {
+      "wedding": {
+        "name": "Hochzeit",
+        "desc": "Prachtvoller Brautschmuck",
+        "tagline": "Für den wertvollsten Tag"
+      },
+      "anniversary": {
+        "name": "Jubiläum",
+        "desc": "Meilensteine feiern",
+        "tagline": "Markieren Sie jeden Moment in Gold"
+      },
+      "engagement": {
+        "name": "Verlobung",
+        "desc": "Neue Anfänge enthüllen",
+        "tagline": "Sagen Sie Ja zur Brillanz"
+      },
+      "dailywear": {
+        "name": "Täglicher Bedarf",
+        "desc": "Müheloses tägliches Funkeln",
+        "tagline": "Luxus für jeden Tag"
+      }
+    }
+  },
+  "VamikaShowcase": {
+    "title": "Das Lookbook",
+    "curated": "Für Sie kuratiert",
+    "bridal": {
+      "title": "Die Brautausstattung",
+      "tagline": "Hochzeits-Edit",
+      "desc": "Prachtvolle Brautsets, handgefertigt mit traditioneller Kunstfertigkeit für den wertvollsten Tag in Ihrem Leben.",
+      "cta": "Brautkollektion entdecken →"
+    },
+    "diamond": {
+      "title": "Diamant-Essentials",
+      "tagline": "Trends",
+      "desc": "Einzigartige Brillanz, unendlicher Charme.",
+      "cta": "Jetzt shoppen →"
+    },
+    "gold": {
+      "title": "Gold-Traditionen",
+      "tagline": "Erbe",
+      "desc": "Kunstvoll handgefertigte Gold-Meisterwerke.",
+      "cta": "Entdecken →"
+    }
+  },
+  "Newsletter": {
+    "stayConnected": "Bleiben Sie in Verbindung",
+    "joinCircle": "Werden Sie Teil des {brand}-Kreises",
+    "description": "Erfahren Sie als Erster von neuen Kollektionen, erhalten Sie exklusive Angebote und Einladungen zu unseren privaten Events.",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail-Adresse ein",
+    "subscribeButton": "Jetzt abonnieren",
+    "policyNotice": "Mit dem Abonnieren stimmen Sie unserer",
+    "privacyPolicy": "Datenschutzerklärung zu"
+  },
+  "TrustBanner": {
+    "commitment": "Unser Engagement",
+    "promise": "Das {brand}-Versprechen",
+    "items": {
+      "certified": {
+        "title": "100% Zertifiziert",
+        "desc": "Jeder Diamant und Edelstein ist von führenden internationalen gemmologischen Labors zertifiziert."
+      },
+      "gold": {
+        "title": "Punziertes Gold",
+        "desc": "Ausschließliche Verwendung von BIS-punziertem Feingold, um absolute Echtheit und Wiederverkaufswert zu garantieren."
+      },
+      "returns": {
+        "title": "30 Tage Rückgaberecht",
+        "desc": "Genießen Sie absolute Sorgenfreiheit mit unseren unkomplizierten Rückgabe- und Umtauschrichtlinien."
+      },
+      "checkout": {
+        "title": "Sicherer Checkout",
+        "desc": "Verschlüsselte Checkout-Integration zum Schutz der Transaktionsprivatsphäre und der Anmeldedaten."
+      }
+    }
+  },
+  "Footer": {
+    "description": "Exquisiter Luxusschmuck, gefertigt mit Präzision, Leidenschaft und Perfektion seit 2024.",
+    "columns": {
+      "sale": {
+        "title": "Sale",
+        "items": {
+          "discounts": "Rabatte",
+          "news": "Neuigkeiten",
+          "registerDiscounts": "Registrierungsrabatte"
+        }
+      },
+      "about": {
+        "title": "Über uns",
+        "items": {
+          "aboutBrand": "Über Vamika Jewels",
+          "workWithUs": "Arbeiten Sie mit uns",
+          "companyProfile": "Unternehmensprofil"
+        }
+      },
+      "buying": {
+        "title": "Kaufberatung",
+        "items": {
+          "loyaltyCard": "Vamika Jewels Treuekarte",
+          "termsOfUse": "Nutzungsbedingungen",
+          "privacyPolicy": "Datenschutzerklärung",
+          "complaints": "Reklamationen",
+          "partners": "Partner"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "items": {
+          "contact": "Kontakt",
+          "howToBuy": "Wie man bei Vamika Jewels kauft",
+          "faq": "FAQ"
+        }
+      }
+    },
+    "copyright": "© {year} {brand}. Alle Rechte vorbehalten.",
+    "tagline": "Auf Exzellenz ausgelegt"
+  }
+}

@@ -62,6 +62,15 @@ export async function GET(request: Request) {
       return NextResponse.json(adminProducts);
     }
 
+    if (mode === "max-price") {
+      const maxPriceObj = await prisma.product.aggregate({
+        _max: {
+          price: true
+        }
+      });
+      return NextResponse.json({ maxPrice: maxPriceObj._max.price || 20000 });
+    }
+
     const page = Number(searchParams.get("page"));
     const validatedPage = (page && page > 0) ? page : 1;
 

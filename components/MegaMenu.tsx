@@ -297,8 +297,12 @@ const megaCategories: MegaCategory[] = [
   },
 ];
 
+import { useTranslations } from "next-intl";
+
 // ─── MegaMenu Component ─────────────────────────────────────────
 const MegaMenu = () => {
+  const tHeader = useTranslations("Header");
+  const tMega = useTranslations("MegaMenu");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("Category");
 
@@ -325,7 +329,7 @@ const MegaMenu = () => {
             }`}
           >
             {cat.icon}
-            <span>{cat.label}</span>
+            <span>{cat.id === "all" ? tHeader("allJewellery") : tHeader(cat.id)}</span>
           </button>
         ))}
       </div>
@@ -353,7 +357,7 @@ const MegaMenu = () => {
                           : "text-luxury-text-secondary hover:text-luxury-text-primary hover:bg-luxury-ivory"
                       }`}
                     >
-                      {filter.name}
+                      {tMega(`filters.${filter.name.toLowerCase()}`)}
                     </button>
                   ))}
                 </div>
@@ -373,7 +377,7 @@ const MegaMenu = () => {
                             {sub.icon}
                           </span>
                           <span className="text-[13px] font-sans text-luxury-text-primary group-hover:text-[#832729] transition-colors duration-200 font-medium">
-                            {sub.name}
+                            {tMega(`subcategories.${sub.name.replace(/\s+/g, "").toLowerCase()}`)}
                           </span>
                         </Link>
                       ))}
@@ -456,8 +460,8 @@ const MegaMenu = () => {
                         </div>
                       </div>
                       <div>
-                        <p className="text-[13px] font-sans font-semibold text-luxury-text-primary">{cat.banner.title}</p>
-                        <p className="text-[11px] font-sans text-luxury-text-secondary">{cat.banner.subtitle}</p>
+                        <p className="text-[13px] font-sans font-semibold text-luxury-text-primary">{tMega(`banners.${cat.id}.title`)}</p>
+                        <p className="text-[11px] font-sans text-luxury-text-secondary">{tMega(`banners.${cat.id}.subtitle`)}</p>
                       </div>
                     </div>
                     <Link
@@ -465,7 +469,7 @@ const MegaMenu = () => {
                       onClick={() => setActiveCategory(null)}
                       className="bg-[#832729] text-white text-[11px] font-sans font-semibold tracking-wider uppercase px-5 py-2.5 rounded-sm hover:bg-[#6b1f21] transition-colors duration-200 shrink-0"
                     >
-                      View All
+                      {tMega("viewAll")}
                     </Link>
                   </div>
                 </div>
@@ -475,21 +479,21 @@ const MegaMenu = () => {
                   <div className="relative flex-1 rounded-sm overflow-hidden mb-3">
                     <Image
                       src={cat.lifestyle.image}
-                      alt={cat.lifestyle.tagline}
+                      alt={tMega(`lifestyles.${cat.id}.tagline`)}
                       fill
                       className="object-cover"
                       sizes="240px"
                     />
                   </div>
                   <p className="text-[13px] font-sans text-luxury-text-primary leading-snug font-medium">
-                    {cat.lifestyle.tagline}
+                    {tMega(`lifestyles.${cat.id}.tagline`)}
                   </p>
                   <Link
                     href={cat.lifestyle.href}
                     onClick={() => setActiveCategory(null)}
                     className="text-[12px] font-sans text-[#832729] underline underline-offset-2 mt-1.5 hover:text-[#6b1f21] transition-colors inline-flex items-center gap-x-1"
                   >
-                    {cat.lifestyle.cta} <span className="text-xs">↗</span>
+                    {tMega(`lifestyles.${cat.id}.cta`)} <span className="text-xs">↗</span>
                   </Link>
                 </div>
               </div>

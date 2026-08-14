@@ -15,6 +15,8 @@ import Link from "next/link";
 import { sanitize } from "@/lib/sanitize";
 import { getImagePath } from "@/lib/utils";
 
+import { useTranslations } from "next-intl";
+
 const ProductItem = ({
   product,
   color,
@@ -22,6 +24,8 @@ const ProductItem = ({
   product: Product;
   color: string;
 }) => {
+  const t = useTranslations("Product");
+
   return (
     <div className="flex flex-col items-center w-full max-w-sm group border border-luxury-border/40 p-4 bg-white rounded transition-all duration-300 hover:shadow-md hover:border-luxury-gold/40">
       <Link href={`/product/${product.slug}`} className="w-full overflow-hidden flex justify-center items-center h-[260px] bg-luxury-ivory rounded mb-4">
@@ -48,7 +52,7 @@ const ProductItem = ({
         href={`/product/${product?.slug}`}
         className="block w-full text-center uppercase tracking-widest bg-luxury-text-primary text-white py-3 mt-4 text-xs font-semibold hover:bg-luxury-gold transition-all duration-300 rounded shadow-sm"
       >
-        View Product
+        {t("viewProduct")}
       </Link>
     </div>
   );

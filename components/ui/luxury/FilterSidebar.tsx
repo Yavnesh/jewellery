@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Check } from "lucide-react";
 import { useFilterStore, FilterState } from "@/app/_zustand/filterStore";
@@ -40,9 +40,30 @@ const filterSections = [
 
 export const FilterSidebar = () => {
   const store = useFilterStore();
-  const [openSections, setOpenSections] = useState<string[]>(
-    filterSections.map((s) => s.id)
-  );
+  const [absoluteMaxPrice, setAbsoluteMaxPrice] = useState(20000);
+  const [openSections, setOpenSections] = useState<string[]>([
+    "priceRange",
+    ...filterSections.map((s) => s.id)
+  ]);
+
+  useEffect(() => {
+    const fetchMaxPrice = async () => {
+      try {
+        const response = await fetch("/api/products?mode=max-price");
+        const data = await response.json();
+        if (data?.maxPrice) {
+          setAbsoluteMaxPrice(data.maxPrice);
+          // If store priceRange is still at default [0, 20000], update it to the fetched dynamic max
+          if (store.priceRange[1] === 20000) {
+            store.setPriceRange([store.priceRange[0], data.maxPrice]);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch max price:", error);
+      }
+    };
+    fetchMaxPrice();
+  }, []);
 
   const toggleSection = (id: string) => {
     setOpenSections((prev) =>
@@ -54,13 +75,58 @@ export const FilterSidebar = () => {
     <div className="w-full h-full bg-white flex flex-col">
       <div className="flex-1 overflow-y-auto no-scrollbar pb-12 px-6 pt-6">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
-          <h2 className="font-serif text-2xl text-[#333333]">Filters</h2>
+          <span className="text-xs font-sans text-gray-400 uppercase tracking-widest font-semibold">Active Options</span>
           <button 
-            onClick={store.clearAll}
+            onClick={() => {
+              store.clearAll();
+              store.setPriceRange([0, absoluteMaxPrice]);
+            }}
             className="text-[13px] font-sans font-medium text-gray-500 hover:text-[#8B2C33] underline underline-offset-4"
           >
             Clear All
           </button>
+        </div>
+
+        {/* Price Range Filter */}
+        <div className="mb-6 border-b border-gray-100 pb-6">
+          <button
+            onClick={() => toggleSection("priceRange")}
+            className="flex items-center justify-between w-full text-left group"
+          >
+            <span className="font-sans font-medium text-sm text-[#333333] uppercase tracking-widest group-hover:text-[#8B2C33] transition-colors">
+              Price Range
+            </span>
+            <ChevronDown
+              className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
+                openSections.includes("priceRange") ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          
+          {openSections.includes("priceRange") && (
+            <div className="pt-4 flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <label className="text-[11px] text-gray-500 font-sans uppercase">Min Price (₹)</label>
+                  <input 
+                    type="number"
+                    value={store.priceRange[0]}
+                    onChange={(e) => store.setPriceRange([Number(e.target.value), store.priceRange[1]])}
+                    className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm font-sans focus:outline-none focus:border-[#8B2C33] text-gray-700 bg-white"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="text-[11px] text-gray-500 font-sans uppercase">Max Price (₹)</label>
+                  <input 
+                    type="number"
+                    value={store.priceRange[1]}
+                    onChange={(e) => store.setPriceRange([store.priceRange[0], Number(e.target.value)])}
+                    className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm font-sans focus:outline-none focus:border-[#8B2C33] text-gray-700 bg-white"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {filterSections.map((section) => {

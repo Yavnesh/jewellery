@@ -2,16 +2,20 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useTranslations } from "next-intl";
+
 export const VamikaShowcase = () => {
+  const t = useTranslations("VamikaShowcase");
+
   return (
     <div className="py-20 bg-[#FAF7F2]">
       {/* Section header */}
       <div className="text-center mb-14">
         <span className="text-vamika-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
-          Curated For You
+          {t("curated")}
         </span>
         <h2 className="text-luxury-text-primary text-4xl font-serif font-light uppercase tracking-widest mt-3 max-lg:text-3xl">
-          The Lookbook
+          {t("title")}
         </h2>
         <div className="w-12 h-px bg-vamika-gold mx-auto mt-4" />
       </div>
@@ -27,7 +31,7 @@ export const VamikaShowcase = () => {
           >
             <Image
               src="/bridal-occasion.png"
-              alt="Bridal Collection"
+              alt={t("bridal.title")}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
               sizes="60vw"
@@ -35,16 +39,16 @@ export const VamikaShowcase = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-8">
               <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.25em] uppercase font-semibold">
-                Wedding Edit
+                {t("bridal.tagline")}
               </span>
               <h3 className="text-white text-3xl font-serif font-light uppercase tracking-wide mt-2">
-                The Bridal Trousseau
+                {t("bridal.title")}
               </h3>
               <p className="text-white/70 text-sm mt-2 font-sans max-w-md">
-                Grand bridal sets handcrafted with heritage artistry for the most precious day of your life.
+                {t("bridal.desc")}
               </p>
               <span className="inline-block mt-4 text-white text-[10px] font-sans tracking-widest uppercase font-semibold border-b border-white/50 pb-1 group-hover:text-vamika-gold-light group-hover:border-vamika-gold-light transition-colors">
-                Explore Bridal →
+                {t("bridal.cta")}
               </span>
             </div>
           </Link>
@@ -58,7 +62,7 @@ export const VamikaShowcase = () => {
             >
               <Image
                 src="/editorial-grid-1.png"
-                alt="Diamond Collection"
+                alt={t("diamond.title")}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="40vw"
@@ -66,13 +70,13 @@ export const VamikaShowcase = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
-                  Trending
+                  {t("diamond.tagline")}
                 </span>
                 <h3 className="text-white text-xl font-serif font-light uppercase tracking-wide mt-1">
-                  Diamond Essentials
+                  {t("diamond.title")}
                 </h3>
                 <span className="inline-block mt-2 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium group-hover:text-vamika-gold-light transition-colors">
-                  Shop Now →
+                  {t("diamond.cta")}
                 </span>
               </div>
             </Link>
@@ -84,7 +88,7 @@ export const VamikaShowcase = () => {
             >
               <Image
                 src="/editorial-grid-2.png"
-                alt="Gold Collection"
+                alt={t("gold.title")}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="40vw"
@@ -92,13 +96,13 @@ export const VamikaShowcase = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
-                  Heritage
+                  {t("gold.tagline")}
                 </span>
                 <h3 className="text-white text-xl font-serif font-light uppercase tracking-wide mt-1">
-                  Gold Traditions
+                  {t("gold.title")}
                 </h3>
                 <span className="inline-block mt-2 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium group-hover:text-vamika-gold-light transition-colors">
-                  Discover →
+                  {t("gold.cta")}
                 </span>
               </div>
             </Link>

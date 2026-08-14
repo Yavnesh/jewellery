@@ -1,33 +1,55 @@
 import prisma from "@/utils/db";
 import { unstable_cache } from "next/cache";
 
-export const getProductBySlug = unstable_cache(
-  async (slug: string) => {
-    return prisma.product.findUnique({
-      where: { slug },
-      include: {
-        category: true,
-        options: {
-          include: {
-            values: { orderBy: { position: 'asc' } }
-          },
-          orderBy: { position: 'asc' }
+export const getProductBySlug = async (slug: string, locale: string = "en") => {
+  const product = await prisma.product.findFirst({
+    where: {
+      OR: [
+        { slug },
+        { translations: { some: { slug, locale } } }
+      ]
+    },
+    include: {
+      category: {
+        include: { translations: { where: { locale } } }
+      },
+      translations: {
+        where: { locale }
+      },
+      options: {
+        include: {
+          values: { orderBy: { position: 'asc' } }
         },
-        variants: {
-          where: { status: 'ACTIVE' },
-          include: {
-            optionValues: {
-              include: { optionValue: { include: { option: true } } }
-            }
-          },
-          orderBy: { position: 'asc' }
-        }
+        orderBy: { position: 'asc' }
+      },
+      variants: {
+        where: { status: 'ACTIVE' },
+        include: {
+          optionValues: {
+            include: { optionValue: { include: { option: true } } }
+          }
+        },
+        orderBy: { position: 'asc' }
       }
-    });
-  },
-  ['product-by-slug'],
-  { tags: ['products'] }
-);
+    }
+  });
+
+  if (!product) return null;
+
+  const activeTrans = product.translations[0];
+  const catTrans = product.category?.translations[0];
+
+  return {
+    ...product,
+    title: activeTrans ? activeTrans.title : product.title,
+    description: activeTrans ? activeTrans.description : product.description,
+    slug: activeTrans ? activeTrans.slug : product.slug,
+    category: product.category ? {
+      ...product.category,
+      name: catTrans ? catTrans.name : product.category.name
+    } : null
+  };
+};
 
 export const getProductImages = (productId: string) => {
   return unstable_cache(
@@ -41,7 +63,7 @@ export const getProductImages = (productId: string) => {
   )();
 };
 
-export const getProducts = async (where: any, skip: number, limit: number, sort: string) => {
+export const getProducts = async (where: any, skip: number, limit: number, sort: string, locale: string = "en") => {
   const products = await prisma.product.findMany({
     where,
     skip,
@@ -56,7 +78,15 @@ export const getProducts = async (where: any, skip: number, limit: number, sort:
       rating: true,
       inStock: true,
       category: {
-        select: { name: true }
+        select: { 
+          name: true,
+          translations: {
+            where: { locale }
+          }
+        }
+      },
+      translations: {
+        where: { locale }
       }
     },
     orderBy: sort === 'price-asc' ? { price: 'asc' } :
@@ -64,7 +94,20 @@ export const getProducts = async (where: any, skip: number, limit: number, sort:
              { id: 'desc' }
   });
   
+  const localizedProducts = products.map(prod => {
+    const activeTrans = prod.translations[0];
+    const catTrans = prod.category?.translations[0];
+    return {
+      ...prod,
+      title: activeTrans ? activeTrans.title : prod.title,
+      slug: activeTrans ? activeTrans.slug : prod.slug,
+      category: prod.category ? {
+        name: catTrans ? catTrans.name : prod.category.name
+      } : undefined
+    };
+  });
+
   const totalProducts = await prisma.product.count({ where });
   
-  return { products, totalProducts };
+  return { products: localizedProducts, totalProducts };
 };

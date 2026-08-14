@@ -51,6 +51,7 @@ model Product {
   // Variant Architecture Relations
   variants ProductVariant[]
   options  ProductOption[]
+  translations ProductTranslation[]
 }
 
 model Image {
@@ -122,9 +123,10 @@ model customer_order_product {
 }
 
 model Category {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  products Product[] // Define a one-to-many relationship
+  id           String                @id @default(uuid())
+  name         String                @unique
+  products     Product[] // Define a one-to-many relationship
+  translations CategoryTranslation[]
 }
 
 model Wishlist {
@@ -609,3 +611,29 @@ model OrderLineItem {
 
   @@index([orderId])
 }
+
+model ProductTranslation {
+  id             String  @id @default(uuid())
+  productId      String
+  locale         String
+  title          String
+  description    String  @db.Text
+  slug           String
+  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([productId, locale])
+  @@index([locale])
+  @@index([slug])
+}
+
+model CategoryTranslation {
+  id          String   @id @default(uuid())
+  categoryId  String
+  locale      String
+  name        String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@index([locale])
+}
+

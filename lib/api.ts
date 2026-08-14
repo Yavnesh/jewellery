@@ -4,7 +4,16 @@ export const apiClient = {
   baseUrl: config.apiBaseUrl,
   
   async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${this.baseUrl}${endpoint}`;
+    let base = "";
+    if (typeof window !== "undefined") {
+      base = window.location.origin;
+    } else {
+      base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+      if (base === "undefined") {
+        base = "http://localhost:3000";
+      }
+    }
+    const url = `${base}${endpoint}`;
     
     const defaultOptions: RequestInit = {
       headers: {

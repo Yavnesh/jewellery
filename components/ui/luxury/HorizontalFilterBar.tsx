@@ -39,12 +39,12 @@ export const HorizontalFilterBar = () => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row items-center justify-between py-6 border-b border-gray-100 mb-8 gap-4 bg-white">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-row items-center justify-between py-6 border-b border-gray-100 mb-8 gap-4 bg-white">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Main Filter Button (Opens Drawer) */}
           <button 
             onClick={() => setIsDrawerOpen(true)}
-            className="flex items-center gap-2 px-6 py-2 border border-gray-200 rounded-full hover:border-[#8B2C33] transition-colors font-sans text-sm text-[#333333]"
+            className="flex items-center gap-2 px-6 py-2 border border-gray-200 rounded-full hover:border-[#8B2C33] transition-colors font-sans text-sm text-[#333333] shrink-0"
           >
             <Filter className="w-4 h-4" />
             <span>Filter</span>
@@ -56,29 +56,30 @@ export const HorizontalFilterBar = () => {
             <ChevronDown className="w-4 h-4 text-gray-400" />
           </button>
 
-          {activeFilters.length > 0 && <div className="hidden md:block w-[1px] h-6 bg-gray-200 mx-2" />}
-
-          {/* Active Filter Pills */}
-          {activeFilters.map((filter) => (
-            <button 
-              key={`${filter.category}-${filter.value}`}
-              onClick={() => store.removeFilter(filter.category, filter.value)}
-              className="group flex items-center gap-1.5 px-4 py-2 border border-gray-200 bg-[#F9F9F9] text-[#333333] rounded-full hover:border-red-500 hover:text-red-500 transition-all font-sans text-[13px]"
-            >
-              <span className="flex items-center justify-center bg-gray-200 rounded-full p-0.5 group-hover:bg-red-100 transition-colors">
-                <X className="w-2.5 h-2.5 text-gray-500 group-hover:text-red-500 transition-colors" />
-              </span>
-              {filter.label}
-            </button>
-          ))}
-          
+          {/* Active Filter Pills (Desktop Only) */}
           {activeFilters.length > 0 && (
-            <button 
-              onClick={store.clearAll}
-              className="text-[13px] font-sans text-[#D62D20] font-medium ml-2 hover:underline"
-            >
-              Clear All
-            </button>
+            <div className="hidden md:flex items-center gap-3 flex-wrap">
+              <div className="w-[1px] h-6 bg-gray-200 mx-2" />
+              {activeFilters.map((filter) => (
+                <button 
+                  key={`${filter.category}-${filter.value}`}
+                  onClick={() => store.removeFilter(filter.category, filter.value)}
+                  className="group flex items-center gap-1.5 px-4 py-2 border border-gray-200 bg-[#F9F9F9] text-[#333333] rounded-full hover:border-red-500 hover:text-red-500 transition-all font-sans text-[13px]"
+                >
+                  <span className="flex items-center justify-center bg-gray-200 rounded-full p-0.5 group-hover:bg-red-100 transition-colors">
+                    <X className="w-2.5 h-2.5 text-gray-500 group-hover:text-red-500 transition-colors" />
+                  </span>
+                  {filter.label}
+                </button>
+              ))}
+              
+              <button 
+                onClick={store.clearAll}
+                className="text-[13px] font-sans text-[#D62D20] font-medium ml-2 hover:underline"
+              >
+                Clear All
+              </button>
+            </div>
           )}
         </div>
 

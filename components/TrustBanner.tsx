@@ -2,39 +2,39 @@ import React from "react";
 import { FaGem, FaAward, FaLock, FaRotateLeft } from "react-icons/fa6";
 import { BRAND_NAME } from "@/utils/brand";
 
+import { useTranslations } from "next-intl";
+
 const trustItems = [
   {
+    key: "certified",
     icon: <FaAward className="text-2xl text-vamika-gold-light" />,
-    title: "100% Certified",
-    desc: "Every diamond and gemstone is certified by leading international gemological laboratories.",
   },
   {
+    key: "gold",
     icon: <FaGem className="text-2xl text-vamika-gold-light" />,
-    title: "Hallmarked Gold",
-    desc: "Strictly using BIS hallmarked pure gold to ensure absolute authenticity and resale value.",
   },
   {
+    key: "returns",
     icon: <FaRotateLeft className="text-2xl text-vamika-gold-light" />,
-    title: "30-Day Returns",
-    desc: "Enjoy complete peace of mind with our hassle-free return and exchange policy.",
   },
   {
+    key: "checkout",
     icon: <FaLock className="text-2xl text-vamika-gold-light" />,
-    title: "Secure Checkout",
-    desc: "Encrypted checkout integration to protect transaction privacy and credentials.",
   }
 ];
 
 export const TrustBanner = () => {
+  const t = useTranslations("TrustBanner");
+
   return (
     <div className="py-20 bg-[#2B0E0A]">
       {/* Section header */}
       <div className="text-center mb-14">
         <span className="text-vamika-gold-light uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
-          Our Commitment
+          {t("commitment")}
         </span>
         <h2 className="text-white text-4xl font-serif font-light uppercase tracking-widest mt-3 max-lg:text-3xl">
-          The {BRAND_NAME} Promise
+          {t("promise", { brand: BRAND_NAME })}
         </h2>
         <div className="w-12 h-px bg-vamika-gold-light/50 mx-auto mt-4" />
       </div>
@@ -46,10 +46,10 @@ export const TrustBanner = () => {
               {item.icon}
             </div>
             <h3 className="font-serif font-medium text-lg uppercase tracking-wider text-white mb-2">
-              {item.title}
+              {t(`items.${item.key}.title`)}
             </h3>
             <p className="text-xs text-stone-400 leading-relaxed font-sans max-w-xs">
-              {item.desc}
+              {t(`items.${item.key}.desc`)}
             </p>
           </div>
         ))}

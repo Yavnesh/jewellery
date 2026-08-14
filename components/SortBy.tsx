@@ -10,28 +10,36 @@
 
 "use client";
 import React from "react";
-import { useSortStore } from "@/app/_zustand/sortStore";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 const SortBy = () => {
-  // getting values from Zustand sort store
-  const { sortBy, changeSortBy } = useSortStore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentSort = searchParams.get("sort") || "defaultSort";
+
+  const handleSortChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "defaultSort") {
+      params.delete("sort");
+    } else {
+      params.set("sort", value);
+    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   return (
-    <div className="flex items-center gap-x-5 max-lg:flex-col max-lg:w-full max-lg:items-start">
-      <h3 className="text-xl">Sort by:</h3>
-      <select
-        defaultValue={sortBy}
-        onChange={(e) => changeSortBy(e.target.value)}
-        className="select border-gray-400 py-2 px-2 text-base border-2 select-bordered w-40 focus:outline-none outline-none max-lg:w-full bg-white"
-        name="sort"
-      >
-        <option value="defaultSort">Default</option>
-        <option value="titleAsc">Sort A-Z</option>
-        <option value="titleDesc">Sort Z-A</option>
-        <option value="lowPrice">Lowest Price</option>
-        <option value="highPrice">Highest Price</option>
-      </select>
-    </div>
+    <select
+      value={currentSort}
+      onChange={(e) => handleSortChange(e.target.value)}
+      className="border border-gray-200 rounded-full py-2 px-4 text-xs font-sans focus:outline-none outline-none bg-white hover:border-[#8B2C33] transition-colors cursor-pointer text-[#333333]"
+      name="sort"
+    >
+      <option value="defaultSort">Default</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+    </select>
   );
 };
 

@@ -2,47 +2,43 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useTranslations } from "next-intl";
+
 const occasions = [
   {
-    name: "Wedding",
-    desc: "Grand Bridal Ornaments",
-    tagline: "For the most precious day",
+    key: "wedding",
     link: "/shop?occasion=Wedding",
     image: "/bridal-occasion.png",
   },
   {
-    name: "Anniversary",
-    desc: "Celebrate Milestones",
-    tagline: "Mark every moment in gold",
+    key: "anniversary",
     link: "/shop?occasion=Anniversary",
     image: "/anniversary-lifestyle.png",
   },
   {
-    name: "Engagement",
-    desc: "Unveil New Beginnings",
-    tagline: "Say yes to brilliance",
+    key: "engagement",
     link: "/shop?occasion=Engagement",
     image: "/rings-lifestyle.png",
   },
   {
-    name: "Daily Wear",
-    desc: "Effortless Everyday Sparkle",
-    tagline: "Luxury for every day",
+    key: "dailywear",
     link: "/shop?occasion=Daily+Wear",
     image: "/daily-wear-lifestyle.png",
   }
 ];
 
 export const OccasionGrid = () => {
+  const t = useTranslations("OccasionGrid");
+
   return (
     <div className="py-20 bg-white">
       {/* Section header */}
       <div className="text-center mb-14">
         <span className="text-vamika-gold uppercase tracking-[0.3em] text-[10px] font-sans font-semibold">
-          Find Your Moment
+          {t("moment")}
         </span>
         <h2 className="text-luxury-text-primary text-4xl font-serif font-light uppercase tracking-widest mt-3 max-lg:text-3xl">
-          Shop by Occasion
+          {t("title")}
         </h2>
         <div className="w-12 h-px bg-vamika-gold mx-auto mt-4" />
       </div>
@@ -51,13 +47,13 @@ export const OccasionGrid = () => {
         {occasions.map((occ) => (
           <Link
             href={occ.link}
-            key={occ.name}
+            key={occ.key}
             className="relative h-[300px] overflow-hidden rounded-sm group"
           >
             {/* Background image */}
             <Image
               src={occ.image}
-              alt={occ.name}
+              alt={t(`items.${occ.key}.name`)}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
               sizes="(max-width: 450px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -69,16 +65,16 @@ export const OccasionGrid = () => {
             {/* Content */}
             <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
               <span className="text-vamika-gold-light text-[9px] font-sans tracking-[0.2em] uppercase font-semibold">
-                {occ.tagline}
+                {t(`items.${occ.key}.tagline`)}
               </span>
               <h3 className="font-serif font-light text-2xl uppercase tracking-wider text-white mt-1 group-hover:text-vamika-gold-light transition-colors duration-300">
-                {occ.name}
+                {t(`items.${occ.key}.name`)}
               </h3>
               <p className="text-white/60 text-xs mt-1 font-sans tracking-wide">
-                {occ.desc}
+                {t(`items.${occ.key}.desc`)}
               </p>
               <span className="inline-block mt-3 text-[10px] font-sans font-semibold tracking-widest uppercase text-white/80 group-hover:text-vamika-gold-light transition-colors duration-300">
-                Browse Collection →
+                {t("browse")}
               </span>
             </div>
           </Link>

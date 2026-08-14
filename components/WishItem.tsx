@@ -19,6 +19,9 @@ interface WishItemProps {
   stockAvailabillity: number;
 }
 
+import { useSession } from "next-auth/react";
+import apiClient from "@/lib/api";
+
 const WishItem = ({
   id,
   title,
@@ -30,6 +33,7 @@ const WishItem = ({
   const { removeFromWishlist } = useWishlistStore();
   const { syncCart } = useProductStore();
   const [isPending, startTransition] = React.useTransition();
+  const { data: session } = useSession();
 
   const handleAddToCart = () => {
     startTransition(async () => {
@@ -39,15 +43,24 @@ const WishItem = ({
       if (result.success && result.cart) {
         syncCart(result.cart);
         toast.success("Product added to the cart");
+        await handleRemove();
       } else {
         toast.error(result.error || "Failed to add to cart");
       }
     });
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
     removeFromWishlist(id);
     toast.success("Product removed from wishlist");
+    if (session?.user) {
+      try {
+        const userId = (session.user as any).id;
+        await apiClient.delete(`/api/wishlist/${userId}?productId=${id}`);
+      } catch (err) {
+        console.error("Failed to sync wishlist deletion to db:", err);
+      }
+    }
   };
 
   return (

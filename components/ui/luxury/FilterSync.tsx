@@ -38,6 +38,18 @@ export const FilterSync = () => {
     syncArrayToUrl("genders", store.genders);
     syncArrayToUrl("features", store.features);
 
+    // Sync minPrice/maxPrice to URL
+    if (store.priceRange[0] > 0) {
+      params.set("minPrice", String(store.priceRange[0]));
+    } else {
+      params.delete("minPrice");
+    }
+    if (store.priceRange[1] < 1000000) {
+      params.set("maxPrice", String(store.priceRange[1]));
+    } else {
+      params.delete("maxPrice");
+    }
+
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   }, [
     store.jewelryTypes,
@@ -47,6 +59,7 @@ export const FilterSync = () => {
     store.purities,
     store.genders,
     store.features,
+    store.priceRange,
     pathname,
     router
   ]);

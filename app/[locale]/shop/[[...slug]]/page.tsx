@@ -12,7 +12,7 @@ import { sanitize } from "@/lib/sanitize";
 // Force dynamic rendering to ensure the shop page reads live database values on Vercel
 export const dynamic = "force-dynamic";
 
-type Props = { params: Promise<{ slug?: string[] }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> };
+type Props = { params: Promise<{ locale: string; slug?: string[] }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> };
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const awaitedParams = await params;
@@ -50,6 +50,7 @@ const ShopPage = async ({ params, searchParams }: Props) => {
   const awaitedSearchParams = await searchParams;
   
   // Parse Search Params for Prisma Query
+  const locale = awaitedParams.locale;
   const categorySlug = awaitedParams?.slug?.[0];
   const sort = awaitedSearchParams?.sort as string;
   const page = awaitedSearchParams?.page ? Number(awaitedSearchParams.page) : 1;
@@ -69,8 +70,17 @@ const ShopPage = async ({ params, searchParams }: Props) => {
   const genders = parseArrayParam("genders");
   const jewelryTypes = parseArrayParam("jewelryTypes");
 
+  const minPrice = awaitedSearchParams?.minPrice ? Number(awaitedSearchParams.minPrice) : undefined;
+  const maxPrice = awaitedSearchParams?.maxPrice ? Number(awaitedSearchParams.maxPrice) : undefined;
+
   // Build Prisma Where Clause
   const where: any = {};
+  
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    where.price = {};
+    if (minPrice !== undefined) where.price.gte = minPrice;
+    if (maxPrice !== undefined) where.price.lte = maxPrice;
+  }
   
   if (categorySlug) {
     where.category = { name: { equals: categorySlug } };
@@ -116,7 +126,7 @@ const ShopPage = async ({ params, searchParams }: Props) => {
   }
   
   // Execute via service
-  const { products, totalProducts } = await getProducts(where, skip, limit, sort);
+  const { products, totalProducts } = await getProducts(where, skip, limit, sort, locale);
 
   const displayTitle = categorySlug 
     ? sanitize(categorySlug.replace("-", " "))

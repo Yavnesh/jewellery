@@ -78,12 +78,20 @@ export async function createCart(sessionId: string | null, userId: string | null
 
 export async function addToCart(cartId: string, variantId: string, quantity: number) {
   // Verify variant exists and is available
-  const variant = await prisma.productVariant.findUnique({
+  let variant = await prisma.productVariant.findUnique({
     where: { id: variantId }
   });
 
+  if (!variant) {
+    // Fallback: If not found, check if the input is a product ID and fetch the first variant of this product
+    variant = await prisma.productVariant.findFirst({
+      where: { productId: variantId }
+    });
+  }
+
   if (!variant) throw new Error("Variant not found");
   
+  const activeVariantId = variant.id;
   const availableStock = variant.stockQuantity - variant.reservedQuantity;
   if (availableStock < quantity) {
     throw new Error(`Insufficient stock. Only ${availableStock} available.`);
@@ -94,7 +102,7 @@ export async function addToCart(cartId: string, variantId: string, quantity: num
     where: {
       cartId_variantId: {
         cartId,
-        variantId
+        variantId: activeVariantId
       }
     }
   });
@@ -113,7 +121,7 @@ export async function addToCart(cartId: string, variantId: string, quantity: num
     return prisma.cartItem.create({
       data: {
         cartId,
-        variantId,
+        variantId: activeVariantId,
         quantity
       }
     });

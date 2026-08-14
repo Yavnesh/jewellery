@@ -8,43 +8,43 @@ import Image from "next/image";
 import Link from "next/link";
 import Heading from "./Heading";
 
+import { useTranslations } from "next-intl";
+
 const categories = [
   {
     id: 1,
-    title: "Rings",
-    subtitle: "Solitaires & Bands",
+    titleKey: "rings",
     href: "/shop/rings",
     image: "/rings-lifestyle.png",
   },
   {
     id: 2,
-    title: "Necklaces",
-    subtitle: "Chokers & Pendants",
+    titleKey: "necklaces",
     href: "/shop/necklaces",
     image: "/necklace-lifestyle.png",
   },
   {
     id: 3,
-    title: "Earrings",
-    subtitle: "Jhumkas & Studs",
+    titleKey: "earrings",
     href: "/shop/earrings",
     image: "/earrings-lifestyle.png",
   },
   {
     id: 4,
-    title: "Bracelets",
-    subtitle: "Bangles & Chains",
+    titleKey: "bracelets",
     href: "/shop/bracelets",
     image: "/bracelet-lifestyle.png",
   },
 ];
 
 const CategoryMenu = () => {
+  const t = useTranslations("CategoryMenu");
+
   return (
     <div className="py-20 bg-white">
-      <Heading title="SHOP BY CATEGORY" />
+      <Heading title={t("title")} />
       <p className="text-center text-xs text-luxury-text-secondary tracking-widest uppercase -mt-4 mb-12 font-sans">
-        Explore our curated collections
+        {t("subtitle")}
       </p>
       <div className="max-w-screen-2xl mx-auto px-16 max-md:px-6 grid grid-cols-4 max-lg:grid-cols-2 max-sm:grid-cols-1 gap-5">
         {categories.map((cat) => (
@@ -56,7 +56,7 @@ const CategoryMenu = () => {
             {/* Background Image */}
             <Image
               src={cat.image}
-              alt={cat.title}
+              alt={t(`items.${cat.titleKey}.title`)}
               fill
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -68,13 +68,13 @@ const CategoryMenu = () => {
             {/* Content at bottom */}
             <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
               <span className="text-vamika-gold-light text-[10px] font-sans tracking-[0.2em] uppercase font-semibold">
-                {cat.subtitle}
+                {t(`items.${cat.titleKey}.subtitle`)}
               </span>
               <h3 className="text-white text-2xl font-serif font-light uppercase tracking-wider mt-1 group-hover:text-vamika-gold-light transition-colors duration-300">
-                {cat.title}
+                {t(`items.${cat.titleKey}.title`)}
               </h3>
               <span className="inline-block mt-3 text-white/80 text-[10px] font-sans tracking-widest uppercase font-medium border-b border-white/40 pb-0.5 group-hover:border-vamika-gold-light group-hover:text-vamika-gold-light transition-all duration-300">
-                Explore →
+                {t("explore")}
               </span>
             </div>
           </Link>
