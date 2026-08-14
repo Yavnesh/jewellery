@@ -3,7 +3,7 @@ import { CustomButton, DashboardSidebar } from "@/components";
 import { nanoid } from "nanoid";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { formatCategoryName } from "../../../../utils/categoryFormating";
+import { formatCategoryName } from "@/utils/categoryFormating";
 import apiClient from "@/lib/api";
 
 const DashboardCategory = () => {

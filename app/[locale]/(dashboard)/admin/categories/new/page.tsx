@@ -2,7 +2,7 @@
 import { DashboardSidebar } from "@/components";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { convertCategoryNameToURLFriendly } from "../../../../../utils/categoryFormating";
+import { convertCategoryNameToURLFriendly } from "@/utils/categoryFormating";
 import apiClient from "@/lib/api";
 
 const DashboardNewCategoryPage = () => {

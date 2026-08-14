@@ -1,5 +1,5 @@
 "use client";
-import { useProductStore } from "../_zustand/store";
+import { useProductStore } from "@/app/_zustand/store";
 import Image from "next/image";
 import Script from "next/script";
 import { useEffect, useState } from "react";

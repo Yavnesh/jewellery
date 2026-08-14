@@ -27,9 +27,11 @@ import { useWishlistStore } from "@/app/_zustand/wishlistStore";
 import apiClient from "@/lib/api";
 import { Menu, X } from "lucide-react";
 
+import { useTranslations } from "next-intl";
 import { BRAND_NAME } from "@/utils/brand";
 
 const Header = () => {
+  const t = useTranslations("Header");
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const { wishlist, setWishlist, wishQuantity } = useWishlistStore();

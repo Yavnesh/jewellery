@@ -3,8 +3,8 @@ import { DashboardSidebar } from "@/components";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState, use } from "react";
 import toast from "react-hot-toast";
-import { formatCategoryName } from "../../../../../utils/categoryFormating";
-import { convertCategoryNameToURLFriendly } from "../../../../../utils/categoryFormating";
+import { formatCategoryName } from "@/utils/categoryFormating";
+import { convertCategoryNameToURLFriendly } from "@/utils/categoryFormating";
 import apiClient from "@/lib/api";
 
 interface DashboardSingleCategoryProps {

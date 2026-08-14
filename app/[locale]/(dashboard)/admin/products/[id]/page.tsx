@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import {
   convertCategoryNameToURLFriendly as convertSlugToURLFriendly,
   formatCategoryName,
-} from "../../../../../utils/categoryFormating";
+} from "@/utils/categoryFormating";
 import { nanoid } from "nanoid";
 import apiClient from "@/lib/api";
 
