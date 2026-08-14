@@ -10,7 +10,7 @@ export const HorizontalFilterBar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const quickFilters = [
-    { label: "₹25,000 - ₹50,000", active: true },
+    { label: "₹25,000 - ₹50,000", active: false },
     { label: "Gifts For Him", active: false },
     { label: "Women", active: false },
     { label: "Gold Jewellery", active: false },
@@ -27,7 +27,6 @@ export const HorizontalFilterBar = () => {
           >
             <Filter className="w-4 h-4" />
             <span>Filter</span>
-            <span className="bg-[#D62D20] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">1</span>
             <ChevronDown className="w-4 h-4 text-gray-400" />
           </button>
 
