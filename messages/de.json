@@ -95,7 +95,12 @@
       "category": "Kategorie",
       "price": "Preis",
       "occasion": "Anlass",
-      "gender": "Geschlecht"
+      "gender": "Geschlecht",
+      "goldcoin": "Goldmünze",
+      "men": "Herren",
+      "metal": "Metall",
+      "metalstones": "Metall & Steine",
+      "style": "Stil"
     },
     "subcategories": {
       "alljewellery": "Alle Schmuckstücke",

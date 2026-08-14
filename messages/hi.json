@@ -95,7 +95,12 @@
       "category": "श्रेणी",
       "price": "कीमत",
       "occasion": "अवसर",
-      "gender": "लिंग"
+      "gender": "लिंग",
+      "goldcoin": "सोने का सिक्का",
+      "men": "पुरुष",
+      "metal": "धातु",
+      "metalstones": "धातु और पत्थर",
+      "style": "शैली"
     },
     "subcategories": {
       "alljewellery": "सभी आभूषण",

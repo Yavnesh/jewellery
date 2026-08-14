@@ -95,7 +95,12 @@
       "category": "الفئة",
       "price": "السعر",
       "occasion": "المناسبة",
-      "gender": "الجنس"
+      "gender": "الجنس",
+      "goldcoin": "العملة الذهبية",
+      "men": "الرجال",
+      "metal": "المعدن",
+      "metalstones": "المعدن والأحجار",
+      "style": "النمط"
     },
     "subcategories": {
       "alljewellery": "كل المجوهرات",

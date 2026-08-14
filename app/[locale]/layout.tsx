@@ -58,8 +58,8 @@ export default async function RootLayout({
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
   
   return (
-    <html lang={locale} data-theme="light">
-      <body className={`${inter.variable} ${cormorant.variable} font-sans bg-luxury-bg text-luxury-text-primary antialiased`}>
+    <html lang={locale} data-theme="light" suppressHydrationWarning>
+      <body className={`${inter.variable} ${cormorant.variable} font-sans bg-luxury-bg text-luxury-text-primary antialiased`} suppressHydrationWarning>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-white text-black p-4 z-50 rounded-sm outline-2 outline-black outline-offset-2">
           Skip to main content
         </a>

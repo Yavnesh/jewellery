@@ -357,7 +357,7 @@ const MegaMenu = () => {
                           : "text-luxury-text-secondary hover:text-luxury-text-primary hover:bg-luxury-ivory"
                       }`}
                     >
-                      {tMega(`filters.${filter.name.toLowerCase()}`)}
+                      {tMega(`filters.${filter.name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()}`)}
                     </button>
                   ))}
                 </div>

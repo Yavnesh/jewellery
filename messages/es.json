@@ -95,7 +95,12 @@
       "category": "Categoría",
       "price": "Precio",
       "occasion": "Ocasión",
-      "gender": "Género"
+      "gender": "Género",
+      "goldcoin": "Moneda de oro",
+      "men": "Hombres",
+      "metal": "Metal",
+      "metalstones": "Metal y piedras",
+      "style": "Estilo"
     },
     "subcategories": {
       "alljewellery": "Toda la joyería",
