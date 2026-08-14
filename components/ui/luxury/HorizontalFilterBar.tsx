@@ -6,15 +6,36 @@ import { SortBy } from "@/components";
 import { FilterSidebar } from "@/components/ui/luxury/FilterSidebar";
 import { AnimatePresence, motion } from "framer-motion";
 
+import { useFilterStore, FilterState } from "@/app/_zustand/filterStore";
+
 export const HorizontalFilterBar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const store = useFilterStore();
 
-  const quickFilters = [
-    { label: "₹25,000 - ₹50,000", active: false },
-    { label: "Gifts For Him", active: false },
-    { label: "Women", active: false },
-    { label: "Gold Jewellery", active: false },
+  const categoriesToSync: Array<{ key: keyof FilterState; displayName: string }> = [
+    { key: "jewelryTypes", displayName: "Jewelry Type" },
+    { key: "metalColors", displayName: "Metal Color" },
+    { key: "occasions", displayName: "Occasion" },
+    { key: "collections", displayName: "Collection" },
+    { key: "purities", displayName: "Purity" },
+    { key: "genders", displayName: "Gender" },
+    { key: "features", displayName: "Feature" }
   ];
+
+  const activeFilters: Array<{ category: keyof Omit<FilterState, 'priceRange' | 'setPriceRange' | 'toggleFilter' | 'clearAll' | 'removeFilter'>; value: string; label: string }> = [];
+
+  categoriesToSync.forEach(({ key, displayName }) => {
+    const values = store[key as keyof Omit<FilterState, 'priceRange' | 'setPriceRange' | 'toggleFilter' | 'clearAll' | 'removeFilter'>] as string[];
+    if (Array.isArray(values)) {
+      values.forEach(val => {
+        activeFilters.push({
+          category: key as keyof Omit<FilterState, 'priceRange' | 'setPriceRange' | 'toggleFilter' | 'clearAll' | 'removeFilter'>,
+          value: val,
+          label: `${displayName}: ${val}`
+        });
+      });
+    }
+  });
 
   return (
     <>
@@ -27,35 +48,38 @@ export const HorizontalFilterBar = () => {
           >
             <Filter className="w-4 h-4" />
             <span>Filter</span>
+            {activeFilters.length > 0 && (
+              <span className="bg-[#D62D20] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {activeFilters.length}
+              </span>
+            )}
             <ChevronDown className="w-4 h-4 text-gray-400" />
           </button>
 
-          <div className="hidden md:block w-[1px] h-6 bg-gray-200 mx-2" />
+          {activeFilters.length > 0 && <div className="hidden md:block w-[1px] h-6 bg-gray-200 mx-2" />}
 
-          {/* Quick Filter Pills */}
-          {quickFilters.map((filter) => (
+          {/* Active Filter Pills */}
+          {activeFilters.map((filter) => (
             <button 
-              key={filter.label}
-              className={`flex items-center gap-1.5 px-4 py-2 border rounded-full transition-all font-sans text-[13px] ${
-                filter.active 
-                  ? "border-gray-200 bg-[#F9F9F9] text-[#333333]" 
-                  : "border-gray-200 text-gray-600 hover:border-[#8B2C33] hover:text-[#8B2C33]"
-              }`}
+              key={`${filter.category}-${filter.value}`}
+              onClick={() => store.removeFilter(filter.category, filter.value)}
+              className="group flex items-center gap-1.5 px-4 py-2 border border-gray-200 bg-[#F9F9F9] text-[#333333] rounded-full hover:border-red-500 hover:text-red-500 transition-all font-sans text-[13px]"
             >
-              {filter.active ? (
-                <span className="flex items-center justify-center bg-gray-200 rounded-full p-0.5">
-                  <X className="w-2.5 h-2.5 text-gray-500" />
-                </span>
-              ) : (
-                <Plus className="w-3 h-3 text-[#8B2C33]" />
-              )}
+              <span className="flex items-center justify-center bg-gray-200 rounded-full p-0.5 group-hover:bg-red-100 transition-colors">
+                <X className="w-2.5 h-2.5 text-gray-500 group-hover:text-red-500 transition-colors" />
+              </span>
               {filter.label}
             </button>
           ))}
           
-          <button className="text-[13px] font-sans text-[#D62D20] font-medium ml-2 hover:underline">
-            +Show More
-          </button>
+          {activeFilters.length > 0 && (
+            <button 
+              onClick={store.clearAll}
+              className="text-[13px] font-sans text-[#D62D20] font-medium ml-2 hover:underline"
+            >
+              Clear All
+            </button>
+          )}
         </div>
 
         {/* Sort Dropdown */}
