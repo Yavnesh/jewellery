@@ -17,7 +17,7 @@ import { FaHeart } from "react-icons/fa6";
 const HeartElement = ({wishQuantity}: {wishQuantity: number}) => {
   return (
     <div className="relative">
-      <Link href="/wishlist">
+      <Link href="/account/wishlist">
         <FaHeart className="text-2xl text-luxury-text-primary" />
         <span className="block w-6 h-6 font-bold bg-luxury-gold text-white rounded-full flex justify-center items-center absolute top-[-17px] right-[-22px]">
           { wishQuantity }
