@@ -1,7 +1,7 @@
 import { env } from './env';
 
 const config = {
-  apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001',
+  apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || '',
   nextAuthUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL || 'http://localhost:3000',
 };
 
