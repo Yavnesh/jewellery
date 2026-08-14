@@ -19,8 +19,8 @@ export class RazorpayPaymentAdapter implements PaymentProviderAdapter {
 
   constructor() {
     this.client = new Razorpay({
-      key_id: env.RAZORPAY_KEY_ID,
-      key_secret: env.RAZORPAY_KEY_SECRET,
+      key_id: env.RAZORPAY_KEY_ID || "rzp_test_dummy",
+      key_secret: env.RAZORPAY_KEY_SECRET || "dummy_secret",
     });
   }
 
