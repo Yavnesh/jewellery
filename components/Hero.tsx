@@ -10,35 +10,28 @@ const Hero = () => {
   const t = useTranslations("Hero");
   const [current, setCurrent] = useState(0);
 
-  const slides = [
-    {
-      id: 1,
-      title: t("slide1.title"),
-      subtitle: t("slide1.subtitle"),
-      description: t("slide1.description"),
-      image: "/bridal-occasion.png",
-      ctaText: t("slide1.ctaText"),
-      ctaLink: "/shop?occasion=Wedding",
-    },
-    {
-      id: 2,
-      title: t("slide2.title"),
-      subtitle: t("slide2.subtitle"),
-      description: t("slide2.description"),
-      image: "/hero-banner.png",
-      ctaText: t("slide2.ctaText"),
-      ctaLink: "/shop",
-    },
-    {
-      id: 3,
-      title: t("slide3.title"),
-      subtitle: t("slide3.subtitle"),
-      description: t("slide3.description"),
-      image: "/daily-wear-lifestyle.png",
-      ctaText: t("slide3.ctaText"),
-      ctaLink: "/shop?occasion=Daily+Wear",
-    }
-  ];
+  const slidesOrderStr = t("slidesOrder") || "slide1,slide2,slide3";
+  const slidesKeys = slidesOrderStr.split(",");
+
+  const slideDataMap: Record<string, { ctaLink: string }> = {
+    slide1: { ctaLink: "/shop?occasion=Wedding" },
+    slide2: { ctaLink: "/shop" },
+    slide3: { ctaLink: "/shop?occasion=Daily+Wear" },
+    slide4: { ctaLink: "/shop?occasion=Engagement" }
+  };
+
+  const slides = slidesKeys.map((key, index) => {
+    const data = slideDataMap[key] || { ctaLink: "/shop" };
+    return {
+      id: index + 1,
+      title: t(`${key}.title`),
+      subtitle: t(`${key}.subtitle`),
+      description: t(`${key}.description`),
+      image: t(`${key}.image`),
+      ctaText: t(`${key}.ctaText`),
+      ctaLink: data.ctaLink,
+    };
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {

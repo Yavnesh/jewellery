@@ -1,0 +1,21 @@
+{
+  "short_name": "VamikaJewels",
+  "name": "Vamika Jewels Storefront",
+  "icons": [
+    {
+      "src": "/images/logo-round.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/logo-round-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "display": "standalone",
+  "orientation": "portrait"
+}

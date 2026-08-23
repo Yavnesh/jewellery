@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FaGem, FaRing } from "react-icons/fa6";
@@ -305,10 +305,79 @@ const MegaMenu = () => {
   const tMega = useTranslations("MegaMenu");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("Category");
+  const [categories, setCategories] = useState<any[]>([]);
 
-  const handleCategoryHover = (id: string) => {
-    setActiveCategory(id);
-    setActiveFilter("Category"); // reset to default filter when category changes
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("MegaMenu loaded categories:", data);
+        if (Array.isArray(data)) {
+          setCategories(data);
+        }
+      })
+      .catch((err) => console.error("Error loading categories in mega menu:", err));
+  }, []);
+
+  const emojiMap: Record<string, string> = {
+    "rings": "💍",
+    "earrings": "👂",
+    "pendants": "📿",
+    "bracelets": "🔗",
+    "bangles": "⭕",
+    "necklace": "🧣",
+    "broches": "📍",
+    "charms": "🧿",
+    "white-loose-diamond": "💎",
+    "salt-and-pepper": "🌶️"
+  };
+
+  const parentCategories = categories.filter((c: any) => !c.parentId && c.name !== "REPLACE_WITH_CATEGORY_ID");
+
+  const dynamicCategories = parentCategories.map((parent: any) => {
+    const subcats = categories.filter((c: any) => c.parentId === parent.id);
+    return {
+      id: parent.slug,
+      label: parent.name,
+      icon: <span className="text-sm">{emojiMap[parent.slug] || "✨"}</span>,
+      subcategories: subcats.map((sub: any) => {
+        const shortName = sub.name.includes("-") ? sub.name.split("-").pop()! : sub.name;
+        return {
+          name: shortName,
+          href: `/shop/${parent.slug}/${sub.slug}`,
+          icon: "💎"
+        };
+      }),
+      filters: [
+        { name: "Category" },
+        { name: "Price" },
+        { name: "Occasion" },
+        { name: "Gender" },
+      ],
+      banner: {
+        title: `Explore Fine ${parent.name}`,
+        subtitle: `Handcrafted with precise elegance.`,
+        href: `/shop/${parent.slug}`,
+      },
+      lifestyle: {
+        image: "/necklace-lifestyle.png",
+        tagline: `Unveil our exquisite collection of ${parent.name.toLowerCase()}.`,
+        cta: "Explore Now",
+        href: `/shop/${parent.slug}`,
+      }
+    };
+  });
+
+  const finalMegaCategories = dynamicCategories.length > 0 ? dynamicCategories : megaCategories;
+
+  const handleCategoryHover = (cat: any) => {
+    const hasDropdown = cat.id === "all" || cat.subcategories.length > 1;
+    if (hasDropdown) {
+      setActiveCategory(cat.id);
+      setActiveFilter("Category");
+    } else {
+      setActiveCategory(null);
+    }
   };
 
   return (
@@ -318,20 +387,37 @@ const MegaMenu = () => {
         className="flex justify-center gap-x-1 max-w-screen-2xl mx-auto"
         onMouseLeave={() => setActiveCategory(null)}
       >
-        {megaCategories.map((cat) => (
-          <button
-            key={cat.id}
-            onMouseEnter={() => handleCategoryHover(cat.id)}
-            className={`flex items-center gap-x-1.5 px-4 py-3 text-[11px] font-sans tracking-widest uppercase font-medium transition-all duration-200 border-b-2 ${
-              activeCategory === cat.id
-                ? "text-[#832729] border-[#832729]"
-                : "text-luxury-text-primary border-transparent hover:text-[#832729]"
-            }`}
-          >
-            {cat.icon}
-            <span>{cat.id === "all" ? tHeader("allJewellery") : tHeader(cat.id)}</span>
-          </button>
-        ))}
+        {finalMegaCategories.map((cat) => {
+          const hasDropdown = cat.id === "all" || cat.subcategories.length > 1;
+          const classNames = `flex items-center px-4 py-3 text-[11px] font-sans tracking-widest uppercase font-medium transition-all duration-200 border-b-2 ${
+            activeCategory === cat.id
+              ? "text-[#832729] border-[#832729]"
+              : "text-luxury-text-primary border-transparent hover:text-[#832729]"
+          }`;
+
+          if (hasDropdown) {
+            return (
+              <button
+                key={cat.id}
+                onMouseEnter={() => handleCategoryHover(cat)}
+                className={classNames}
+              >
+                <span>{cat.label}</span>
+              </button>
+            );
+          } else {
+            return (
+              <Link
+                key={cat.id}
+                href={`/shop/${cat.id}`}
+                onMouseEnter={() => setActiveCategory(null)}
+                className={classNames}
+              >
+                <span>{cat.label}</span>
+              </Link>
+            );
+          }
+        })}
       </div>
 
       {/* Mega Menu Panel */}
@@ -341,13 +427,13 @@ const MegaMenu = () => {
           onMouseEnter={() => setActiveCategory(activeCategory)}
           onMouseLeave={() => setActiveCategory(null)}
         >
-          {megaCategories
+          {finalMegaCategories
             .filter((cat) => cat.id === activeCategory)
             .map((cat) => (
               <div key={cat.id} className="max-w-screen-2xl mx-auto flex">
                 {/* Left Sidebar — Filters */}
                 <div className="w-44 shrink-0 border-r border-luxury-border/40 py-6 px-5">
-                  {cat.filters.map((filter, idx) => (
+                  {cat.filters.map((filter) => (
                     <button
                       key={filter.name}
                       onMouseEnter={() => setActiveFilter(filter.name)}
@@ -357,27 +443,24 @@ const MegaMenu = () => {
                           : "text-luxury-text-secondary hover:text-luxury-text-primary hover:bg-luxury-ivory"
                       }`}
                     >
-                      {tMega(`filters.${filter.name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()}`)}
+                      {filter.name}
                     </button>
                   ))}
                 </div>
 
-                {/* Center — Subcategory Grid */}
-                <div className="flex-1 py-6 px-8 flex flex-col justify-between">
+                {/* Center Content — Subcategories / Filter Options */}
+                <div className="flex-1 p-8">
                   {activeFilter === "Category" && (
-                    <div className="grid grid-cols-3 gap-x-8 gap-y-5">
-                      {cat.subcategories.map((sub) => (
+                    <div className="grid grid-cols-3 gap-x-8 gap-y-6">
+                      {cat.subcategories.map((sub: any) => (
                         <Link
                           key={sub.name}
                           href={sub.href}
-                          className="flex items-center gap-x-3 group"
+                          className="flex items-center gap-x-2 group"
                           onClick={() => setActiveCategory(null)}
                         >
-                          <span className="w-10 h-10 rounded-full bg-[#FAF7F2] border border-luxury-border/40 flex items-center justify-center text-base group-hover:bg-[#832729]/5 group-hover:border-[#832729]/20 transition-all duration-200">
-                            {sub.icon}
-                          </span>
                           <span className="text-[13px] font-sans text-luxury-text-primary group-hover:text-[#832729] transition-colors duration-200 font-medium">
-                            {tMega(`subcategories.${sub.name.replace(/\s+/g, "").toLowerCase()}`)}
+                            {sub.name}
                           </span>
                         </Link>
                       ))}
@@ -387,10 +470,10 @@ const MegaMenu = () => {
                   {activeFilter === "Price" && (
                     <div className="grid grid-cols-4 gap-4">
                       {[
-                        { label: "<25K", img: "/product1.webp" },
-                        { label: "25K-50K", img: "/product2.webp" },
-                        { label: "50K-1L", img: "/product4.webp" },
-                        { label: "1L & Above", img: "/product7.webp" },
+                        { label: "<25K", img: "/rings-lifestyle.png" },
+                        { label: "25K-50K", img: "/earrings-lifestyle.png" },
+                        { label: "50K-1L", img: "/necklace-lifestyle.png" },
+                        { label: "1L & Above", img: "/bracelet-lifestyle.png" },
                       ].map((item) => (
                         <Link href="/shop" key={item.label} onClick={() => setActiveCategory(null)} className="group flex flex-col items-center gap-3">
                           <div className="w-full aspect-square rounded-xl overflow-hidden bg-luxury-ivory relative">
@@ -447,21 +530,9 @@ const MegaMenu = () => {
                   {/* Promotional Banner */}
                   <div className="mt-8 bg-[#FAF7F2] border border-luxury-border/40 rounded-xl px-5 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-x-4">
-                      {/* Small product image thumbnails */}
-                      <div className="flex -space-x-2">
-                        <div className="w-10 h-10 rounded-sm overflow-hidden border border-white">
-                          <Image src="/product1.webp" alt="" width={40} height={40} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="w-10 h-10 rounded-sm overflow-hidden border border-white">
-                          <Image src="/product6.webp" alt="" width={40} height={40} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="w-10 h-10 rounded-sm overflow-hidden border border-white">
-                          <Image src="/product9.webp" alt="" width={40} height={40} className="w-full h-full object-cover" />
-                        </div>
-                      </div>
                       <div>
-                        <p className="text-[13px] font-sans font-semibold text-luxury-text-primary">{tMega(`banners.${cat.id}.title`)}</p>
-                        <p className="text-[11px] font-sans text-luxury-text-secondary">{tMega(`banners.${cat.id}.subtitle`)}</p>
+                        <p className="text-[13px] font-sans font-semibold text-luxury-text-primary">{cat.banner.title}</p>
+                        <p className="text-[11px] font-sans text-luxury-text-secondary">{cat.banner.subtitle}</p>
                       </div>
                     </div>
                     <Link
@@ -479,21 +550,21 @@ const MegaMenu = () => {
                   <div className="relative flex-1 rounded-sm overflow-hidden mb-3">
                     <Image
                       src={cat.lifestyle.image}
-                      alt={tMega(`lifestyles.${cat.id}.tagline`)}
+                      alt={cat.lifestyle.tagline}
                       fill
                       className="object-cover"
                       sizes="240px"
                     />
                   </div>
                   <p className="text-[13px] font-sans text-luxury-text-primary leading-snug font-medium">
-                    {tMega(`lifestyles.${cat.id}.tagline`)}
+                    {cat.lifestyle.tagline}
                   </p>
                   <Link
                     href={cat.lifestyle.href}
                     onClick={() => setActiveCategory(null)}
                     className="text-[12px] font-sans text-[#832729] underline underline-offset-2 mt-1.5 hover:text-[#6b1f21] transition-colors inline-flex items-center gap-x-1"
                   >
-                    {tMega(`lifestyles.${cat.id}.cta`)} <span className="text-xs">↗</span>
+                    {cat.lifestyle.cta} <span className="text-xs">↗</span>
                   </Link>
                 </div>
               </div>

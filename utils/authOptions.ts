@@ -3,6 +3,7 @@ import { Account, User as AuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
+import FacebookProvider from "next-auth/providers/facebook";
 import bcrypt from "bcryptjs";
 import prisma from "@/utils/db";
 import { nanoid } from "nanoid";
@@ -16,6 +17,10 @@ export const authOptions: NextAuthOptions = {
     AppleProvider({
       clientId: process.env.AUTH_APPLE_ID!,
       clientSecret: process.env.AUTH_APPLE_SECRET!,
+    }),
+    FacebookProvider({
+      clientId: process.env.AUTH_FACEBOOK_ID!,
+      clientSecret: process.env.AUTH_FACEBOOK_SECRET!,
     }),
     CredentialsProvider({
       id: "credentials",
@@ -59,7 +64,7 @@ export const authOptions: NextAuthOptions = {
       }
       
       // Handle OAuth providers safely
-      if (account && ["google", "apple", "github"].includes(account.provider)) {
+      if (account && ["google", "apple", "facebook", "github"].includes(account.provider)) {
         try {
           // 1. Check if the OAuth account is already linked
           const linkedAccount = await prisma.account.findUnique({

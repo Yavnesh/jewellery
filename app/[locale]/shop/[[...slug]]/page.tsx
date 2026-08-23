@@ -1,6 +1,7 @@
 import React from "react";
 import { getProducts } from "@/src/modules/catalog/catalog.service";
 import type { Metadata } from "next";
+import prisma from "@/utils/db";
 import { CategoryBanner } from "@/components/ui/luxury/CategoryBanner";
 import { HorizontalFilterBar } from "@/components/ui/luxury/HorizontalFilterBar";
 import { FilterSidebar } from "@/components/ui/luxury/FilterSidebar";
@@ -51,7 +52,7 @@ const ShopPage = async ({ params, searchParams }: Props) => {
   
   // Parse Search Params for Prisma Query
   const locale = awaitedParams.locale;
-  const categorySlug = awaitedParams?.slug?.[0];
+  const slugs = awaitedParams?.slug || [];
   const sort = awaitedSearchParams?.sort as string;
   const page = awaitedSearchParams?.page ? Number(awaitedSearchParams.page) : 1;
   const limit = 20;
@@ -82,9 +83,33 @@ const ShopPage = async ({ params, searchParams }: Props) => {
     if (maxPrice !== undefined) where.price.lte = maxPrice;
   }
   
-  if (categorySlug) {
-    where.category = { name: { equals: categorySlug } };
+  // Resolve Category / Subcategory hierarchy dynamically from DB
+  let categoryObj: any = null;
+  let parentCategoryObj: any = null;
+
+  if (slugs.length > 0) {
+    const activeSlug = slugs[slugs.length - 1];
+    categoryObj = await prisma.category.findFirst({
+      where: { slug: activeSlug },
+      include: { children: true }
+    });
+
+    if (categoryObj) {
+      if (categoryObj.children && categoryObj.children.length > 0) {
+        const childIds = categoryObj.children.map((c: any) => c.id);
+        where.categoryId = { in: [categoryObj.id, ...childIds] };
+      } else {
+        where.categoryId = categoryObj.id;
+      }
+
+      if (categoryObj.parentId) {
+        parentCategoryObj = await prisma.category.findUnique({
+          where: { id: categoryObj.parentId }
+        });
+      }
+    }
   }
+
   if (collections) {
     where.collection = { in: collections };
   } else if (awaitedSearchParams?.collection) {
@@ -128,11 +153,22 @@ const ShopPage = async ({ params, searchParams }: Props) => {
   // Execute via service
   const { products, totalProducts } = await getProducts(where, skip, limit, sort, locale);
 
-  const displayTitle = categorySlug 
-    ? sanitize(categorySlug.replace("-", " "))
+  const displayTitle = categoryObj
+    ? (categoryObj.name.includes("-") ? categoryObj.name.split("-").pop() : categoryObj.name)
     : awaitedSearchParams?.collection
     ? `${sanitize(awaitedSearchParams.collection as string)} Collection`
     : "All Jewellery";
+
+  // Build Breadcrumbs dynamically
+  const breadcrumbs = [];
+  breadcrumbs.push({ name: "Home", href: "/shop" });
+  if (parentCategoryObj) {
+    breadcrumbs.push({ name: parentCategoryObj.name, href: `/shop/${parentCategoryObj.slug}` });
+  }
+  if (categoryObj) {
+    const cleanName = categoryObj.name.includes("-") ? categoryObj.name.split("-").pop() : categoryObj.name;
+    breadcrumbs.push({ name: cleanName, href: `/shop/${slugs.join("/")}` });
+  }
 
   return (
     <div className="bg-white min-h-screen pb-24">
@@ -142,7 +178,14 @@ const ShopPage = async ({ params, searchParams }: Props) => {
         {/* Breadcrumb / Title area matching Vamika style */}
         <div className="mb-4">
           <div className="text-xs text-gray-500 font-sans mb-6 flex items-center gap-2">
-            <span>Home</span> <span className="text-gray-300">{'>'}</span> <span className="text-[#8B2C33]">{displayTitle}</span>
+            {breadcrumbs.map((crumb, idx) => (
+              <React.Fragment key={idx}>
+                {idx > 0 && <span className="text-gray-300">{'>'}</span>}
+                <span className={idx === breadcrumbs.length - 1 ? "text-[#8B2C33]" : "text-gray-500"}>
+                  {crumb.name}
+                </span>
+              </React.Fragment>
+            ))}
           </div>
           <div className="flex items-end gap-2">
             <h1 className="font-serif text-3xl text-[#333333] capitalize">

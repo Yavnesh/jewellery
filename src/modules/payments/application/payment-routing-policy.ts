@@ -21,14 +21,15 @@ export class AmountBasedPaymentRoutingPolicy implements PaymentRoutingPolicy {
       throw new UnsupportedPaymentCurrencyError(input.amount.currency);
     }
 
-    // Assuming currency is INR, calculate USD equivalent
-    // 1 USD is approximately 83 INR (using a fixed conversion for now)
-    const exchangeRate = 83;
-    const amountInINR = input.amount.amountMinor / 100;
-    const amountInUSD = amountInINR / exchangeRate;
+    // Calculate USD equivalent
+    let amountInUSD = input.amount.amountMinor / 100;
+    if (input.amount.currency === "INR") {
+      const exchangeRate = 83;
+      amountInUSD = amountInUSD / exchangeRate;
+    }
 
-    // If the price of item when converted to dollar is more than 2000
-    if (amountInUSD > 2000) {
+    // If the price of item when converted to dollar is more than 1000
+    if (amountInUSD >= 1000) {
       return PaymentProvider.SKYDO;
     }
 

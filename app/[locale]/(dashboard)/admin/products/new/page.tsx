@@ -18,6 +18,7 @@ const AddNewProduct = () => {
     description: string;
     slug: string;
     categoryId: string;
+    subcategoryId: string;
   }>({
     merchantId: "",
     title: "",
@@ -28,9 +29,21 @@ const AddNewProduct = () => {
     description: "",
     slug: "",
     categoryId: "",
+    subcategoryId: "",
   });
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [merchants, setMerchants] = useState<any[]>([]);
+
+  // Variation States for Rings
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [variantDetails, setVariantDetails] = useState<Record<string, { sku: string; price: number; stockQuantity: number }>>({});
+
+  const parentCategories = categories.filter((c) => c.parentId === null);
+  const subcategories = categories.filter((c) => c.parentId === product.categoryId);
+
+  const selectedParent = categories.find((c) => c.id === product.categoryId);
+  const isRings = selectedParent?.slug === "rings" || selectedParent?.name.toLowerCase() === "rings";
+
   const addProduct = async () => {
     if (
       !product.merchantId ||
@@ -44,20 +57,44 @@ const AddNewProduct = () => {
     }
 
     try {
-      // Sanitize form data before sending to API
-      const sanitizedProduct = sanitizeFormData(product);
+      const payload: any = {
+        ...product,
+        price: Number(product.price),
+        inStock: Number(product.inStock),
+      };
 
-      console.log("Sending product data:", sanitizedProduct);
+      if (isRings && selectedSizes.length > 0) {
+        payload.options = [
+          {
+            name: "Ring Size",
+            values: selectedSizes,
+          },
+        ];
+        payload.variants = selectedSizes.map((size) => {
+          const detail = variantDetails[size] || {
+            sku: `${product.slug}-size-${size}`,
+            price: Number(product.price),
+            stockQuantity: Number(product.inStock),
+          };
+          return {
+            optionValue: size,
+            sku: detail.sku,
+            price: Number(detail.price),
+            stockQuantity: Number(detail.stockQuantity),
+          };
+        });
+      }
 
-      // Correct usage of apiClient.post
-      const response = await apiClient.post(`/api/products`, sanitizedProduct);
+      console.log("Sending product data:", payload);
+
+      const response = await apiClient.post(`/api/products`, payload);
 
       if (response.status === 201) {
         const data = await response.json();
         console.log("Product created successfully:", data);
         toast.success("Product added successfully");
         setProduct({
-          merchantId: "",
+          merchantId: product.merchantId || "",
           title: "",
           price: 0,
           manufacturer: "",
@@ -66,11 +103,14 @@ const AddNewProduct = () => {
           description: "",
           slug: "",
           categoryId: categories[0]?.id || "",
+          subcategoryId: "",
         });
+        setSelectedSizes([]);
+        setVariantDetails({});
       } else {
         const errorData = await response.json();
         console.error("Failed to create product:", errorData);
-        toast.error(`"Error:" ${errorData.message || "Failed to add product"}`);
+        toast.error(`Error: ${errorData.error || "Failed to add product"}`);
       }
     } catch (error) {
       console.error("Error adding product:", error);
@@ -81,10 +121,10 @@ const AddNewProduct = () => {
   const fetchMerchants = async () => {
     try {
       const res = await apiClient.get("/api/merchants");
-      const data: Merchant[] = await res.json();
+      const data = await res.json();
       setMerchants(data || []);
       setProduct((prev) => ({
-      ...prev,
+        ...prev,
         merchantId: prev.merchantId || data?.[0]?.id || "",
       }));
     } catch (e) {
@@ -101,7 +141,6 @@ const AddNewProduct = () => {
         method: "POST",
         body: formData,
       });
-
       if (response.ok) {
         const data = await response.json();
       } else {
@@ -115,11 +154,10 @@ const AddNewProduct = () => {
   const fetchCategories = async () => {
     apiClient
       .get(`/api/categories`)
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
         setCategories(data);
+        const firstParent = data.find((c: any) => c.parentId === null);
         setProduct({
           merchantId: product.merchantId || "",
           title: "",
@@ -129,7 +167,8 @@ const AddNewProduct = () => {
           mainImage: "",
           description: "",
           slug: "",
-          categoryId: data[0]?.id,
+          categoryId: firstParent?.id || "",
+          subcategoryId: "",
         });
       });
   };
@@ -139,11 +178,40 @@ const AddNewProduct = () => {
     fetchMerchants();
   }, []);
 
+  const handleSizeCheckboxChange = (size: string) => {
+    if (selectedSizes.includes(size)) {
+      setSelectedSizes(selectedSizes.filter((s) => s !== size));
+    } else {
+      setSelectedSizes([...selectedSizes, size]);
+      if (!variantDetails[size]) {
+        setVariantDetails((prev) => ({
+          ...prev,
+          [size]: {
+            sku: `${product.slug}-size-${size}`,
+            price: product.price,
+            stockQuantity: product.inStock,
+          },
+        }));
+      }
+    }
+  };
+
+  const handleVariantDetailChange = (size: string, field: string, val: any) => {
+    setVariantDetails((prev) => ({
+      ...prev,
+      [size]: {
+        ...prev[size],
+        [field]: val,
+      },
+    }));
+  };
+
   return (
     <div className="bg-white flex justify-start max-w-screen-2xl mx-auto xl:h-full max-xl:flex-col max-xl:gap-y-5">
       <DashboardSidebar />
       <div className="flex flex-col gap-y-7 xl:ml-5 max-xl:px-5 w-full">
         <h1 className="text-3xl font-semibold">Add new product</h1>
+        
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
@@ -214,23 +282,46 @@ const AddNewProduct = () => {
               className="select select-bordered"
               value={product?.categoryId}
               onChange={(e) =>
-                setProduct({ ...product, categoryId: e.target.value })
+                setProduct({ ...product, categoryId: e.target.value, subcategoryId: "" })
               }
             >
-              {categories &&
-                categories.map((category: any) => (
-                  <option key={category?.id} value={category?.id}>
-                    {category?.name}
-                  </option>
-                ))}
+              {parentCategories.map((category: any) => (
+                <option key={category?.id} value={category?.id}>
+                  {category?.name}
+                </option>
+              ))}
             </select>
           </label>
         </div>
 
+        {subcategories.length > 0 && (
+          <div>
+            <label className="form-control w-full max-w-xs">
+              <div className="label">
+                <span className="label-text">Subcategory:</span>
+              </div>
+              <select
+                className="select select-bordered"
+                value={product?.subcategoryId}
+                onChange={(e) =>
+                  setProduct({ ...product, subcategoryId: e.target.value })
+                }
+              >
+                <option value="">Select Subcategory</option>
+                {subcategories.map((category: any) => (
+                  <option key={category?.id} value={category?.id}>
+                    {category?.name.split("-").pop() /* render short subcategory name */}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
+
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
-              <span className="label-text">Product price:</span>
+              <span className="label-text">Base Price:</span>
             </div>
             <input
               type="text"
@@ -242,6 +333,57 @@ const AddNewProduct = () => {
             />
           </label>
         </div>
+
+        {isRings && (
+          <div className="border p-4 rounded max-w-xl">
+            <h3 className="font-semibold text-lg mb-2">Ring Sizes Configurations</h3>
+            <div className="flex gap-x-4 mb-4">
+              {["5", "6", "7", "8", "9", "10"].map((size) => (
+                <label key={size} className="flex items-center gap-x-1 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedSizes.includes(size)}
+                    onChange={() => handleSizeCheckboxChange(size)}
+                  />
+                  <span>Size {size}</span>
+                </label>
+              ))}
+            </div>
+
+            {selectedSizes.map((size) => {
+              const detail = variantDetails[size] || { sku: "", price: 0, stockQuantity: 0 };
+              return (
+                <div key={size} className="bg-gray-50 p-2 rounded mb-2 border">
+                  <span className="font-semibold block mb-1">Size {size} Details:</span>
+                  <div className="grid grid-cols-3 gap-x-2">
+                    <input
+                      type="text"
+                      placeholder="SKU"
+                      className="input input-xs input-bordered w-full"
+                      value={detail.sku}
+                      onChange={(e) => handleVariantDetailChange(size, "sku", e.target.value)}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Price"
+                      className="input input-xs input-bordered w-full"
+                      value={detail.price}
+                      onChange={(e) => handleVariantDetailChange(size, "price", Number(e.target.value))}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Stock"
+                      className="input input-xs input-bordered w-full"
+                      value={detail.stockQuantity}
+                      onChange={(e) => handleVariantDetailChange(size, "stockQuantity", Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
@@ -257,6 +399,7 @@ const AddNewProduct = () => {
             />
           </label>
         </div>
+
         <div>
           <label className="form-control w-full max-w-xs">
             <div className="label">
@@ -274,6 +417,7 @@ const AddNewProduct = () => {
             </select>
           </label>
         </div>
+
         <div>
           <input
             type="file"
@@ -293,6 +437,7 @@ const AddNewProduct = () => {
             />
           )}
         </div>
+
         <div>
           <label className="form-control">
             <div className="label">
@@ -307,11 +452,12 @@ const AddNewProduct = () => {
             ></textarea>
           </label>
         </div>
+
         <div className="flex gap-x-2">
           <button
             onClick={addProduct}
             type="button"
-            className="uppercase bg-blue-500 px-10 py-5 text-lg border border-black border-gray-300 font-bold text-white shadow-sm hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2"
+            className="uppercase bg-blue-500 px-10 py-5 text-lg border border-black border-gray-300 font-bold text-white shadow-sm hover:bg-blue-600 hover:text-white"
           >
             Add product
           </button>

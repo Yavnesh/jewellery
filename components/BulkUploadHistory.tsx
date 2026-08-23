@@ -82,7 +82,7 @@ const BulkUploadHistory = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/bulk-upload/${batchToDelete.id}?deleteProducts=${deleteProducts}`,
+        `/api/bulk-upload/${batchToDelete.id}?deleteProducts=${deleteProducts}`,
         {
           method: "DELETE",
         }

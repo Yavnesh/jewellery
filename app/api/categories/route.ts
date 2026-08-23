@@ -15,7 +15,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name } = await request.json();
+    const { name, parentId } = await request.json();
 
     if (!name || name.trim().length === 0) {
       return NextResponse.json(
@@ -24,9 +24,12 @@ export async function POST(request: Request) {
       );
     }
 
+    const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const category = await prisma.category.create({
       data: {
         name: name.trim(),
+        slug,
+        parentId: parentId || null,
       },
     });
 

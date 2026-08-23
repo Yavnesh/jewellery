@@ -45,7 +45,7 @@ const ProductItem = ({
         {sanitize(product.title)}
       </Link>
       <p className="text-sm font-sans text-luxury-gold font-semibold tracking-widest mt-2">
-        ${product.price}
+        ₹ {product.price.toLocaleString('en-IN')}
       </p>
 
       <Link

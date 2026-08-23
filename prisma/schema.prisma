@@ -20,7 +20,7 @@ model Product {
   mainImage      String
   price          Int                      @default(0)
   rating         Int                      @default(0)
-  description    String
+  description    String                   @db.Text
   manufacturer   String
   inStock        Int                      @default(1)
   categoryId     String
@@ -33,7 +33,7 @@ model Product {
   metalType      String?
   purity         String?
   weight         Float?
-  features       String?
+  features       String?                  @db.Text
   gender         String?
   originalPrice  Int?
 
@@ -52,6 +52,7 @@ model Product {
   variants ProductVariant[]
   options  ProductOption[]
   translations ProductTranslation[]
+  reviews  Review[]
 }
 
 model Image {
@@ -77,6 +78,7 @@ model User {
   // Cart relation
   cart                    Cart?
   notificationPreferences NotificationPreference?
+  reviews                 Review[]
 }
 
 model Customer_order {
@@ -103,6 +105,13 @@ model Customer_order {
   notifications Notification[]
   payments      Payment[]
   lineItems     OrderLineItem[]
+  coupons       OrderCoupon[]
+
+  addressSnapshot OrderAddressSnapshot?
+  shipment        OrderShipment?
+  refunds         OrderRefund[]
+  returns         OrderReturn[]
+  reviews         Review[]
 }
 
 model customer_order_product {
@@ -125,8 +134,17 @@ model customer_order_product {
 model Category {
   id           String                @id @default(uuid())
   name         String                @unique
-  products     Product[] // Define a one-to-many relationship
+  slug         String                @unique
+  parentId     String?
+  parent       Category?             @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children     Category[]            @relation("CategoryHierarchy")
+  products     Product[]             // Define a one-to-many relationship
   translations CategoryTranslation[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @default(now()) @updatedAt
+
+  @@index([parentId])
+  @@index([slug])
 }
 
 model Wishlist {
@@ -295,6 +313,7 @@ model ProductVariant {
   inventoryEvents InventoryEvent[]
   cartItems       CartItem[]
   orderProducts   customer_order_product[]
+  inventory       Inventory?
 
   @@index([productId, status])
   @@index([status])
@@ -636,4 +655,162 @@ model CategoryTranslation {
   @@unique([categoryId, locale])
   @@index([locale])
 }
+
+model ProcessedWebhook {
+  id        String   @id @default(uuid())
+  eventId   String   @unique
+  provider  String
+  payload   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  title     String   @default("")
+  comment   String   @db.Text
+  status    String   @default("PENDING")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderId   String?
+  order     Customer_order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([productId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model Coupon {
+  id            String        @id @default(uuid())
+  code          String        @unique
+  discountType  String        // PERCENTAGE or FIXED
+  value         Float
+  minOrderValue Float         @default(0)
+  maxDiscount   Float?
+  startDate     DateTime
+  endDate       DateTime
+  usageLimit    Int           @default(1)
+  usedCount     Int           @default(0)
+  createdAt     DateTime      @default(now())
+  orderCoupons  OrderCoupon[]
+}
+
+model OrderCoupon {
+  id        String         @id @default(uuid())
+  orderId   String
+  couponId  String
+  discount  Float
+  order     Customer_order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  coupon    Coupon         @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@unique([orderId, couponId])
+  @@index([couponId])
+}
+
+model PasswordResetOtp {
+  id        String   @id @default(uuid())
+  email     String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+// ─── NEW HARDENED MODELS (V4 ARCHITECTURE) ───────────────────────────────────
+
+model IncomingWebhookEvent {
+  id        String   @id @default(uuid())
+  provider  String   // "razorpay" or "skydo"
+  payload   String   @db.Text
+  status    String   @default("PENDING") // PENDING, PROCESSED, FAILED
+  createdAt DateTime @default(now())
+
+  @@index([status])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String
+  action     String   // e.g. "ADJUST_STOCK", "REFUND_ORDER"
+  entityType String
+  entityId   String
+  oldValue   String?  @db.Text
+  newValue   String?  @db.Text
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+}
+
+model OrderAddressSnapshot {
+  id          String         @id @default(uuid())
+  orderId     String         @unique
+  addressType String         // "SHIPPING" or "BILLING"
+  fullName    String
+  phone       String
+  line1       String
+  line2       String?
+  city        String
+  state       String
+  postalCode  String
+  country     String
+  order       Customer_order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model OrderShipment {
+  id             String         @id @default(uuid())
+  orderId        String         @unique
+  courier        String
+  trackingNumber String
+  status         String         @default("PRE_DEPARTURE")
+  insuranceValue Int            @default(0)
+  signatureReq   Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  order          Customer_order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model OrderRefund {
+  id              String         @id @default(uuid())
+  orderId         String
+  gatewayRefundId String         @unique
+  amount          Int
+  status          String         @default("PENDING")
+  reason          String?
+  createdAt       DateTime       @default(now())
+  order           Customer_order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model OrderReturn {
+  id          String         @id @default(uuid())
+  orderId     String
+  status      String         @default("REQUESTED")
+  reason      String
+  exchangeCta Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  order       Customer_order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model Inventory {
+  id           String         @id @default(uuid())
+  variantId    String         @unique
+  onHand       Int            @default(0)
+  reserved     Int            @default(0)
+  available    Int            @default(0)
+  isSerialized Boolean        @default(false)
+  version      Int            @default(0)
+  variant      ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+}
+
 

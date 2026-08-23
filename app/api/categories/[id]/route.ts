@@ -35,7 +35,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const { name } = await request.json();
+    const { name, parentId } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: "Category ID is required" }, { status: 400 });
@@ -53,9 +53,14 @@ export async function PUT(
       return NextResponse.json({ error: "Category not found" }, { status: 404 });
     }
 
+    const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const updatedCategory = await prisma.category.update({
       where: { id: existingCategory.id },
-      data: { name: name.trim() },
+      data: {
+        name: name.trim(),
+        slug,
+        parentId: parentId || null
+      },
     });
 
     return NextResponse.json(updatedCategory);

@@ -1,6 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { AmountBasedPaymentRoutingPolicy } from "../../src/modules/payments/application/payment-routing-policy";
 import { PaymentProvider } from "../../src/modules/payments/domain/payment-provider";
+
+vi.mock("@/lib/env", () => ({
+  env: {
+    PAYMENT_ROUTING_CURRENCY: "USD"
+  }
+}));
 
 describe("AmountBasedPaymentRoutingPolicy", () => {
   const policy = new AmountBasedPaymentRoutingPolicy();

@@ -95,7 +95,7 @@ const BulkUploadPage = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("http://localhost:3001/api/bulk-upload", {
+      const response = await fetch("/api/bulk-upload", {
         method: "POST",
         body: formData,
       });
@@ -168,7 +168,7 @@ Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Ano
               image URL, description, slug, categoryId)
             </li>
             <li>Upload the completed CSV file</li>
-            <li>Maximum file size: 5MB</li>
+            <li>Maximum file size: 50MB</li>
           </ul>
         </div>
 

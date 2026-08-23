@@ -28,11 +28,13 @@ import { BRAND_NAME } from "@/utils/brand";
 export const metadata: Metadata = {
   title: `${BRAND_NAME} - Fine Luxury Jewelry`,
   description: `Experience premium fine jewelry and custom gemstones curated in a luxury storefront.`,
+  manifest: "/manifest.json",
 };
 
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import DatadogInit from "@/components/DatadogInit";
+import PwaRegister from "@/components/PwaRegister";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -66,6 +68,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <SessionProvider session={session}>
             <SessionTimeoutWrapper />
+            <PwaRegister />
             <Header />
             <Providers>
               <main id="main-content">

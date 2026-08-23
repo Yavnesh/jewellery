@@ -13,51 +13,35 @@ export async function POST(req: Request) {
     // 1. Verify Webhook Authenticity
     const event = await paymentProvider.verifyWebhook({ rawBody, signature });
 
-    // 2. Guarantee Idempotency (prevent double processing)
-    // In Prisma, we can use a unique constraint on providerEventId
-    try {
-      await prisma.paymentEvent.create({
-        data: {
+    // 2. Guarantee Idempotency (Check against PaymentEvent table first)
+    const existingEvent = await prisma.paymentEvent.findUnique({
+      where: {
+        provider_providerEventId: {
           provider: 'RAZORPAY',
-          providerEventId: event.providerEventId,
-          eventType: event.type,
-          payload: event.data,
+          providerEventId: event.providerEventId
         }
-      });
-    } catch (e: any) {
-      if (e.code === 'P2002') {
-        // Unique constraint violation means we already processed this exact webhook ID
-        logger.info({ eventId: event.providerEventId }, 'Webhook already processed (Idempotent replay)');
-        return NextResponse.json({ received: true, status: 'already_processed' });
       }
-      throw e;
+    });
+
+    if (existingEvent) {
+      logger.info({ eventId: event.providerEventId }, 'Webhook already processed (Idempotent replay prevention)');
+      return NextResponse.json({ received: true, status: 'already_processed' });
     }
 
-    // 3. Handle Business Logic (e.g. updating order status to PAID)
-    if (event.type === 'payment_intent.succeeded') {
-      const orderId = event.data.metadata?.orderId;
-      if (orderId) {
-        await prisma.customer_order.update({
-          where: { id: orderId },
-          data: { paymentStatus: 'SUCCEEDED' }
-        });
-        
-        // Mark event as fully processed
-        await prisma.paymentEvent.update({
-          where: {
-            provider_providerEventId: {
-              provider: 'RAZORPAY',
-              providerEventId: event.providerEventId
-            }
-          },
-          data: { processedAt: new Date() }
-        });
+    // 3. Queue Webhook Event Asynchronously (Insert into IncomingWebhookEvent)
+    await prisma.incomingWebhookEvent.create({
+      data: {
+        id: event.providerEventId, // Use provider's unique event ID as primary key
+        provider: 'razorpay',
+        payload: JSON.stringify(event),
+        status: 'PENDING'
       }
-    }
+    });
 
-    return NextResponse.json({ received: true });
+    // 4. Return 200 OK Immediately to Payment Gateway (Prevents timeouts)
+    return NextResponse.json({ received: true, status: 'queued' });
   } catch (error: any) {
-    logger.error({ error: error.message }, 'Payment webhook failed');
-    return NextResponse.json({ error: 'Webhook Handler Failed' }, { status: 400 });
+    logger.error({ error: error.message }, 'Payment webhook queuing failed');
+    return NextResponse.json({ error: 'Webhook Queuing Failed' }, { status: 400 });
   }
 }

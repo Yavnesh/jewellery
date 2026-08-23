@@ -1,6 +1,6 @@
 "use server";
 
-import { processCheckout } from "@/lib/checkout/checkout.service";
+import { checkoutService } from "@/src/modules/checkout/application/checkout.service";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 import { cookies } from "next/headers";
@@ -16,6 +16,7 @@ interface CheckoutInputPayload {
   apartment: string;
   postalCode: string;
   city: string;
+  state: string;
   country: string;
   orderNotice?: string;
 }
@@ -31,16 +32,16 @@ export async function submitCheckout(inputData: CheckoutInputPayload) {
     };
 
     // Basic validation
-    if (!input.name || !input.email || !input.adress || !input.city) {
+    if (!input.name || !input.email || !input.adress || !input.city || !input.state) {
       return { success: false, error: "Please fill in all required fields." };
     }
 
-    const { order, paymentIntent } = await processCheckout(input);
+    const { order, paymentIntent } = await checkoutService.processCheckout({
+      shippingDetails: input,
+      userId,
+      idempotencyKey: `action_checkout_${userId || "guest"}_${Date.now()}`,
+    });
 
-    // After successful checkout, clear the cart session cookie if guest, 
-    // or just rely on the cart being marked as CONVERTED.
-    // The next call to getActiveCart will create a new one automatically.
-    
     // Revalidate the entire site cache to update stock quantities on product pages
     revalidatePath("/", "layout");
 

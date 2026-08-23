@@ -189,36 +189,39 @@ const LoginPage = () => {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="mt-6 grid grid-cols-3 gap-3">
                 <button
                   type="button"
                   aria-label="Sign in with Google"
-                  className="flex w-full items-center border border-gray-300 justify-center gap-3 rounded-md bg-white px-3 py-2 text-black hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 transition-colors"
+                  className="flex w-full items-center border border-gray-300 justify-center gap-2 rounded-md bg-white px-2 py-2 text-black hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 transition-colors text-xs"
                   onClick={() => handleOAuthLogin("google")}
                 >
-                  <FcGoogle className="h-5 w-5" />
-                  <span className="text-sm font-semibold leading-6">
-                    Google
-                  </span>
+                  <FcGoogle className="h-4 w-4" />
+                  <span className="font-semibold">Google</span>
                 </button>
 
                 <button
                   type="button"
                   aria-label="Sign in with Apple"
-                  className="flex w-full items-center justify-center gap-3 rounded-md bg-black px-3 py-2 text-white hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors"
+                  className="flex w-full items-center justify-center gap-2 rounded-md bg-black px-2 py-2 text-white hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-colors text-xs"
                   onClick={() => handleOAuthLogin("apple")}
                 >
-                  <svg
-                    className="h-5 w-5"
-                    aria-hidden="true"
-                    fill="currentColor"
-                    viewBox="0 0 384 512"
-                  >
+                  <svg className="h-4 w-4" aria-hidden="true" fill="currentColor" viewBox="0 0 384 512">
                     <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
                   </svg>
-                  <span className="text-sm font-semibold leading-6">
-                    Apple
-                  </span>
+                  <span className="font-semibold">Apple</span>
+                </button>
+
+                <button
+                  type="button"
+                  aria-label="Sign in with Facebook"
+                  className="flex w-full items-center justify-center gap-2 rounded-md bg-[#1877F2] px-2 py-2 text-white hover:bg-[#166FE5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1877F2] transition-colors text-xs"
+                  onClick={() => handleOAuthLogin("facebook")}
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-semibold">Facebook</span>
                 </button>
               </div>
               {error && (

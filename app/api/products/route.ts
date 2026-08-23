@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/utils/db";
+import { validateCategoryHierarchy } from "@/lib/validation/product.validation";
 
 const ALLOWED_FILTER_TYPES = ['price', 'rating', 'category', 'inStock', 'outOfStock'];
 const ALLOWED_OPERATORS = ['gte', 'lte', 'gt', 'lt', 'equals', 'contains'];
@@ -181,26 +182,100 @@ export async function POST(request: Request) {
       description,
       manufacturer,
       categoryId,
+      subcategoryId,
       inStock,
+      options,
+      variants,
     } = body;
 
     if (!title || !merchantId || !slug || !price || !categoryId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const product = await prisma.product.create({
-      data: {
-        merchantId,
-        slug,
-        title,
-        mainImage,
-        price: Number(price),
-        rating: 5,
-        description,
-        manufacturer,
-        categoryId,
-        inStock: Number(inStock) || 1,
-      },
+    // Validate Category-Subcategory hierarchy integrity
+    if (subcategoryId && !(await validateCategoryHierarchy(categoryId, subcategoryId))) {
+      return NextResponse.json({ error: "Invalid subcategory parent mapping" }, { status: 400 });
+    }
+
+    const product = await prisma.$transaction(async (tx) => {
+      const p = await tx.product.create({
+        data: {
+          merchantId,
+          slug,
+          title,
+          mainImage,
+          price: Number(price),
+          rating: 5,
+          description,
+          manufacturer,
+          categoryId: subcategoryId || categoryId, // Lowest level category reference
+          inStock: Number(inStock) || 1,
+        },
+      });
+
+      if (options && Array.isArray(options) && options.length > 0) {
+        for (const opt of options) {
+          const createdOpt = await tx.productOption.create({
+            data: {
+              productId: p.id,
+              name: opt.name,
+            }
+          });
+
+          if (opt.values && Array.isArray(opt.values)) {
+            const valMap: Record<string, string> = {};
+            for (let vIdx = 0; vIdx < opt.values.length; vIdx++) {
+              const val = opt.values[vIdx];
+              const createdVal = await tx.productOptionValue.create({
+                data: {
+                  optionId: createdOpt.id,
+                  value: val,
+                  position: vIdx
+                }
+              });
+              valMap[val] = createdVal.id;
+            }
+
+            if (variants && Array.isArray(variants)) {
+              for (let vrIdx = 0; vrIdx < variants.length; vrIdx++) {
+                const vr = variants[vrIdx];
+                if (vr.optionValue && valMap[vr.optionValue]) {
+                  const createdVariant = await tx.productVariant.create({
+                    data: {
+                      productId: p.id,
+                      sku: vr.sku,
+                      price: Number(vr.price),
+                      stockQuantity: Number(vr.stockQuantity) || 0,
+                      title: `${title} - ${vr.optionValue}`,
+                      position: vrIdx
+                    }
+                  });
+
+                  await tx.variantOptionValue.create({
+                    data: {
+                      variantId: createdVariant.id,
+                      optionValueId: valMap[vr.optionValue]
+                    }
+                  });
+                }
+              }
+            }
+          }
+        }
+      } else {
+        // Create default variant if no custom options
+        await tx.productVariant.create({
+          data: {
+            productId: p.id,
+            sku: body.sku || `${slug}-default`,
+            price: Number(price),
+            stockQuantity: Number(inStock) || 1,
+            title: `${title} - Default`
+          }
+        });
+      }
+
+      return p;
     });
 
     return NextResponse.json(product, { status: 201 });
