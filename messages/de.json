@@ -352,7 +352,7 @@
       "about": {
         "title": "Über uns",
         "items": {
-          "aboutBrand": "Über Vamika Jewels",
+          "aboutBrand": "Über Uns",
           "workWithUs": "Arbeiten Sie mit uns",
           "companyProfile": "Unternehmensprofil"
         }
@@ -378,5 +378,91 @@
     },
     "copyright": "© {year} {brand}. Alle Rechte vorbehalten.",
     "tagline": "Auf Exzellenz ausgelegt"
+  },
+  "AboutPage": {
+    "title": "Über Uns",
+    "tagline": "Ihre Vision. Unsere Handwerkskunst. Eine zeitlose Kreation.",
+    "introTitle": "Exquisite Handwerkskunst & Qualität",
+    "paragraph1": "Wir sind ein vertrauenswürdiger Schmuckhersteller, Diamantenhändler und Spezialist für maßgeschneiderten Schmuck. Wir kreieren exquisite Stücke, die außergewöhnliche Handwerkskunst, Qualität und zeitloses Design vereinen.",
+    "paragraph2": "Von der Beschaffung erstklassiger Diamanten und edler Materialien bis hin zur Herstellung und individuellen Anpassung von Schmuck bieten wir durchgängige Schmucklösungen, die auf die einzigartige Vision jedes Kunden zugeschnitten sind. Zu unserer Expertise gehören individuell gestalteter Diamantschmuck, Verlobungsringe, Brautschmuck, Einzelanfertigungen und exklusive Kollektionen.",
+    "paragraph3": "Mit einem starken Fokus auf Qualität, Authentizität, Präzision und Kundenzufriedenheit verwandeln wir Ideen in wunderschön gefertigten Schmuck, der geschaffen wurde, um über Generationen hinweg geschätzt zu werden.",
+    "missionTitle": "Unsere Mission & Philosophie",
+    "missionText": "Ihre Vision durch unübertroffene Präzision und authentische Handwerkskunst zum Leben zu erwecken. Wir glauben, dass jedes Schmuckstück eine Geschichte erzählt, und wir möchten Ihre zeitlos machen.",
+    "features": {
+      "manufacturer": {
+        "title": "Schmuckhersteller",
+        "desc": "Durchgängige Kreation, die traditionelle Techniken mit modernster Fertigung verbindet."
+      },
+      "trader": {
+        "title": "Diamantenhändler",
+        "desc": "Direkter Zugang zu ethisch einwandfreien, erstklassigen Diamanten von höchster Brillanz."
+      },
+      "specialist": {
+        "title": "Spezialist für Anpassungen",
+        "desc": "Maßgeschneiderter Service zur Konzeption und Herstellung einzigartiger Schätze."
+      }
+    }
+  },
+  "CareersPage": {
+    "title": "Arbeiten Sie mit Uns",
+    "tagline": "Seit 2018 verwandeln wir Ideen in zeitlosen Schmuck – gefertigt mit Leidenschaft, Präzision und Perfektion.",
+    "introTitle": "Werden Sie Teil Unseres Erbes",
+    "paragraph1": "Gegründet im Jahr 2018 sind wir ein vertrauenswürdiger Schmuckhersteller, Diamantenhändler und Spezialist für maßgeschneiderten Schmuck, der sich der Herstellung außergewöhnlicher Stücke mit kompromissloser Qualität verschrieben hat.",
+    "paragraph2": "Mit langjähriger Expertise in der Schmuck- und Diamantenbranche sind wir auf individuell gestalteten Diamantschmuck, Verlobungsringe, Brautschmuck und exklusive Designs spezialisiert.",
+    "paragraph3": "Von sorgfältig ausgewählten Diamanten und edlen Materialien bis hin zur fachmännischen Herstellung und personalisierten Designs bieten wir durchgängige Schmucklösungen an.",
+    "paragraph4": "Unser Engagement für Qualität, Authentizität, Präzision, Transparenz und Kundenzufriedenheit hat uns geholfen, dauerhafte Kundenbeziehungen aufzubauen.",
+    "applyTitle": "Beginnen Sie Ihre Reise mit Uns",
+    "applyDesc": "Haben Sie eine Leidenschaft für edlen Schmuck, Design oder Gemmologie? Senden Sie uns Ihr Portfolio und Ihren Lebenslauf, um Karrieremöglichkeiten in unserem Team zu entdecken.",
+    "emailLabel": "Bewerbung senden an: careers@vamikajewels.com",
+    "values": {
+      "quality": {
+        "title": "Kompromisslose Qualität",
+        "desc": "Maßstäbe setzen bei der Auswahl von Edelmetallen und Edelsteinen."
+      },
+      "authenticity": {
+        "title": "Absolute Authentizität",
+        "desc": "Sicherstellen, dass jede Komponente zertifiziert und ethisch einwandfrei ist."
+      },
+      "precision": {
+        "title": "Präzisionsarbeit",
+        "desc": "Handwerk mit strenger Liebe zum Detail und traditionellem Fachwissen."
+      }
+    }
+  },
+  "CompanyProfilePage": {
+    "title": "Unternehmensprofil",
+    "headerTitle": "Vami Exports",
+    "subtitle": "Herstellung von Diamant- & Goldschmuck | Maßgeschneiderter Schmuck | Diamantenhandel",
+    "introTitle": "Über Vami Exports",
+    "paragraph1": "Vami Exports, gegründet von Herrn Sobhag Sharma, ist ein professionell geführtes Schmuckunternehmen, das sich auf die Herstellung von Diamant- und Goldschmuck, den Diamantenhandel und maßgeschneiderten Schmuck spezialisiert hat.",
+    "paragraph2": "Mit 20 Jahren Branchenerfahrung bringen wir in jede Kreation umfangreiches Wissen, Handwerkskunst und Expertise ein. Vami Exports wurde 2018 mit der Vision gegründet, wunderschön gefertigten Schmuck zu liefern, der außergewöhnliche Qualität, zeitgemäßes Design und zeitlose Eleganz verbindet.",
+    "paragraph3": "Unsere Erfahrung in der Diamanten- und Schmuckbranche ermöglicht es uns, jede Phase des Prozesses zu verstehen – von der Auswahl und Beschaffung der Diamanten bis hin zum Design, der Herstellung, Veredelung und individuellen Anpassung des Schmucks.",
+    "expertiseTitle": "Unsere Expertise",
+    "expertiseItems": [
+      "Herstellung von Diamantschmuck",
+      "Herstellung von Goldschmuck",
+      "Diamantenhandel",
+      "Maßgeschneiderter Schmuck",
+      "Braut- und Hochzeitsschmuck",
+      "Verlobungs- und Diamantringe",
+      "Personalisierte Schmuckdesigns",
+      "Private Label & Fertigungslösungen"
+    ],
+    "craftTitle": "Unsere Handwerkskunst",
+    "craftParagraph1": "Bei Vami Exports wird jedes Stück mit viel Liebe zum Detail hergestellt. Wir verbinden traditionelle Schmuckhandwerkskunst mit modernen Techniken und zeitgemäßem Design, um Schmuck zu schaffen, der Individualität und Eleganz widerspiegelt.",
+    "craftParagraph2": "Egal, ob Sie ein Design im Sinn haben oder Unterstützung bei der Entwicklung eines völlig neuen Konzepts benötigen, unser Team arbeitet eng mit den Kunden zusammen, um Ideen in wunderschön veredelten Schmuck zu verwandeln.",
+    "commitmentTitle": "Unsere Verpflichtung",
+    "commitmentParagraph": "Wir glauben, dass Schmuck mehr als ein Accessoire ist – er ist Ausdruck von Emotionen, Individualität, Meilensteinen und Erinnerungen.",
+    "commitmentSub": "Unser Engagement basiert auf vier Grundwerten:",
+    "commitmentValues": "Qualität • Authentizität • Handwerkskunst • Vertrauen",
+    "commitmentBottom": "Wir sind bestrebt, bei jedem Diamanten, jedem Stück Gold und jeder fertigen Kreation hohe Standards einzuhalten und gleichzeitig langfristige Beziehungen zu unseren Kunden und Geschäftspartnern aufzubauen.",
+    "visionTitle": "Unsere Vision",
+    "visionParagraph": "Vami Exports als vertrauenswürdigen und angesehenen Namen in der globalen Diamant- und Goldschmuckbranche zu etablieren, indem wir außergewöhnliche Handwerkskunst, zuverlässigen Service und innovative, maßgeschneiderte Schmucklösungen liefern.",
+    "promiseTitle": "Unser Versprechen",
+    "promiseLine1": "20 Jahre Expertise.",
+    "promiseLine2": "Seit 2018 ein Name, dem Sie vertrauen können.",
+    "promiseBottom": "Bei Vami Exports stellen wir nicht einfach nur Schmuck her – wir erschaffen zeitlose Geschichten in Diamanten und Gold.",
+    "bottomLogo": "Vami Exports",
+    "bottomTagline": "Eleganz gestalten. Vertrauen schaffen. Jeden Moment feiern."
   }
 }

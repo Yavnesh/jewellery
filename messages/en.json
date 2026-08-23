@@ -44,23 +44,34 @@
   },
   "Hero": {
     "viewAll": "View All",
+    "slidesOrder": "slide4,slide2,slide3",
     "slide1": {
       "title": "The Bridal Essence",
       "subtitle": "Wedding Collection",
       "description": "Unveil our exquisite collection of hand-crafted bridal sets, designed to make your special day eternal.",
-      "ctaText": "Explore Bridal"
+      "ctaText": "Explore Bridal",
+      "image": "/bridal-occasion.png"
     },
     "slide2": {
       "title": "Timeless Gold",
       "subtitle": "Signature Collection",
       "description": "Indulge in the timeless elegance of masterfully crafted gold jewelry, designed to be treasured for generations.",
-      "ctaText": "Shop Now"
+      "ctaText": "Shop Now",
+      "image": "/hero-banner.png"
     },
     "slide3": {
       "title": "Everyday Radiance",
       "subtitle": "Daily Wear",
       "description": "Lightweight, elegant pieces curated for the modern woman — luxury you can wear every day.",
-      "ctaText": "Explore Daily Wear"
+      "ctaText": "Explore Daily Wear",
+      "image": "/daily-wear-lifestyle.png"
+    },
+    "slide4": {
+      "title": "Modern Romance",
+      "subtitle": "Engagement Collection",
+      "description": "Exquisite solitaire diamond engagement rings, designed to capture your unique love story.",
+      "ctaText": "Explore Solitaires",
+      "image": "/western-engagement-lifestyle.jpg"
     }
   },
   "Introducing": {
@@ -352,7 +363,7 @@
       "about": {
         "title": "About Us",
         "items": {
-          "aboutBrand": "About Vamika Jewels",
+          "aboutBrand": "About Us",
           "workWithUs": "Work With Us",
           "companyProfile": "Company Profile"
         }
@@ -378,5 +389,226 @@
     },
     "copyright": "© {year} {brand}. All rights reserved.",
     "tagline": "Designed for excellence"
+  },
+  "AboutPage": {
+    "title": "About Us",
+    "tagline": "Your vision. Our craftsmanship. A timeless creation.",
+    "introTitle": "Exquisite Craftsmanship & Quality",
+    "paragraph1": "We are a trusted Jewellery Manufacturer, Diamond Trader, and Customized Jewellery Specialist, creating exquisite pieces that combine exceptional craftsmanship, quality, and timeless design.",
+    "paragraph2": "From sourcing premium diamonds and precious materials to manufacturing and customizing jewellery, we offer end-to-end jewellery solutions tailored to every client’s unique vision. Our expertise includes custom-designed diamond jewellery, engagement rings, bridal jewellery, bespoke pieces, and exclusive collections.",
+    "paragraph3": "With a strong focus on quality, authenticity, precision, and customer satisfaction, we transform ideas into beautifully crafted jewellery that is made to be cherished for generations.",
+    "missionTitle": "Our Mission & Philosophy",
+    "missionText": "To bring your vision to life through unmatched precision and authentic craftsmanship. We believe every piece of jewellery tells a story, and we are dedicated to making yours timeless.",
+    "features": {
+      "manufacturer": {
+        "title": "Jewellery Manufacturer",
+        "desc": "End-to-end creation, combining traditional techniques with state-of-the-art manufacturing."
+      },
+      "trader": {
+        "title": "Diamond Trader",
+        "desc": "Direct access to ethically sourced, premium diamonds of the highest brilliance."
+      },
+      "specialist": {
+        "title": "Customization Specialist",
+        "desc": "Bespoke service to conceptualize and craft one-of-a-kind treasures."
+      }
+    }
+  },
+  "CareersPage": {
+    "title": "Work With Us",
+    "tagline": "Since 2018, turning ideas into timeless jewellery—crafted with passion, precision, and perfection.",
+    "introTitle": "Join Our Legacy of Craftsmanship",
+    "paragraph1": "Established in 2018, we are a trusted Jewellery Manufacturer, Diamond Trader, and Customized Jewellery Specialist, dedicated to creating exceptional jewellery with uncompromising quality and craftsmanship.",
+    "paragraph2": "With years of expertise in the jewellery and diamond industry, we specialize in custom-designed diamond jewellery, engagement rings, bridal jewellery, bespoke creations, and exclusive designs.",
+    "paragraph3": "From carefully selected diamonds and precious materials to expert manufacturing and personalized designs, we provide end-to-end jewellery solutions tailored to our clients’ individual preferences and visions.",
+    "paragraph4": "Our commitment to quality, authenticity, precision, transparency, and customer satisfaction has helped us build lasting relationships with our clients.",
+    "applyTitle": "Start Your Journey With Us",
+    "applyDesc": "Are you passionate about fine jewelry, design, or gemology? Send us your portfolio and resume to explore career opportunities in our team.",
+    "emailLabel": "Send application to: careers@vamikajewels.com",
+    "values": {
+      "quality": {
+        "title": "Uncompromising Quality",
+        "desc": "Setting benchmarks in precious metals and gemstone selection."
+      },
+      "authenticity": {
+        "title": "Absolute Authenticity",
+        "desc": "Ensuring every component is certified and ethically sourced."
+      },
+      "precision": {
+        "title": "Master Precision",
+        "desc": "Crafting with rigorous attention to detail and traditional expertise."
+      }
+    }
+  },
+  "CompanyProfilePage": {
+    "title": "Company Profile",
+    "headerTitle": "Vami Exports",
+    "subtitle": "Diamond & Gold Jewellery Manufacturing | Custom Jewellery | Diamond Trading",
+    "introTitle": "About Vami Exports",
+    "paragraph1": "Vami Exports, founded by Mr. Sobhag Sharma, is a professionally managed jewellery company specializing in diamond and gold jewellery manufacturing, diamond trading, and customized jewellery.",
+    "paragraph2": "With 20 years of industry experience, we bring extensive knowledge, craftsmanship, and expertise to every creation. Vami Exports was established in 2018 with a vision to deliver beautifully crafted jewellery that combines exceptional quality, contemporary design, and timeless elegance.",
+    "paragraph3": "Our experience across the diamond and jewellery industry enables us to understand every stage of the process—from diamond selection and sourcing to jewellery design, manufacturing, finishing, and customization.",
+    "expertiseTitle": "Our Expertise",
+    "expertiseItems": [
+      "Diamond Jewellery Manufacturing",
+      "Gold Jewellery Manufacturing",
+      "Diamond Trading",
+      "Customized & Bespoke Jewellery",
+      "Bridal & Wedding Jewellery",
+      "Engagement & Diamond Rings",
+      "Personalized Jewellery Designs",
+      "Private Label & Manufacturing Solutions"
+    ],
+    "craftTitle": "Our Craftsmanship",
+    "craftParagraph1": "At Vami Exports, every piece is created with meticulous attention to detail. We combine traditional jewellery craftsmanship with modern techniques and contemporary design to create jewellery that reflects individuality and elegance.",
+    "craftParagraph2": "Whether you have a design in mind or need assistance developing a completely new concept, our team works closely with clients to transform ideas into beautifully finished jewellery.",
+    "commitmentTitle": "Our Commitment",
+    "commitmentParagraph": "We believe that jewellery is more than an accessory—it is a reflection of emotion, individuality, milestones, and memories.",
+    "commitmentSub": "Our commitment is built on four core values:",
+    "commitmentValues": "Quality • Authenticity • Craftsmanship • Trust",
+    "commitmentBottom": "We strive to maintain high standards in every diamond, every piece of gold, and every finished creation while building long-term relationships with our clients and business partners.",
+    "visionTitle": "Our Vision",
+    "visionParagraph": "To establish Vami Exports as a trusted and respected name in the global diamond and gold jewellery industry by delivering exceptional craftsmanship, reliable service, and innovative customized jewellery solutions.",
+    "promiseTitle": "Our Promise",
+    "promiseLine1": "20 Years of Expertise.",
+    "promiseLine2": "Since 2018, One Name You Can Trust.",
+    "promiseBottom": "At Vami Exports, we don't simply manufacture jewellery—we craft timeless stories in diamonds and gold.",
+    "bottomLogo": "Vami Exports",
+    "bottomTagline": "Crafting Elegance. Creating Trust. Celebrating Every Moment."
+  },
+  "LoyaltyPage": {
+    "title": "Loyalty Program",
+    "tagline": "Elevating your journey with exclusive privileges, rewards, and bespoke services.",
+    "intro": "The Vamika Jewels Loyalty Program is designed to celebrate our most valued clients. Earn points on every purchase and unlock access to private collections, priority custom design consultation, and anniversary privileges.",
+    "tiersTitle": "Exclusive Membership Tiers",
+    "pointsTitle": "How to Earn & Redeem",
+    "silver": {
+      "name": "Silver Tier",
+      "desc": "Entrance upon first purchase. 1% points back on gold jewellery, 1.5% on diamonds, and complimentary cleaning services."
+    },
+    "gold": {
+      "name": "Gold Tier",
+      "desc": "Unlock at ₹2,50,000 annual spend. 1.5% points back on gold, 2.5% on diamonds, complimentary insured shipping, and birthday gifts."
+    },
+    "platinum": {
+      "name": "Platinum Tier",
+      "desc": "Unlock at ₹7,50,000 annual spend. 2% points back on gold, 4% on diamonds, private previews, and a dedicated personal concierge."
+    }
+  },
+  "TermsPage": {
+    "title": "Terms of Use",
+    "tagline": "Please read our guidelines for shopping and interacting with Vamika Jewels.",
+    "intro": "These terms govern your use of our luxury storefront, customized orders, and online services.",
+    "sections": {
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "desc": "By accessing this store, placing an order, or booking a customization session, you agree to comply with and be bound by these Terms of Use."
+      },
+      "customOrders": {
+        "title": "2. Customized & Bespoke Orders",
+        "desc": "Bespoke pieces require a 50% upfront deposit before manufacturing begins. Once approved and cast in precious metal, custom designs are non-refundable."
+      },
+      "pricing": {
+        "title": "3. Pricing & Gold Rates",
+        "desc": "Due to fluctuations in the gold, platinum, and diamond markets, prices are subject to change. Gold rate calculations are locked at the time of deposit."
+      },
+      "intellectual": {
+        "title": "4. Intellectual Property",
+        "desc": "All custom jewelry CAD models, designs, and content developed by our master craftsmen remain the exclusive property of Vami Exports."
+      }
+    }
+  },
+  "PrivacyPage": {
+    "title": "Privacy Policy",
+    "tagline": "Your trust and privacy are paramount to us.",
+    "intro": "We safeguard your personal information, transaction history, and customization designs with military-grade encryption.",
+    "sections": {
+      "collection": {
+        "title": "1. Information We Collect",
+        "desc": "We collect billing credentials, contact information, delivery addresses, and custom design notes to process your luxury jewelry orders."
+      },
+      "security": {
+        "title": "2. Data Security",
+        "desc": "We use Secure Sockets Layer (SSL) technology and industry-standard payment gateways (Stripe, Razorpay) to prevent unauthorized access."
+      },
+      "sharing": {
+        "title": "3. Third-Party Sharing",
+        "desc": "We never sell your personal information. Sourcing and courier partners only receive delivery details required for insured logistics."
+      }
+    }
+  },
+  "ComplaintsPage": {
+    "title": "Complaints & Inquiries",
+    "tagline": "We strive for perfection, but if anything is less than exemplary, we are here to resolve it.",
+    "intro": "Every creation undergoes strict quality assurance. If you notice any stone setting defects or gold weight discrepancies, please contact our resolution team.",
+    "stepTitle": "Our Resolution Process",
+    "step1": {
+      "title": "1. Submit Details",
+      "desc": "Contact us via support@vamikajewels.com with your order number and close-up images of the issue."
+    },
+    "step2": {
+      "title": "2. Expert Evaluation",
+      "desc": "Our master gemologists evaluate the concern and coordinate return shipping for physical inspections."
+    },
+    "step3": {
+      "title": "3. Repair or Replacement",
+      "desc": "Verified defects are resolved under warranty with complimentary repair, metal casting corrections, or item replacement."
+    }
+  },
+  "PartnersPage": {
+    "title": "Partners & Affiliates",
+    "tagline": "Collaborating with elite diamond houses and luxury retailers worldwide.",
+    "intro": "We partner with ethically sourced diamond miners, registered local boutiques, and bespoke designers to deliver global excellence.",
+    "silverTitle": "Partner with Vami Exports",
+    "desc": "Vami Exports offers private label manufacturing solutions, gold hallmarking setups, and diamond trading catalogs to verified B2B partners.",
+    "apply": "Apply for B2B Partnership"
+  },
+  "ContactPage": {
+    "title": "Contact Us",
+    "tagline": "We are here to assist you with inquiries, custom orders, or showroom visits.",
+    "intro": "Reach out to our jewelry advisors for customized orders, diamond trading consultations, or general store assistance.",
+    "addressTitle": "Headquarters & Showroom",
+    "addressText": "Vami Exports, Jaipur, Rajasthan, India",
+    "phoneTitle": "Phone & WhatsApp",
+    "phoneText": "+91 98765 43210",
+    "emailTitle": "Email Support",
+    "emailText": "support@vamikajewels.com",
+    "formTitle": "Send Us a Message",
+    "nameLabel": "Your Name",
+    "emailLabel": "Your Email",
+    "msgLabel": "Your Message",
+    "sendBtn": "Send Message"
+  },
+  "HowToBuyPage": {
+    "title": "How to Buy",
+    "tagline": "Seamless purchasing and customization guidance for our luxury pieces.",
+    "step1": {
+      "title": "1. Explore & Select",
+      "desc": "Browse our online collections of rings, necklaces, and earrings, or select loose diamonds from our trading catalog."
+    },
+    "step2": {
+      "title": "2. Consult & Customize",
+      "desc": "For bespoke pieces, connect with our custom specialists. We create CAD mockups and coordinate precious metal options."
+    },
+    "step3": {
+      "title": "3. Secure Checkout",
+      "desc": "Complete your order via encrypted gateways (Stripe, Razorpay) with instant order confirmation and rate-locking."
+    },
+    "step4": {
+      "title": "4. Fully Insured Shipping",
+      "desc": "Every creation is packaged in a luxury box and delivered via secure, fully insured logistics partners."
+    }
+  },
+  "FaqPage": {
+    "title": "FAQ",
+    "tagline": "Frequently asked questions regarding our craftsmanship, shipping, and custom designs.",
+    "q1": "Are your diamonds certified?",
+    "a1": "Yes, every diamond above 0.3 carats is certified by leading international gemological laboratories like GIA, IGI, or HRD.",
+    "q2": "How long do custom orders take?",
+    "a2": "Custom jewelry design and manufacturing typically take between 2 to 4 weeks, depending on design complexity.",
+    "q3": "Is the shipping insured?",
+    "a3": "Absolutely. All shipments are fully insured against loss, damage, or theft during transit to guarantee total peace of mind.",
+    "q4": "What metal purity do you offer?",
+    "a4": "We construct jewelry using BIS hallmarked pure gold (18K and 22K) and 950 Platinum, stamped with official purity marks."
   }
 }

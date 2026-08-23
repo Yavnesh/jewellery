@@ -75,7 +75,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const isBestseller = product.rating && product.rating >= 4.5;
+  const isBestseller = !!(product.rating && product.rating >= 4.5);
   const stockCount = product.inStock || 5;
 
   const handleProductClick = () => {

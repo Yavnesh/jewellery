@@ -352,7 +352,7 @@
       "about": {
         "title": "À propos",
         "items": {
-          "aboutBrand": "À propos de Vamika Jewels",
+          "aboutBrand": "À Propos",
           "workWithUs": "Travaillez avec nous",
           "companyProfile": "Profil de l'entreprise"
         }
@@ -378,5 +378,91 @@
     },
     "copyright": "© {year} {brand}. Tous droits réservés.",
     "tagline": "Conçu pour l'excellence"
+  },
+  "AboutPage": {
+    "title": "À Propos",
+    "tagline": "Votre vision. Notre savoir-faire. Une création intemporelle.",
+    "introTitle": "Artisanat d'Excellence et Qualité",
+    "paragraph1": "Nous sommes un fabricant de bijoux de confiance, un négociant en diamants et un spécialiste des bijoux personnalisés, créant des pièces exquises qui allient un savoir-faire exceptionnel, la qualité et un design intemporel.",
+    "paragraph2": "De l'approvisionnement en diamants de qualité supérieure et en matériaux précieux à la fabrication et à la personnalisation de bijoux, nous offrons des solutions de joaillerie de bout en bout adaptées à la vision unique de chaque client. Notre expertise comprend les bijoux en diamants conçus sur mesure, les bagues de fiançailles, les bijoux de mariage, les pièces sur mesure et les collections exclusives.",
+    "paragraph3": "En mettant l'accent sur la qualité, l'authenticité, la précision et la satisfaction du client, nous transformons les idées en bijoux magnifiquement façonnés, faits pour être chéris pendant des générations.",
+    "missionTitle": "Notre Mission & Philosophie",
+    "missionText": "Donner vie à votre vision grâce à une précision inégalée et un savoir-faire authentique. Nous pensons que chaque bijou raconte une histoire, et nous nous engageons à rendre la vôtre éternelle.",
+    "features": {
+      "manufacturer": {
+        "title": "Fabricant de Bijoux",
+        "desc": "Création de bout en bout, combinant des techniques traditionnelles avec une fabrication de pointe."
+      },
+      "trader": {
+        "title": "Négociant en Diamants",
+        "desc": "Accès direct à des diamants de qualité supérieure provenant de sources éthiques et d'une brillance maximale."
+      },
+      "specialist": {
+        "title": "Spécialiste de la Personnalisation",
+        "desc": "Service sur mesure pour conceptualiser et façonner des trésors uniques en leur genre."
+      }
+    }
+  },
+  "CareersPage": {
+    "title": "Travailler avec Nous",
+    "tagline": "Depuis 2018, nous transformons les idées en bijoux intemporels, façonnés avec passion, précision et perfection.",
+    "introTitle": "Rejoignez Notre Héritage d'Artisanat",
+    "paragraph1": "Fondé en 2018, nous sommes un fabricant de bijoux de confiance, un négociant en diamants et un spécialiste des bijoux personnalisés, dédiés à la création de bijoux exceptionnels avec une qualité et un savoir-faire sans compromis.",
+    "paragraph2": "Forts de plusieurs années d'expertise dans l'industrie de la joaillerie et du diamant, nous sommes spécialisés dans les bijoux en diamants conçus sur mesure, les bagues de fiançailles, les bijoux de mariage, les créations sur mesure et les modèles exclusifs.",
+    "paragraph3": "Des diamants et métaux précieux soigneusement sélectionnés à la fabrication experte et aux designs personnalisés, nous fournissons des solutions de joaillerie de bout en bout adaptées aux préférences et aux visions de chaque client.",
+    "paragraph4": "Notre engagement envers la qualité, l'authenticité, la précision, la transparence et la satisfaction du client nous a permis de nouer des relations durables avec nos clients.",
+    "applyTitle": "Commencez Votre Voyage avec Nous",
+    "applyDesc": "Vous êtes passionné par la haute joaillerie, le design ou la gemmologie ? Envoyez-nous votre portfolio et votre CV pour explorer les opportunités de carrière au sein de notre équipe.",
+    "emailLabel": "Envoyer la candidature à: careers@vamikajewels.com",
+    "values": {
+      "quality": {
+        "title": "Qualité Sans Compromis",
+        "desc": "Établir des références dans la sélection des métaux précieux et des pierres précieuses."
+      },
+      "authenticity": {
+        "title": "Authenticité Absolue",
+        "desc": "Garantir que chaque composant est certifié et provient de sources éthiques."
+      },
+      "precision": {
+        "title": "Précision Maître",
+        "desc": "Façonner avec une attention rigoureuse aux détails et une expertise traditionnelle."
+      }
+    }
+  },
+  "CompanyProfilePage": {
+    "title": "Profil de l'Entreprise",
+    "headerTitle": "Vami Exports",
+    "subtitle": "Fabrication de Bijoux en Diamant et Or | Bijoux sur Mesure | Commerce de Diamants",
+    "introTitle": "À propos de Vami Exports",
+    "paragraph1": "Vami Exports, fondée par M. Sobhag Sharma, est une entreprise de joaillerie gérée par des professionnels, spécialisée dans la fabrication de bijoux en or et en diamants, le commerce de diamants et les bijoux personnalisés.",
+    "paragraph2": "Avec 20 ans d'expérience dans l'industrie, nous apportons des connaissances approfondies, un savoir-faire et une expertise à chaque création. Vami Exports a été créée en 2018 avec la vision de proposer des bijoux magnifiquement façonnés qui allient une qualité exceptionnelle, un design contemporain et une élégance intemporelle.",
+    "paragraph3": "Notre expérience dans l'industrie du diamant et de la joaillerie nous permet de comprendre chaque étape du processus, de la sélection et de l'approvisionnement des diamants à la conception, la fabrication, la finition et la personnalisation des bijoux.",
+    "expertiseTitle": "Notre Expertise",
+    "expertiseItems": [
+      "Fabrication de Bijoux en Diamant",
+      "Fabrication de Bijoux en Or",
+      "Commerce de Diamants",
+      "Bijoux Personnalisés et sur Mesure",
+      "Bijoux de Mariage et de Fiançailles",
+      "Bagues de Fiançailles et Alliances",
+      "Modèles de Bijoux Personnalisés",
+      "Marque Privée et Solutions de Fabrication"
+    ],
+    "craftTitle": "Notre Savoir-faire",
+    "craftParagraph1": "Chez Vami Exports, chaque pièce est créée avec une attention méticuleuse aux détails. Nous combinons l'artisanat traditionnel de la joaillerie avec des techniques modernes et un design contemporain pour créer des bijoux qui reflètent l'individualité et l'élégance.",
+    "craftParagraph2": "Que vous ayez un modèle en tête ou que vous ayez besoin d'aide pour développer un concept entièrement nouveau, notre équipe travaille en étroite collaboration avec les clients pour transformer les idées en bijoux magnifiquement finis.",
+    "commitmentTitle": "Notre Engagement",
+    "commitmentParagraph": "Nous pensons que les bijoux sont plus qu'un simple accessoire : ils sont le reflet d'émotions, de l'individualité, d'étapes importantes et de souvenirs.",
+    "commitmentSub": "Notre engagement repose sur quatre valeurs fondamentales :",
+    "commitmentValues": "Qualité • Authenticité • Artisanat • Confiance",
+    "commitmentBottom": "Nous nous efforçons de maintenir des normes élevées pour chaque diamant, chaque pièce d'or et chaque création finie, tout en établissant des relations à long terme avec nos clients et partenaires commerciaux.",
+    "visionTitle": "Notre Vision",
+    "visionParagraph": "Faire de Vami Exports un nom de confiance et respecté dans l'industrie mondiale de la joaillerie en diamant et en or en offrant un savoir-faire exceptionnel, un service fiable et des solutions de bijoux personnalisés innovantes.",
+    "promiseTitle": "Notre Promesse",
+    "promiseLine1": "20 Ans d'Expertise.",
+    "promiseLine2": "Depuis 2018, un nom auquel vous pouvez faire confiance.",
+    "promiseBottom": "Chez Vami Exports, nous ne fabriquons pas simplement des bijoux, nous façonnons des histoires intemporelles en diamants et en or.",
+    "bottomLogo": "Vami Exports",
+    "bottomTagline": "Créer l'élégance. Instaurer la confiance. Célébrer chaque instant."
   }
 }

@@ -352,7 +352,7 @@
       "about": {
         "title": "Sobre nosotros",
         "items": {
-          "aboutBrand": "Sobre Vamika Jewels",
+          "aboutBrand": "Sobre nosotros",
           "workWithUs": "Trabaja con nosotros",
           "companyProfile": "Perfil de la empresa"
         }
@@ -376,7 +376,93 @@
         }
       }
     },
-    "copyright": "© {year} {brand}. Reservados todos los derechos.",
+    "copyright": "© {year} {brand}. Todos los derechos reservados.",
     "tagline": "Diseñado para la excelencia"
+  },
+  "AboutPage": {
+    "title": "Sobre Nosotros",
+    "tagline": "Tu visión. Nuestra artesanía. Una creación atemporal.",
+    "introTitle": "Artesanía Exquisita y Calidad",
+    "paragraph1": "Somos un fabricante de joyería de confianza, comerciante de diamantes y especialista en joyería personalizada, creando piezas exquisitas que combinan una artesanía excepcional, calidad y un diseño atemporal.",
+    "paragraph2": "Desde la obtención de diamantes premium y materiales preciosos hasta la fabricación y personalización de joyas, ofrecemos soluciones de joyería de extremo a extremo adaptadas a la visión única de cada cliente. Nuestra experiencia incluye joyería de diamantes de diseño personalizado, anillos de compromiso, joyería nupcial, piezas a medida y colecciones exclusivas.",
+    "paragraph3": "Con un fuerte enfoque en la calidad, la autenticidad, la precisión y la satisfacción del cliente, transformamos ideas en joyas bellamente elaboradas que están hechas para ser apreciadas durante generaciones.",
+    "missionTitle": "Nuestra Misión y Filosofía",
+    "missionText": "Dar vida a su visión a través de una precisión inigualable y una artesanía auténtica. Creemos que cada joya cuenta una historia y nos dedicamos a hacer que la suya sea eterna.",
+    "features": {
+      "manufacturer": {
+        "title": "Fabricante de Joyas",
+        "desc": "Creación de extremo a extremo, combinando técnicas tradicionales con fabricación de última generación."
+      },
+      "trader": {
+        "title": "Comerciante de Diamantes",
+        "desc": "Acceso directo a diamantes premium de origen ético con el mayor brillo."
+      },
+      "specialist": {
+        "title": "Especialista en Personalización",
+        "desc": "Servicio a medida para conceptualizar y crear tesoros únicos."
+      }
+    }
+  },
+  "CareersPage": {
+    "title": "Trabaja con Nosotros",
+    "tagline": "Desde 2018, convirtiendo ideas en joyas atemporales, creadas con pasión, precisión y perfección.",
+    "introTitle": "Únase a Nuestro Legado de Artesanía",
+    "paragraph1": "Establecido en 2018, somos un fabricante de joyería de confianza, comerciante de diamantes y especialista en joyería personalizada, dedicados a crear joyas excepcionales con una calidad y artesanía inquebrantables.",
+    "paragraph2": "Con años de experiencia en la industria de la joyería y los diamantes, nos especializamos en joyas de diamantes de diseño personalizado, anillos de compromiso, joyas nupciales, creaciones a medida y diseños exclusivos.",
+    "paragraph3": "Desde diamantes y materiales preciosos cuidadosamente seleccionados hasta una fabricación experta y diseños personalizados, ofrecemos soluciones de joyería integrales adaptadas a las preferencias y visiones individuales de nuestros clientes.",
+    "paragraph4": "Nuestro compromiso con la calidad, la autenticidad, la precisión, la transparencia y la satisfacción del cliente nos ha ayudado a construir relaciones duraderas con nuestros clientes.",
+    "applyTitle": "Comience su Viaje con Nosotros",
+    "applyDesc": "¿Le apasiona la alta joyería, el diseño o la gemología? Envíenos su portafolio y currículum para explorar oportunidades profesionales en nuestro equipo.",
+    "emailLabel": "Enviar solicitud a: careers@vamikajewels.com",
+    "values": {
+      "quality": {
+        "title": "Calidad Inquebrantable",
+        "desc": "Estableciendo puntos de referencia en la selección de metales preciosos y piedras preciosas."
+      },
+      "authenticity": {
+        "title": "Autenticidad Absoluta",
+        "desc": "Garantizando que cada componente esté certificado y tenga un origen ético."
+      },
+      "precision": {
+        "title": "Precisión Maestra",
+        "desc": "Elaborando con rigurosa atención al detalle y experiencia tradicional."
+      }
+    }
+  },
+  "CompanyProfilePage": {
+    "title": "Perfil de la Empresa",
+    "headerTitle": "Vami Exports",
+    "subtitle": "Fabricación de Joyas de Diamantes y Oro | Joyería Personalizada | Comercio de Diamantes",
+    "introTitle": "Sobre Vami Exports",
+    "paragraph1": "Vami Exports, fundada por el Sr. Sobhag Sharma, es una empresa de joyería gestionada profesionalmente que se especializa en la fabricación de joyas de oro y diamantes, el comercio de diamantes y la joyería personalizada.",
+    "paragraph2": "Con 20 años de experiencia en la industria, aportamos amplios conocimientos, artesanía y experiencia a cada creación. Vami Exports se estableció en 2018 con la visión de ofrecer joyas bellamente elaboradas que combinen una calidad excepcional, un diseño contemporáneo y una elegancia atemporal.",
+    "paragraph3": "Nuestra experiencia en la industria de los diamantes y la joyería nos permite comprender cada etapa del proceso, desde la selección y obtención de diamantes hasta el diseño, la fabricación, el acabado y la personalización de las joyas.",
+    "expertiseTitle": "Nuestra Experiencia",
+    "expertiseItems": [
+      "Fabricación de Joyería de Diamantes",
+      "Fabricación de Joyería de Oro",
+      "Comercio de Diamantes",
+      "Joyería Personalizada y a Medida",
+      "Joyería Nupcial y de Boda",
+      "Anillos de Compromiso y de Diamantes",
+      "Diseños de Joyería Personalizados",
+      "Marca Privada y Soluciones de Fabricación"
+    ],
+    "craftTitle": "Nuestra Artesanía",
+    "craftParagraph1": "En Vami Exports, cada pieza se crea con meticulosa atención al detalle. Combinamos la artesanía de la joyería tradicional con técnicas modernas y diseño contemporáneo para crear joyas que reflejen individualidad y elegancia.",
+    "craftParagraph2": "Ya sea que tenga un diseño en mente o necesite ayuda para desarrollar un concepto completamente nuevo, nuestro equipo trabaja en estrecha colaboración con los clientes para transformar sus ideas en joyas bellamente acabadas.",
+    "commitmentTitle": "Nuestro Compromiso",
+    "commitmentParagraph": "Creemos que la joyería es más que un accesorio: es un reflejo de emociones, individualidad, hitos y recuerdos.",
+    "commitmentSub": "Nuestro compromiso se basa en cuatro valores fundamentales:",
+    "commitmentValues": "Calidad • Autenticidad • Artesanía • Confianza",
+    "commitmentBottom": "Nos esforzamos por mantener altos estándares en cada diamante, cada pieza de oro y cada creación terminada, mientras construimos relaciones a largo plazo con nuestros clientes y socios comerciales.",
+    "visionTitle": "Nuestra Visión",
+    "visionParagraph": "Establecer a Vami Exports como un nombre confiable y respetado en la industria global de joyería de diamantes y oro mediante la entrega de una artesanía excepcional, un servicio confiable y soluciones innovadoras de joyería personalizada.",
+    "promiseTitle": "Nuestra Promesa",
+    "promiseLine1": "20 Años de Experiencia.",
+    "promiseLine2": "Desde 2018, un nombre en el que puede confiar.",
+    "promiseBottom": "En Vami Exports, no solo fabricamos joyas, sino que creamos historias atemporales en diamantes y oro.",
+    "bottomLogo": "Vami Exports",
+    "bottomTagline": "Elaborando elegancia. Creando confianza. Celebrando cada momento."
   }
 }

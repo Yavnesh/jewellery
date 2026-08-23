@@ -60,7 +60,7 @@ export const navigation = {
     { key: "registerDiscounts", name: "Register Discounts", href: "/sale/register-discounts" },
   ],
   about: [
-    { key: "aboutBrand", name: `About ${BRAND_NAME}`, href: "/about" },
+    { key: "aboutBrand", name: "About Us", href: "/about" },
     { key: "workWithUs", name: "Work With Us", href: "/about/careers" },
     { key: "companyProfile", name: "Company Profile", href: "/about/company-profile" },
   ],
