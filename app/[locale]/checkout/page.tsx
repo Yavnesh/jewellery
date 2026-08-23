@@ -130,6 +130,7 @@ const CheckoutPage = () => {
         adress: checkoutForm.adress.trim(),
         apartment: checkoutForm.apartment.trim(),
         city: checkoutForm.city.trim(),
+        state: "",
         country: checkoutForm.country.trim(),
         postalCode: checkoutForm.postalCode.trim(),
         orderNotice: checkoutForm.orderNotice.trim(),
