@@ -154,7 +154,7 @@ export class CheckoutService {
     }
 
     // 6. Prepare Pricing Input
-    const pricingItems = cart.items.map((item) => {
+    const pricingItems = cart.items.map((item: any) => {
       return {
         variantId: item.variantId,
         quantity: item.quantity,
@@ -266,7 +266,7 @@ export class CheckoutService {
           paymentStatus: PaymentStatus.PENDING,
           
           lineItems: {
-            create: cart.items.map((item) => {
+            create: cart.items.map((item: any) => {
               const lineTotal = item.quantity * item.variant.price;
               return {
                 productId: item.variant.productId,
@@ -284,7 +284,7 @@ export class CheckoutService {
             }),
           },
           products: {
-            create: cart.items.map((item) => ({
+            create: cart.items.map((item: any) => ({
               variantId: item.variantId,
               productId: item.variant.productId,
               quantity: item.quantity,
