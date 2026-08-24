@@ -10,9 +10,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // 1. Verify user exists
+        // 1. Verify user exists
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() }
+      where: { email: email.toLowerCase() },
+      include: { profile: true }
     });
 
     if (!user) {
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
 
     // 4. Send OTP via configured SMS/WhatsApp gateway
     // If user profile has a phone number, send it there, otherwise default template logging
-    const phone = user.phone || "+919999999999"; 
+    const phone = user.profile?.phone || "+919999999999"; 
     await smsService.get().sendOtp(phone, otp);
 
     return NextResponse.json({ success: true, message: "OTP sent successfully" });
