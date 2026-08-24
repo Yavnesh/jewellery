@@ -22,7 +22,7 @@ export async function GET() {
           const existingProcessed = await tx.paymentEvent.findUnique({
             where: {
               provider_providerEventId: {
-                provider: 'PAYMENT_EVENT_RAZORPAY', // unique key namespace prefix
+                provider: 'RAZORPAY',
                 providerEventId: event.providerEventId
               }
             }
