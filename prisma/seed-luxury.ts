@@ -25,7 +25,7 @@ async function main() {
   const defaultCategory = await prisma.category.upsert({
     where: { name: "Rings" },
     update: {},
-    create: { name: "Rings" },
+    create: { name: "Rings", slug: "rings" },
   });
   const defaultMerchant = await prisma.merchant.create({
     data: { name: "Luxury Brand", status: "ACTIVE" },
