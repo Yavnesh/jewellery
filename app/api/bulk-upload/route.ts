@@ -173,7 +173,7 @@ export async function POST(req: Request) {
     if (!merchant) {
       merchant = await prisma.merchant.create({
         data: {
-          storeName: "Vamika Store",
+          name: "Vamika Store",
           email: "vamika@jewels.com",
           status: "APPROVED"
         }
