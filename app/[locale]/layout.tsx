@@ -36,6 +36,8 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import DatadogInit from "@/components/DatadogInit";
 import PwaRegister from "@/components/PwaRegister";
 
+import StorefrontShell from "@/components/StorefrontShell";
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
@@ -69,14 +71,11 @@ export default async function RootLayout({
           <SessionProvider session={session}>
             <SessionTimeoutWrapper />
             <PwaRegister />
-            <Header />
             <Providers>
-              <main id="main-content">
+              <StorefrontShell>
                 {children}
-              </main>
+              </StorefrontShell>
             </Providers>
-            <Footer />
-            <CookieConsentBanner />
             <GoogleAnalytics ga_id={gaId} />
             <DatadogInit />
           </SessionProvider>
@@ -85,3 +84,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

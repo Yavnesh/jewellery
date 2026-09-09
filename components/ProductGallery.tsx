@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { sanitize } from "@/lib/sanitize";
 import { getImagePath } from "@/lib/utils";
+import { FaChevronDown } from "react-icons/fa6";
 
 interface ProductGalleryProps {
   mainImage: string;
@@ -14,43 +15,51 @@ interface ProductGalleryProps {
 export const ProductGallery = ({ mainImage, title, images }: ProductGalleryProps) => {
   const [activeImage, setActiveImage] = useState(mainImage);
 
-  // Merge main image if not present in list
+  // Clean and merge images
   const allImages = images.length > 0 ? images : [mainImage];
 
   return (
-    <div className="w-full max-w-[550px]">
-      <div className="bg-luxury-ivory p-8 rounded border border-luxury-border/60 flex items-center justify-center min-h-[400px]">
-        <Image
-          src={getImagePath(activeImage)}
-          width={500}
-          height={500}
-          alt={sanitize(title)}
-          className="w-auto h-[350px] object-contain transition-all duration-500 hover:scale-105"
-        />
-      </div>
+    <div className="flex flex-col sm:flex-row gap-6 w-full lg:min-h-[550px] items-start">
+      {/* Left Column: Vertical Thumbnails list */}
       {allImages.length > 1 && (
-        <div className="flex justify-start gap-3 mt-4 flex-wrap">
-          {allImages.map((imagePath: string, key: number) => (
-            <div
-              key={key}
-              onClick={() => setActiveImage(imagePath)}
-              className={`border rounded p-1 bg-white cursor-pointer transition-all duration-200 ${
-                activeImage === imagePath
-                  ? "border-vamika-gold ring-1 ring-vamika-gold"
-                  : "border-luxury-border hover:border-vamika-gold/60"
-              }`}
-            >
-              <Image
-                src={getImagePath(imagePath)}
-                width={90}
-                height={90}
-                alt={`${sanitize(title)} gallery ${key + 1}`}
-                className="w-20 h-20 object-contain"
-              />
-            </div>
-          ))}
+        <div className="flex sm:flex-col flex-row gap-3 overflow-x-auto sm:overflow-y-auto w-full sm:w-[90px] pr-0 sm:pr-2 max-h-[120px] sm:max-h-[550px] shrink-0 scrollbar-none pb-2 sm:pb-0">
+          {allImages.map((imagePath: string, key: number) => {
+            const cleanImagePath = getImagePath(imagePath);
+            return (
+              <div
+                key={key}
+                onClick={() => setActiveImage(imagePath)}
+                onMouseEnter={() => setActiveImage(imagePath)}
+                className={`border bg-white cursor-pointer transition-all duration-200 aspect-square flex items-center justify-center shrink-0 w-20 h-20 p-1.5 rounded-sm ${
+                  activeImage === imagePath
+                    ? "border-vamika-gold ring-1 ring-vamika-gold/50"
+                    : "border-gray-200 hover:border-vamika-gold/60"
+                }`}
+              >
+                <Image
+                  src={cleanImagePath}
+                  width={70}
+                  height={70}
+                  alt={`${sanitize(title)} thumbnail ${key + 1}`}
+                  className="w-full h-full object-contain mix-blend-multiply"
+                />
+              </div>
+            );
+          })}
         </div>
       )}
+
+      {/* Right Column: Main Image Container */}
+      <div className="flex-grow w-full aspect-square bg-[#F9F9F9] border border-transparent rounded-sm flex items-center justify-center relative p-8 group overflow-hidden">
+        <Image
+          src={getImagePath(activeImage)}
+          width={650}
+          height={650}
+          alt={sanitize(title)}
+          priority
+          className="object-contain max-h-[480px] w-full h-full mix-blend-multiply transition-transform duration-700 hover:scale-105"
+        />
+      </div>
     </div>
   );
 };

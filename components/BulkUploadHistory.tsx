@@ -13,13 +13,14 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import apiClient from "@/lib/api";
 import {
-  FaCheckCircle,
-  FaTimesCircle,
+  FaCircleCheck,
+  FaCircleXmark,
   FaClock,
-  FaFileAlt,
-  FaTrash,
-  FaExclamationTriangle,
-} from "react-icons/fa";
+  FaFileLines,
+  FaTrashCan,
+  FaTriangleExclamation,
+} from "react-icons/fa6";
+
 
 interface BatchHistory {
   id: string;
@@ -136,21 +137,21 @@ const BulkUploadHistory = () => {
     const upperStatus = status.toUpperCase();
     switch (upperStatus) {
       case "COMPLETED":
-        return <FaCheckCircle className="text-green-500 text-xl" />;
+        return <FaCircleCheck className="text-green-500 text-xl" />;
       case "FAILED":
-        return <FaTimesCircle className="text-red-500 text-xl" />;
+        return <FaCircleXmark className="text-red-500 text-xl" />;
       case "PARTIAL":
-        return <FaExclamationTriangle className="text-yellow-500 text-xl" />;
+        return <FaTriangleExclamation className="text-yellow-500 text-xl" />;
       case "PENDING":
         return <FaClock className="text-blue-500 text-xl" />;
       default:
-        return <FaFileAlt className="text-gray-500 text-xl" />;
+        return <FaFileLines className="text-gray-500 text-xl" />;
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString("id-ID", {
+    return date.toLocaleString("en-IN", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -162,7 +163,7 @@ const BulkUploadHistory = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold"></div>
       </div>
     );
   }
@@ -178,7 +179,7 @@ const BulkUploadHistory = () => {
   if (batches.length === 0) {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center text-gray-500">
-        <FaFileAlt className="text-4xl mx-auto mb-2 text-gray-400" />
+        <FaFileLines className="text-4xl mx-auto mb-2 text-gray-400" />
         <p>No upload history yet</p>
       </div>
     );
@@ -193,9 +194,10 @@ const BulkUploadHistory = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
             <div className="flex items-center gap-3 mb-4">
-              <FaExclamationTriangle className="text-yellow-500 text-3xl" />
+              <FaTriangleExclamation className="text-yellow-500 text-3xl" />
               <h3 className="text-xl font-bold">Delete Batch Upload</h3>
             </div>
+
 
             <p className="text-gray-700 mb-4">
               Are you sure you want to delete{" "}
@@ -283,8 +285,9 @@ const BulkUploadHistory = () => {
                 {deletingBatchId === batch.id ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-rose-500"></div>
                 ) : (
-                  <FaTrash size={14} />
+                  <FaTrashCan size={14} />
                 )}
+
               </button>
             </div>
           </div>

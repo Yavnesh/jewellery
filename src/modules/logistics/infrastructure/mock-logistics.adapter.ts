@@ -17,6 +17,8 @@ export class MockLogisticsAdapter implements LogisticsAdapter {
     return {
       success: true,
       provider: this.provider,
+      carrierName: "Mock Express",
+      serviceName: "Standard",
       shipmentId: `mock_ship_${Math.floor(Math.random() * 1000000)}`,
       awbCode: `AWB${Math.floor(Math.random() * 100000000)}`,
       labelUrl: "https://example.com/mock-label.pdf",
@@ -27,10 +29,13 @@ export class MockLogisticsAdapter implements LogisticsAdapter {
   async trackShipment(awbCode: string): Promise<TrackingResult> {
     return {
       awbCode,
-      status: "In Transit",
+      provider: this.provider,
+      status: "IN_TRANSIT",
+      carrierRawStatus: "IN_TRANSIT",
       activity: [
         {
           date: new Date().toISOString(),
+          status: "IN_TRANSIT",
           location: "Delhi Hub",
           description: "Package received and sorted"
         }

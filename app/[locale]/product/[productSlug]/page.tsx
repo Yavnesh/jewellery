@@ -131,21 +131,13 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
         {/* Hero Section Split */}
         <div className="flex flex-col lg:flex-row gap-12 mb-16">
           
-          {/* Left Column: 2x2 Image Grid */}
+          {/* Left Column: Product gallery with vertical thumbnails */}
           <div className="w-full lg:w-[60%] shrink-0">
-            <div className="grid grid-cols-2 gap-2">
-              {[1, 2, 3, 4].map((index) => (
-                <div key={index} className="aspect-square bg-[#F9F9F9] relative overflow-hidden flex items-center justify-center p-8">
-                  <Image
-                    src={galleryImages[index - 1] || galleryImages[0] || "/placeholder.jpg"}
-                    alt={`${product?.title} - view ${index}`}
-                    width={500}
-                    height={500}
-                    className="object-contain w-full h-full mix-blend-multiply transition-transform duration-500 hover:scale-105"
-                  />
-                </div>
-              ))}
-            </div>
+            <ProductGallery
+              mainImage={product.mainImage}
+              title={product.title}
+              images={galleryImages}
+            />
           </div>
 
           {/* Right Column: Title / Price / ATC */}

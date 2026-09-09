@@ -120,6 +120,8 @@ export class ShiprocketLogisticsAdapter implements LogisticsAdapter {
       return {
         success: true,
         provider: this.provider,
+        carrierName: "Shiprocket",
+        serviceName: "Standard Surface",
         shipmentId: String(data.shipment_id || `sr_ship_${Date.now()}`),
         awbCode: data.awb_code || `AWBSR${Date.now()}`,
         estimatedDelivery: data.onboarding_completed_now ? undefined : undefined
@@ -128,6 +130,7 @@ export class ShiprocketLogisticsAdapter implements LogisticsAdapter {
       return {
         success: false,
         provider: this.provider,
+        carrierName: "Shiprocket",
         shipmentId: "",
         awbCode: "",
         error: e.message
@@ -144,17 +147,21 @@ export class ShiprocketLogisticsAdapter implements LogisticsAdapter {
         }
       });
       const data = await response.json();
+      const rawStatus = data.tracking_data?.shipment_track?.[0]?.current_status || "IN_TRANSIT";
       return {
         awbCode,
-        status: data.tracking_data?.shipment_track?.[0]?.current_status || "Unknown",
+        provider: this.provider,
+        status: rawStatus === "DELIVERED" ? "DELIVERED" : "IN_TRANSIT",
+        carrierRawStatus: rawStatus,
         activity: (data.tracking_data?.shipment_track_activities || []).map((act: any) => ({
           date: act.date,
+          status: "IN_TRANSIT",
           location: act.location,
           description: act.activity
         }))
       };
     } catch (e) {
-      return { awbCode, status: "Unknown", activity: [] };
+      return { awbCode, provider: this.provider, status: "IN_TRANSIT", carrierRawStatus: "Unknown", activity: [] };
     }
   }
 }

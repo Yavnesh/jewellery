@@ -135,9 +135,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
           {/* Floating Actions (Similar & Try It) */}
           <div className="absolute bottom-2 right-2 z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button className="flex items-center gap-1 bg-white text-[10px] font-sans font-medium px-2 py-1 rounded shadow-sm text-gray-700 hover:text-[#8B2C33]">
-              <BoxSelect className="w-3 h-3 text-[#8B2C33]" /> Quick View
-            </button>
             <button onClick={handleQuickAdd} className="flex items-center gap-1 bg-white text-[10px] font-sans font-medium px-2 py-1 rounded shadow-sm text-gray-700 hover:text-[#8B2C33]">
               <View className="w-3 h-3 text-[#8B2C33]" /> Add
             </button>

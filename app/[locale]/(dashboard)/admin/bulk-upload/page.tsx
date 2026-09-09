@@ -1,24 +1,19 @@
-// *********************
-// Role of the component: Bulk upload products page for admin dashboard
-// Name of the component: BulkUpload.tsx
-// Developer: Aleksandar Kuzmanovic (modified)
-// Version: 1.0
-// Component call: <BulkUpload />
-// Input parameters: no input parameters
-// Output: bulk upload page for admin dashboard
-// *********************
-
 "use client";
-import { DashboardSidebar } from "@/components";
-import BulkUploadHistory from "@/components/BulkUploadHistory";
+
 import React, { useState, useRef } from "react";
+import { AdminAppShell } from "@/components/admin/AdminAppShell";
+import BulkUploadHistory from "@/components/BulkUploadHistory";
 import toast from "react-hot-toast";
 import {
-  FaFileUpload,
+  FaUpload,
   FaDownload,
-  FaCheckCircle,
-  FaTimesCircle,
-} from "react-icons/fa";
+  FaCircleCheck,
+  FaCircleXmark,
+  FaFileCsv,
+  FaCircleInfo,
+} from "react-icons/fa6";
+
+
 
 interface UploadResult {
   success: boolean;
@@ -31,7 +26,7 @@ interface UploadResult {
   };
 }
 
-const BulkUploadPage = () => {
+export default function BulkUploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
@@ -55,10 +50,7 @@ const BulkUploadPage = () => {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
-      if (
-        droppedFile.type === "text/csv" ||
-        droppedFile.name.endsWith(".csv")
-      ) {
+      if (droppedFile.type === "text/csv" || droppedFile.name.endsWith(".csv")) {
         setFile(droppedFile);
         setUploadResult(null);
       } else {
@@ -70,10 +62,7 @@ const BulkUploadPage = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      if (
-        selectedFile.type === "text/csv" ||
-        selectedFile.name.endsWith(".csv")
-      ) {
+      if (selectedFile.type === "text/csv" || selectedFile.name.endsWith(".csv")) {
         setFile(selectedFile);
         setUploadResult(null);
       } else {
@@ -108,7 +97,7 @@ const BulkUploadPage = () => {
           message: data.message || "Products uploaded successfully!",
           details: data.details,
         });
-        toast.success("Bulk upload completed!");
+        toast.success("Bulk catalog upload completed!");
         setFile(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -135,327 +124,218 @@ const BulkUploadPage = () => {
 
   const downloadTemplate = () => {
     const csvContent = `title,price,manufacturer,inStock,mainImage,description,slug,categoryId
-Sample Product,99.99,Sample Manufacturer,10,https://example.com/image.jpg,Sample description,sample-product,category-uuid
-Another Product,149.99,Another Manufacturer,5,https://example.com/image2.jpg,Another description,another-product,category-uuid`;
+The Solitaire Diamond Ring,185000,Vamika Signature,10,https://example.com/ring.jpg,Brilliant cut 1.5ct solitaire ring in 18K gold.,the-solitaire-diamond-ring,category-uuid
+The Emerald Cascade Necklace,420000,Vamika Signature,5,https://example.com/necklace.jpg,Cascade of Colombian emeralds in 18K white gold.,the-emerald-cascade-necklace,category-uuid`;
 
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "product-template.csv";
+    a.download = "vamika_product_template.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    toast.success("Template downloaded!");
+    toast.success("CSV template downloaded!");
   };
 
   return (
-    <div className="flex xl:flex-row flex-col justify-start items-start">
-      <DashboardSidebar />
-      <div className="w-full xl:p-14 p-4">
-        <h1 className="text-4xl font-bold mb-8">Bulk Upload Products</h1>
-
-        {/* Instructions */}
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-          <h2 className="text-lg font-semibold mb-2 text-blue-800">
-            📋 Instructions
-          </h2>
-          <ul className="list-disc list-inside space-y-1 text-sm text-blue-700">
-            <li>Download the CSV template below</li>
-            <li>
-              Fill in your product data (title, price, manufacturer, stock,
-              image URL, description, slug, categoryId)
-            </li>
-            <li>Upload the completed CSV file</li>
-            <li>Maximum file size: 50MB</li>
-          </ul>
+    <AdminAppShell>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-serif font-semibold text-vamika-charcoal">
+            Bulk Product <span className="text-luxury-gold">Import & Batch Processor</span>
+          </h1>
+          <p className="text-xs text-luxury-text-secondary mt-1">
+            Import hundreds of jewellery items simultaneously with automated SKU and variant synchronization.
+          </p>
         </div>
 
-        {/* Download Template Button */}
-        <div className="mb-6">
-          <button
-            onClick={downloadTemplate}
-            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-          >
-            <FaDownload /> Download CSV Template
-          </button>
-        </div>
+        <button
+          onClick={downloadTemplate}
+          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-white border border-luxury-border text-vamika-charcoal hover:border-luxury-gold shadow-2xs transition-colors"
+        >
+          <FaDownload className="text-luxury-gold" size={12} />
+          <span>Download CSV Template</span>
+        </button>
+      </div>
 
-        {/* File Upload Area */}
-        <div className="mb-6">
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-              dragActive
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 bg-gray-50 hover:border-gray-400"
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <FaFileUpload className="text-6xl text-gray-400 mx-auto mb-4" />
-            <p className="text-lg mb-2">
-              {file ? (
-                <span className="font-semibold text-blue-600">
-                  Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
-                </span>
-              ) : (
-                "Drag and drop CSV file here, or click to select"
-              )}
-            </p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              onChange={handleFileChange}
-              className="hidden"
-              id="file-upload"
-            />
-            <label
-              htmlFor="file-upload"
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded cursor-pointer transition-colors"
+      {/* Upload & Guidance Container */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
+        {/* Drag and Drop Zone (Left 2 Cols) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-xl border border-luxury-border p-6 shadow-xs space-y-4">
+            <h2 className="font-serif font-semibold text-base text-vamika-charcoal">
+              Upload Catalog CSV File
+            </h2>
+
+            <div
+              className={`border-2 border-dashed rounded-xl p-10 text-center transition-all cursor-pointer ${
+                dragActive
+                  ? "border-luxury-gold bg-luxury-gold/5"
+                  : "border-luxury-border bg-luxury-bg hover:border-luxury-gold/60"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
             >
-              Select CSV File
-            </label>
-          </div>
-        </div>
+              <FaFileCsv className="text-5xl text-luxury-gold mx-auto mb-3" />
+              <p className="text-sm font-semibold text-vamika-charcoal mb-1">
+                {file ? (
+                  <span className="text-luxury-gold font-bold">
+                    Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                  </span>
+                ) : (
+                  "Drag & drop your formatted product CSV here, or click to browse"
+                )}
+              </p>
+              <p className="text-[11px] text-luxury-text-secondary">
+                Supports .csv files up to 50MB
+              </p>
 
-        {/* Upload Button */}
-        {file && (
-          <div className="mb-6">
-            <button
-              onClick={handleUpload}
-              disabled={uploading}
-              className={`w-full py-4 px-6 rounded-lg font-bold text-white text-lg transition-colors ${
-                uploading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleFileChange}
+                className="hidden"
+                id="file-upload"
+              />
+            </div>
+
+            {file && (
+              <div className="pt-2 flex justify-end">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpload();
+                  }}
+                  disabled={uploading}
+                  className="px-6 py-2.5 rounded-lg bg-vamika-charcoal text-luxury-gold font-semibold text-xs hover:bg-black shadow-xs transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <FaUpload />
+                  <span>{uploading ? "Processing Batch..." : "Execute Bulk Upload"}</span>
+                </button>
+
+              </div>
+            )}
+          </div>
+
+          {/* Upload Status Card */}
+          {uploadResult && (
+            <div
+              className={`p-5 rounded-xl border shadow-xs ${
+                uploadResult.success
+                  ? "bg-emerald-50/70 border-emerald-200"
+                  : "bg-red-50/70 border-red-200"
               }`}
             >
-              {uploading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
+              <div className="flex items-start gap-3">
+                {uploadResult.success ? (
+                  <FaCircleCheck className="text-emerald-600 text-xl shrink-0 mt-0.5" />
+                ) : (
+                  <FaCircleXmark className="text-red-600 text-xl shrink-0 mt-0.5" />
+                )}
+                <div className="flex-1 space-y-2">
+
+                  <h3
+                    className={`font-serif font-bold text-sm ${
+                      uploadResult.success ? "text-emerald-900" : "text-red-900"
+                    }`}
                   >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Uploading...
-                </span>
-              ) : (
-                "Upload Products"
-              )}
-            </button>
-          </div>
-        )}
+                    {uploadResult.success ? "Batch Processing Successful" : "Upload Failed"}
+                  </h3>
+                  <p className="text-luxury-text-secondary">{uploadResult.message}</p>
 
-        {/* Upload Result */}
-        {uploadResult && (
-          <div
-            className={`border-l-4 p-6 rounded-lg ${
-              uploadResult.success
-                ? "bg-green-50 border-green-500"
-                : "bg-red-50 border-red-500"
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              {uploadResult.success ? (
-                <FaCheckCircle className="text-3xl text-green-500 flex-shrink-0 mt-1" />
-              ) : (
-                <FaTimesCircle className="text-3xl text-red-500 flex-shrink-0 mt-1" />
-              )}
-              <div className="flex-1">
-                <h3
-                  className={`text-xl font-bold mb-2 ${
-                    uploadResult.success ? "text-green-800" : "text-red-800"
-                  }`}
-                >
-                  {uploadResult.success
-                    ? "✅ Upload Successful!"
-                    : "❌ Upload Failed"}
-                </h3>
-                <p
-                  className={`mb-3 ${
-                    uploadResult.success ? "text-green-700" : "text-red-700"
-                  }`}
-                >
-                  {uploadResult.message}
-                </p>
-
-                {uploadResult.details && (
-                  <div className="bg-white rounded p-4 space-y-2">
-                    <p className="font-semibold">Upload Statistics:</p>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">
+                  {uploadResult.details && (
+                    <div className="grid grid-cols-3 gap-3 pt-2 text-center">
+                      <div className="p-2 bg-white rounded-lg border border-luxury-border">
+                        <div className="text-base font-bold text-vamika-charcoal">
                           {uploadResult.details.processed}
-                        </p>
-                        <p className="text-sm text-gray-600">Processed</p>
+                        </div>
+                        <div className="text-[10px] uppercase text-luxury-text-secondary">Processed</div>
                       </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-green-600">
+                      <div className="p-2 bg-white rounded-lg border border-luxury-border">
+                        <div className="text-base font-bold text-emerald-600">
                           {uploadResult.details.successful}
-                        </p>
-                        <p className="text-sm text-gray-600">Successful</p>
+                        </div>
+                        <div className="text-[10px] uppercase text-emerald-600">Created</div>
                       </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-red-600">
+                      <div className="p-2 bg-white rounded-lg border border-luxury-border">
+                        <div className="text-base font-bold text-red-600">
                           {uploadResult.details.failed}
-                        </p>
-                        <p className="text-sm text-gray-600">Failed</p>
+                        </div>
+                        <div className="text-[10px] uppercase text-red-600">Failed</div>
                       </div>
                     </div>
+                  )}
 
-                    {uploadResult.details.errors &&
-                      uploadResult.details.errors.length > 0 && (
-                        <div className="mt-4">
-                          <p className="font-semibold text-red-700 mb-2">
-                            Errors:
-                          </p>
-                          <ul className="list-disc list-inside space-y-1 text-sm text-red-600 max-h-40 overflow-y-auto">
-                            {uploadResult.details.errors.map((error, index) => (
-                              <li key={index}>{error}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                  </div>
-                )}
+                  {uploadResult.details?.errors && uploadResult.details.errors.length > 0 && (
+                    <div className="mt-3 p-3 bg-white rounded-lg border border-red-200 text-[11px] text-red-700 max-h-36 overflow-y-auto space-y-1">
+                      <div className="font-bold">Error Breakdown:</div>
+                      {uploadResult.details.errors.map((err, i) => (
+                        <div key={i}>• {err}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* CSV Format Guide */}
-        <div className="mt-8 bg-gray-50 rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">📝 CSV Format Guide</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300 text-sm">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-4 py-2 text-left">
-                    Column
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">
-                    Required
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">
-                    Type
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">
-                    Description
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    title
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">✅ Yes</td>
-                  <td className="border border-gray-300 px-4 py-2">String</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Product name
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    price
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">✅ Yes</td>
-                  <td className="border border-gray-300 px-4 py-2">Number</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Product price (e.g., 99.99)
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    manufacturer
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">✅ Yes</td>
-                  <td className="border border-gray-300 px-4 py-2">String</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Manufacturer/Brand name
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    inStock
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">❌ No</td>
-                  <td className="border border-gray-300 px-4 py-2">Number</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Stock quantity (default: 0)
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    mainImage
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">❌ No</td>
-                  <td className="border border-gray-300 px-4 py-2">URL</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Product image URL
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    description
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">✅ Yes</td>
-                  <td className="border border-gray-300 px-4 py-2">String</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Product description
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    slug
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">✅ Yes</td>
-                  <td className="border border-gray-300 px-4 py-2">String</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    URL-friendly identifier
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2 font-mono">
-                    categoryId
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">✅ Yes</td>
-                  <td className="border border-gray-300 px-4 py-2">UUID</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Category ID from database
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          )}
         </div>
 
-        {/* Upload History */}
-        <div className="mt-8">
-          <BulkUploadHistory />
+        {/* CSV Format Guide (Right Col) */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl border border-luxury-border p-5 shadow-xs space-y-3">
+            <div className="flex items-center gap-2">
+              <FaCircleInfo className="text-luxury-gold" />
+              <h2 className="font-serif font-semibold text-base text-vamika-charcoal">
+                Required CSV Schema
+              </h2>
+            </div>
+            <p className="text-luxury-text-secondary text-[11px]">
+              Ensure your columns match the expected headers before submitting:
+            </p>
+
+            <div className="space-y-2 divide-y divide-luxury-border/60">
+              {[
+                { col: "title", req: "Yes", desc: "Product headline / name" },
+                { col: "price", req: "Yes", desc: "Selling price in INR (e.g. 185000)" },
+                { col: "manufacturer", req: "Yes", desc: "Brand / Atelier name" },
+                { col: "inStock", req: "Optional", desc: "Stock quantity (default 0)" },
+                { col: "mainImage", req: "Optional", desc: "Direct image URL" },
+                { col: "description", req: "Yes", desc: "Item story & specification" },
+                { col: "slug", req: "Yes", desc: "Unique URL slug" },
+                { col: "categoryId", req: "Yes", desc: "Valid Category ID" },
+              ].map((item, idx) => (
+                <div key={idx} className="pt-2 flex justify-between items-start">
+                  <div>
+                    <span className="font-mono font-bold text-vamika-charcoal">{item.col}</span>
+                    <div className="text-[10px] text-luxury-text-secondary">{item.desc}</div>
+                  </div>
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                      item.req === "Yes"
+                        ? "bg-amber-50 text-amber-700 border border-amber-200"
+                        : "bg-zinc-100 text-zinc-600"
+                    }`}
+                  >
+                    {item.req}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
 
-export default BulkUploadPage;
+      {/* Upload Batch History */}
+      <div className="mt-8">
+        <BulkUploadHistory />
+      </div>
+    </AdminAppShell>
+  );
+}

@@ -76,7 +76,7 @@ model User {
   bulkUploadBatches bulk_upload_batch[] @relation("UserBatches")
 
   // Cart relation
-  cart                    Cart?
+  cart                    Cart?                   @relation("UserCart")
   notificationPreferences NotificationPreference?
   reviews                 Review[]
 }
@@ -108,7 +108,7 @@ model Customer_order {
   coupons       OrderCoupon[]
 
   addressSnapshot OrderAddressSnapshot?
-  shipment        OrderShipment?
+  shipments       OrderShipment[]
   refunds         OrderRefund[]
   returns         OrderReturn[]
   reviews         Review[]
@@ -129,6 +129,7 @@ model customer_order_product {
 
   quantity        Int
   priceAtPurchase Int @default(0) // Captures price at moment of sale
+  shipmentItems   ShipmentItem[]
 }
 
 model Category {
@@ -431,7 +432,7 @@ model Cart {
   updatedAt DateTime @updatedAt
 
   items CartItem[]
-  user  User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User?      @relation("UserCart", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
   @@index([userId])
@@ -765,16 +766,77 @@ model OrderAddressSnapshot {
 }
 
 model OrderShipment {
-  id             String         @id @default(uuid())
-  orderId        String         @unique
-  courier        String
-  trackingNumber String
-  status         String         @default("PRE_DEPARTURE")
-  insuranceValue Int            @default(0)
-  signatureReq   Boolean        @default(false)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  order          Customer_order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id                    String                   @id @default(uuid())
+  orderId               String
+  provider              String                   @default("MANUAL") // DHL, FEDEX, SHIPROCKET, BLUEDART, MANUAL
+  providerShipmentId    String?
+  courier               String                   @default("BlueDart Apex")
+  service               String?                  // Express, Priority, Economy, Standard, Custom
+  trackingNumber        String
+  status                String                   @default("LABEL_CREATED") // NOT_SHIPPED, LABEL_CREATED, PICKED_UP, IN_TRANSIT, CUSTOMS_CLEARANCE, CUSTOMS_HOLD, OUT_FOR_DELIVERY, DELIVERED, EXCEPTION, RETURNED, CANCELLED
+  previousStatus        String?
+  estimatedDeliveryAt   DateTime?
+  estimatedDeliveryFrom DateTime?
+  estimatedDeliveryTo   DateTime?
+  shippedAt             DateTime?
+  pickedUpAt            DateTime?
+  deliveredAt           DateTime?
+  weight                Float?                   @default(0.5)
+  weightUnit            String?                  @default("kg")
+  length                Float?                   @default(15)
+  width                 Float?                   @default(12)
+  height                Float?                   @default(8)
+  dimensionUnit         String?                  @default("cm")
+  packageCount          Int                      @default(1)
+  insuranceValue        Int                      @default(0)
+  signatureReq          Boolean                  @default(true)
+  labelUrl              String?
+  customsInfo           Json?                    // Country of origin, HS Code, export reason, incoterm, declared value, currency
+  internalNotes         String?                  @db.Text
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  order                 Customer_order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  events                ShipmentTrackingEvent[]
+  items                 ShipmentItem[]
+
+  @@index([orderId])
+  @@index([trackingNumber])
+  @@index([status])
+  @@index([provider, trackingNumber])
+}
+
+model ShipmentTrackingEvent {
+  id              String        @id @default(uuid())
+  shipmentId      String
+  status          String
+  carrierStatus   String?
+  description     String
+  location        String?
+  eventAt         DateTime      @default(now())
+  source          String        @default("CARRIER") // CARRIER, ADMIN, SYSTEM
+  externalEventId String?       // Webhook idempotency key
+  rawPayload      Json?
+  createdAt       DateTime      @default(now())
+
+  shipment        OrderShipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@index([shipmentId])
+  @@index([externalEventId])
+}
+
+model ShipmentItem {
+  id             String                 @id @default(uuid())
+  shipmentId     String
+  orderProductId String
+  quantity       Int                    @default(1)
+  createdAt      DateTime               @default(now())
+
+  shipment       OrderShipment          @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  orderProduct   customer_order_product @relation(fields: [orderProductId], references: [id], onDelete: Cascade)
+
+  @@index([shipmentId])
+  @@index([orderProductId])
 }
 
 model OrderRefund {
