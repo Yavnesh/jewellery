@@ -14,8 +14,11 @@ vi.mock('@/utils/db', () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
-    $transaction: vi.fn(async (cb) => {
-      return cb(prisma);
+    $transaction: vi.fn(async (arg) => {
+      if (typeof arg === 'function') {
+        return arg(prisma);
+      }
+      return arg;
     }),
   }
 }));

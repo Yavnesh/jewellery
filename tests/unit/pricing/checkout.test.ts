@@ -22,6 +22,11 @@ vi.mock('@/utils/db', () => ({
     },
     inventoryEvent: {
       create: vi.fn(),
+      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+    },
+    orderCoupon: {
+      findFirst: vi.fn(),
+      create: vi.fn(),
     },
     cart: {
       findFirst: vi.fn(),
@@ -40,10 +45,17 @@ vi.mock('@/utils/db', () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
-    orderCoupon: {
-      findFirst: vi.fn(),
-      create: vi.fn(),
-    }
+    $queryRaw: vi.fn().mockResolvedValue([
+      { id: 'v1', stockQuantity: 10, reservedQuantity: 0, title: 'Variant 1' }
+    ]),
+    inventory: {
+      findUnique: vi.fn().mockResolvedValue({ id: 'inv_1', variantId: 'v1', onHand: 10, reserved: 0, available: 10 }),
+      create: vi.fn().mockResolvedValue({ id: 'inv_1', variantId: 'v1', onHand: 10, reserved: 0, available: 10 }),
+      update: vi.fn().mockResolvedValue({ id: 'inv_1', variantId: 'v1', onHand: 10, reserved: 2, available: 8 }),
+    },
+    inventoryReservation: {
+      create: vi.fn().mockResolvedValue({ id: 'res_1' }),
+    },
   }
 }));
 
@@ -141,6 +153,15 @@ describe('checkoutService.processCheckout', () => {
   });
 
   it('rejects insufficient stock quantities', async () => {
+    vi.mocked(prisma.$queryRaw).mockImplementation(async (strings: any, ...values: any[]) => {
+      // First call is ProductVariant lock
+      if (strings && strings[0] && strings[0].includes('ProductVariant')) {
+        return [{ id: 'v1', stockQuantity: 2, reservedQuantity: 0, title: 'Product 1' }];
+      }
+      // Second call is Inventory lock
+      return [{ id: 'inv_1', available: 2, reserved: 0 }];
+    });
+
     vi.mocked(prisma.cart.findFirst).mockResolvedValue({
       id: 'cart_1',
       items: [

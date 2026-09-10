@@ -44,6 +44,6 @@ next-env.d.ts
 bun.lockb
 
 # Documentation and unused assets
-docs/
+# docs/
 
 replace_tanishq.js

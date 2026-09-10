@@ -1,0 +1,99 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jewellery_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+      - DATABASE_URL=mysql://jeweluser:jewelpassword@db:3306/jewellery_db
+      - REDIS_URL=redis://redis:6379
+      - NEXTAUTH_SECRET=changeme_in_production_min_32_chars_random
+      - NEXTAUTH_URL=http://localhost:3000
+      - RAZORPAY_KEY_ID=rzp_test_dummy_key_id
+      - RAZORPAY_KEY_SECRET=dummy_razorpay_secret
+      - PAYMENT_ROUTING_CURRENCY=INR
+      - SKYDO_THRESHOLD_MINOR=100000
+      - PAYMENT_RETURN_URL=http://localhost:3000/checkout/callback
+      - RESEND_API_KEY=re_dummy_resend_api_key
+      - AUTO_MIGRATE=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - internal_network
+
+  db:
+    image: mysql:8.0
+    container_name: jewellery_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: jewellery_db
+      MYSQL_USER: jeweluser
+      MYSQL_PASSWORD: jewelpassword
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - internal_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: jewellery_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - internal_network
+
+  mailpit:
+    image: axllent/mailpit:v1.22
+    container_name: jewellery_mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP Port
+    environment:
+      - MP_MAX_MESSAGES=5000
+    networks:
+      - internal_network
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  internal_network:
+    driver: bridge
