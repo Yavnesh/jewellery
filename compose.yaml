@@ -1,10 +1,30 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: jewellery_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3 QUIC
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - internal_network
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: jewellery_app
     restart: unless-stopped
+    expose:
+      - "3000"
     ports:
       - "3000:3000"
     depends_on:
@@ -16,16 +36,16 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
-      - NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+      - NEXT_PUBLIC_API_BASE_URL=https://vamiexports.com
       - DATABASE_URL=mysql://jeweluser:jewelpassword@db:3306/jewellery_db
       - REDIS_URL=redis://redis:6379
       - NEXTAUTH_SECRET=changeme_in_production_min_32_chars_random
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=https://vamiexports.com
       - RAZORPAY_KEY_ID=rzp_test_dummy_key_id
       - RAZORPAY_KEY_SECRET=dummy_razorpay_secret
       - PAYMENT_ROUTING_CURRENCY=INR
       - SKYDO_THRESHOLD_MINOR=100000
-      - PAYMENT_RETURN_URL=http://localhost:3000/checkout/callback
+      - PAYMENT_RETURN_URL=https://vamiexports.com/checkout/callback
       - RESEND_API_KEY=re_dummy_resend_api_key
       - AUTO_MIGRATE=true
     healthcheck:
@@ -46,8 +66,6 @@ services:
       MYSQL_USER: jeweluser
       MYSQL_PASSWORD: jewelpassword
       MYSQL_ROOT_PASSWORD: root_password
-    ports:
-      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -63,8 +81,6 @@ services:
     image: redis:7-alpine
     container_name: jewellery_redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -81,8 +97,8 @@ services:
     container_name: jewellery_mailpit
     restart: unless-stopped
     ports:
-      - "8025:8025" # Web UI
-      - "1025:1025" # SMTP Port
+      - "127.0.0.1:8025:8025" # Bound to localhost only for secure tunnel/internal dev
+      - "127.0.0.1:1025:1025"
     environment:
       - MP_MAX_MESSAGES=5000
     networks:
@@ -92,6 +108,10 @@ volumes:
   mysql_data:
     driver: local
   redis_data:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
     driver: local
 
 networks:
