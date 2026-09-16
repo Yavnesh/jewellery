@@ -1,5 +1,6 @@
 "use server";
 
+import prisma from "@/utils/db";
 import { checkoutService } from "@/src/modules/checkout/application/checkout.service";
 import { getActiveCart } from "@/app/actions/cart.actions";
 import { getServerSession } from "next-auth";
