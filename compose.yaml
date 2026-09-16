@@ -48,6 +48,7 @@ services:
       - PAYMENT_RETURN_URL=https://vamiexports.com/checkout/callback
       - RESEND_API_KEY=re_dummy_resend_api_key
       - AUTO_MIGRATE=true
+      - AUTO_SEED=true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health/live"]
       interval: 15s
