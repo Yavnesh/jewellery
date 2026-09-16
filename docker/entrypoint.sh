@@ -6,7 +6,7 @@ echo "==> Starting container entrypoint script..."
 # If DATABASE_URL is defined and AUTO_MIGRATE is true
 if [ "$AUTO_MIGRATE" = "true" ]; then
   echo "==> Running Prisma database schema synchronization (prisma db push)..."
-  ./node_modules/.bin/prisma db push --skip-generate || npx prisma db push --skip-generate
+  ./node_modules/.bin/prisma db push --skip-generate --accept-data-loss || npx prisma db push --skip-generate --accept-data-loss
 fi
 
 # If AUTO_SEED is set to true, execute database seed
