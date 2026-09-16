@@ -28,12 +28,53 @@ export async function submitCheckout(inputData: CheckoutInputPayload) {
 
     const input = {
       ...inputData,
+      state: inputData.state || inputData.country || inputData.city || "Default",
       userId
     };
 
-    // Basic validation
-    if (!input.name || !input.email || !input.adress || !input.city || !input.state) {
-      return { success: false, error: "Please fill in all required fields." };
+    // Field-level validation checks
+    const fieldErrors: Record<string, string> = {};
+
+    if (!input.name || input.name.trim().length < 2) {
+      fieldErrors.name = "First name must be at least 2 characters.";
+    }
+    if (!input.lastname || input.lastname.trim().length < 2) {
+      fieldErrors.lastname = "Last name must be at least 2 characters.";
+    }
+    const phoneDigits = (input.phone || "").replace(/[^0-9]/g, "");
+    if (!input.phone || phoneDigits.length < 10) {
+      fieldErrors.phone = "Phone number must be at least 10 digits.";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!input.email || !emailRegex.test(input.email.trim())) {
+      fieldErrors.email = "Please enter a valid email address.";
+    }
+    if (!input.company || input.company.trim().length < 2) {
+      fieldErrors.company = "Company name must be at least 2 characters.";
+    }
+    if (!input.adress || input.adress.trim().length < 5) {
+      fieldErrors.adress = "Street address must be at least 5 characters.";
+    }
+    if (!input.apartment || input.apartment.trim().length < 1) {
+      fieldErrors.apartment = "Apartment, suite, or unit number is required.";
+    }
+    if (!input.city || input.city.trim().length < 2) {
+      fieldErrors.city = "City must be at least 2 characters.";
+    }
+    if (!input.country || input.country.trim().length < 2) {
+      fieldErrors.country = "Country / Region is required.";
+    }
+    if (!input.postalCode || input.postalCode.trim().length < 3) {
+      fieldErrors.postalCode = "Postal code must be at least 3 characters.";
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      const firstError = Object.values(fieldErrors)[0];
+      return { 
+        success: false, 
+        error: firstError, 
+        fieldErrors 
+      };
     }
 
     const { order, paymentIntent } = await checkoutService.processCheckout({

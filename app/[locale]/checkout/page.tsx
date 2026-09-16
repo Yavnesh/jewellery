@@ -36,77 +36,100 @@ const CheckoutPage = () => {
     postalCode: "",
     orderNotice: "",
   });
-  
+
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { products, total, clearCart } = useProductStore();
   const router = useRouter();
 
-  // Add validation functions that match server requirements
-  const validateForm = () => {
-    const errors: string[] = [];
-    
+  const validateAll = () => {
+    const errors: Record<string, string> = {};
+
     // Name validation
     if (!checkoutForm.name.trim() || checkoutForm.name.trim().length < 2) {
-      errors.push("Name must be at least 2 characters");
+      errors.name = "First name must be at least 2 characters";
     }
-    
+
     // Lastname validation
     if (!checkoutForm.lastname.trim() || checkoutForm.lastname.trim().length < 2) {
-      errors.push("Lastname must be at least 2 characters");
+      errors.lastname = "Last name must be at least 2 characters";
     }
-    
+
     // Email validation
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!checkoutForm.email.trim() || !emailRegex.test(checkoutForm.email.trim())) {
-      errors.push("Please enter a valid email address");
+      errors.email = "Please enter a valid email address";
     }
-    
+
     // Phone validation (must be at least 10 digits)
-    const phoneDigits = checkoutForm.phone.replace(/[^0-9]/g, '');
+    const phoneDigits = checkoutForm.phone.replace(/[^0-9]/g, "");
     if (!checkoutForm.phone.trim() || phoneDigits.length < 10) {
-      errors.push("Phone number must be at least 10 digits");
+      errors.phone = "Phone number must be at least 10 digits";
     }
-    
+
     // Company validation
-    if (!checkoutForm.company.trim() || checkoutForm.company.trim().length < 5) {
-      errors.push("Company must be at least 5 characters");
+    if (!checkoutForm.company.trim() || checkoutForm.company.trim().length < 2) {
+      errors.company = "Company name must be at least 2 characters";
     }
-    
+
     // Address validation
     if (!checkoutForm.adress.trim() || checkoutForm.adress.trim().length < 5) {
-      errors.push("Address must be at least 5 characters");
+      errors.adress = "Address must be at least 5 characters";
     }
-    
-    // Apartment validation (updated to 1 character minimum)
+
+    // Apartment validation
     if (!checkoutForm.apartment.trim() || checkoutForm.apartment.trim().length < 1) {
-      errors.push("Apartment is required");
+      errors.apartment = "Apartment, suite, etc. is required";
     }
-    
+
     // City validation
-    if (!checkoutForm.city.trim() || checkoutForm.city.trim().length < 5) {
-      errors.push("City must be at least 5 characters");
+    if (!checkoutForm.city.trim() || checkoutForm.city.trim().length < 2) {
+      errors.city = "City must be at least 2 characters";
     }
-    
+
     // Country validation
-    if (!checkoutForm.country.trim() || checkoutForm.country.trim().length < 5) {
-      errors.push("Country must be at least 5 characters");
+    if (!checkoutForm.country.trim() || checkoutForm.country.trim().length < 2) {
+      errors.country = "Country must be at least 2 characters";
     }
-    
+
     // Postal code validation
     if (!checkoutForm.postalCode.trim() || checkoutForm.postalCode.trim().length < 3) {
-      errors.push("Postal code must be at least 3 characters");
+      errors.postalCode = "Postal code must be at least 3 characters";
     }
-    
+
     return errors;
+  };
+
+  const handleInputChange = (field: keyof typeof checkoutForm, value: string) => {
+    setCheckoutForm((prev) => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[field];
+        return updated;
+      });
+    }
   };
 
   const makePurchase = async () => {
     // Client-side validation first
-    const validationErrors = validateForm();
-    if (validationErrors.length > 0) {
-      validationErrors.forEach(error => {
-        toast.error(error);
-      });
+    const errors = validateAll();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const firstField = Object.keys(errors)[0];
+      const el = document.getElementById(
+        firstField === "adress"
+          ? "address"
+          : firstField === "postalCode"
+          ? "postal-code"
+          : firstField === "country"
+          ? "region"
+          : firstField === "email"
+          ? "email-address"
+          : `${firstField}-input`
+      );
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast.error("Please correct the highlighted fields.");
       return;
     }
 
@@ -120,7 +143,7 @@ const CheckoutPage = () => {
     try {
       // Lazy import Server Action
       const { submitCheckout } = await import("@/app/actions/checkout.actions");
-      
+
       const result = await submitCheckout({
         name: checkoutForm.name.trim(),
         lastname: checkoutForm.lastname.trim(),
@@ -130,13 +153,16 @@ const CheckoutPage = () => {
         adress: checkoutForm.adress.trim(),
         apartment: checkoutForm.apartment.trim(),
         city: checkoutForm.city.trim(),
-        state: "",
+        state: checkoutForm.country.trim(),
         country: checkoutForm.country.trim(),
         postalCode: checkoutForm.postalCode.trim(),
         orderNotice: checkoutForm.orderNotice.trim(),
       });
 
       if (!result.success) {
+        if (result.fieldErrors) {
+          setFieldErrors(result.fieldErrors);
+        }
         toast.error(result.error || "Failed to create order");
         setIsSubmitting(false);
         return;
@@ -156,16 +182,17 @@ const CheckoutPage = () => {
         postalCode: "",
         orderNotice: "",
       });
-      
+      setFieldErrors({});
+
       clearCart();
-      
-      if (result.clientAction && result.clientAction.type === 'REDIRECT') {
+
+      if (result.clientAction && result.clientAction.type === "REDIRECT") {
         toast.success("Order created! Redirecting to secure payment...");
         router.push(result.clientAction.redirectUrl);
-      } else if (result.clientAction && result.clientAction.type === 'SDK') {
+      } else if (result.clientAction && result.clientAction.type === "SDK") {
         // Handle Razorpay
         toast.success("Order created! Opening secure payment window...");
-        
+
         const isLoaded = await loadRazorpay();
         if (!isLoaded) {
           toast.error("Failed to load Razorpay SDK. Please check your internet connection.");
@@ -182,7 +209,7 @@ const CheckoutPage = () => {
           handler: async function (response: any) {
             toast.loading("Verifying payment...", { id: "payment-verify" });
             const { verifyPaymentSignatureAction } = await import("@/app/actions/verify-payment.actions");
-            
+
             const verifyResult = await verifyPaymentSignatureAction({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -205,23 +232,21 @@ const CheckoutPage = () => {
             color: "#D3A971", // luxury-gold
           },
         };
-        
+
         const rzp = new (window as any).Razorpay(options);
-        
+
         rzp.on("payment.failed", function (response: any) {
           toast.error("Payment failed or cancelled");
           console.error(response.error);
         });
-        
+
         rzp.open();
-        
       } else {
         toast.success("Order created successfully! You will be contacted for payment.");
         setTimeout(() => {
           router.push(!session?.user ? "/?checkout_success=guest" : "/");
         }, 1000);
       }
-      
     } catch (error: any) {
       console.error("💥 Error in makePurchase:", error);
       toast.error("Failed to create order. Please try again.");
@@ -304,7 +329,7 @@ const CheckoutPage = () => {
           </div>
         </section>
 
-        <form className="px-4 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0">
+        <form className="px-4 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0" onSubmit={(e) => e.preventDefault()}>
           <div className="mx-auto max-w-lg lg:max-w-none">
             {/* Contact Information */}
             <section aria-labelledby="contact-info-heading">
@@ -320,25 +345,32 @@ const CheckoutPage = () => {
                   htmlFor="name-input"
                   className="block text-sm font-sans font-medium text-luxury-text-primary"
                 >
-                  Name * (min 2 characters)
+                  Name * <span className="text-xs text-luxury-text-secondary font-normal">(min 2 characters)</span>
                 </label>
                 <div className="mt-1">
                   <input
                     value={checkoutForm.name}
-                    onChange={(e) =>
-                      setCheckoutForm({
-                        ...checkoutForm,
-                        name: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("name", e.target.value)}
                     type="text"
                     id="name-input"
                     name="name-input"
                     autoComplete="given-name"
                     required
                     disabled={isSubmitting}
-                    className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                      fieldErrors.name
+                        ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                        : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                    }`}
                   />
+                  {fieldErrors.name && (
+                    <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {fieldErrors.name}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -347,25 +379,32 @@ const CheckoutPage = () => {
                   htmlFor="lastname-input"
                   className="block text-sm font-sans font-medium text-luxury-text-primary"
                 >
-                  Lastname * (min 2 characters)
+                  Lastname * <span className="text-xs text-luxury-text-secondary font-normal">(min 2 characters)</span>
                 </label>
                 <div className="mt-1">
                   <input
                     value={checkoutForm.lastname}
-                    onChange={(e) =>
-                      setCheckoutForm({
-                        ...checkoutForm,
-                        lastname: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("lastname", e.target.value)}
                     type="text"
                     id="lastname-input"
                     name="lastname-input"
                     autoComplete="family-name"
                     required
                     disabled={isSubmitting}
-                    className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                      fieldErrors.lastname
+                        ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                        : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                    }`}
                   />
+                  {fieldErrors.lastname && (
+                    <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {fieldErrors.lastname}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -374,25 +413,32 @@ const CheckoutPage = () => {
                   htmlFor="phone-input"
                   className="block text-sm font-sans font-medium text-luxury-text-primary"
                 >
-                  Phone number * (min 10 digits)
+                  Phone number * <span className="text-xs text-luxury-text-secondary font-normal">(min 10 digits)</span>
                 </label>
                 <div className="mt-1">
                   <input
                     value={checkoutForm.phone}
-                    onChange={(e) =>
-                      setCheckoutForm({
-                        ...checkoutForm,
-                        phone: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
                     type="tel"
                     id="phone-input"
                     name="phone-input"
                     autoComplete="tel"
                     required
                     disabled={isSubmitting}
-                    className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                      fieldErrors.phone
+                        ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                        : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                    }`}
                   />
+                  {fieldErrors.phone && (
+                    <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {fieldErrors.phone}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -406,20 +452,27 @@ const CheckoutPage = () => {
                 <div className="mt-1">
                   <input
                     value={checkoutForm.email}
-                    onChange={(e) =>
-                      setCheckoutForm({
-                        ...checkoutForm,
-                        email: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     type="email"
                     id="email-address"
                     name="email-address"
                     autoComplete="email"
                     required
                     disabled={isSubmitting}
-                    className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                      fieldErrors.email
+                        ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                        : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                    }`}
                   />
+                  {fieldErrors.email && (
+                    <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
               </div>
             </section>
@@ -469,15 +522,22 @@ const CheckoutPage = () => {
                       name="company"
                       required
                       disabled={isSubmitting}
-                      className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                        fieldErrors.company
+                          ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                      }`}
                       value={checkoutForm.company}
-                      onChange={(e) =>
-                        setCheckoutForm({
-                          ...checkoutForm,
-                          company: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleInputChange("company", e.target.value)}
                     />
+                    {fieldErrors.company && (
+                      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.company}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -486,7 +546,7 @@ const CheckoutPage = () => {
                     htmlFor="address"
                     className="block text-sm font-sans font-medium text-luxury-text-primary"
                   >
-                    Address *
+                    Address * <span className="text-xs text-luxury-text-secondary font-normal">(min 5 characters)</span>
                   </label>
                   <div className="mt-1">
                     <input
@@ -496,15 +556,22 @@ const CheckoutPage = () => {
                       autoComplete="street-address"
                       required
                       disabled={isSubmitting}
-                      className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                        fieldErrors.adress
+                          ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                      }`}
                       value={checkoutForm.adress}
-                      onChange={(e) =>
-                        setCheckoutForm({
-                          ...checkoutForm,
-                          adress: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleInputChange("adress", e.target.value)}
                     />
+                    {fieldErrors.adress && (
+                      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.adress}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -513,7 +580,7 @@ const CheckoutPage = () => {
                     htmlFor="apartment"
                     className="block text-sm font-sans font-medium text-luxury-text-primary"
                   >
-                    Apartment, suite, etc. * (required)
+                    Apartment, suite, etc. *
                   </label>
                   <div className="mt-1">
                     <input
@@ -522,15 +589,22 @@ const CheckoutPage = () => {
                       name="apartment"
                       required
                       disabled={isSubmitting}
-                      className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                        fieldErrors.apartment
+                          ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                      }`}
                       value={checkoutForm.apartment}
-                      onChange={(e) =>
-                        setCheckoutForm({
-                          ...checkoutForm,
-                          apartment: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleInputChange("apartment", e.target.value)}
                     />
+                    {fieldErrors.apartment && (
+                      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.apartment}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -549,15 +623,22 @@ const CheckoutPage = () => {
                       autoComplete="address-level2"
                       required
                       disabled={isSubmitting}
-                      className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                        fieldErrors.city
+                          ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                      }`}
                       value={checkoutForm.city}
-                      onChange={(e) =>
-                        setCheckoutForm({
-                          ...checkoutForm,
-                          city: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleInputChange("city", e.target.value)}
                     />
+                    {fieldErrors.city && (
+                      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.city}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -566,7 +647,7 @@ const CheckoutPage = () => {
                     htmlFor="region"
                     className="block text-sm font-sans font-medium text-luxury-text-primary"
                   >
-                    Country *
+                    Country / State *
                   </label>
                   <div className="mt-1">
                     <input
@@ -576,15 +657,22 @@ const CheckoutPage = () => {
                       autoComplete="address-level1"
                       required
                       disabled={isSubmitting}
-                      className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                        fieldErrors.country
+                          ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                      }`}
                       value={checkoutForm.country}
-                      onChange={(e) =>
-                        setCheckoutForm({
-                          ...checkoutForm,
-                          country: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleInputChange("country", e.target.value)}
                     />
+                    {fieldErrors.country && (
+                      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.country}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -603,15 +691,22 @@ const CheckoutPage = () => {
                       autoComplete="postal-code"
                       required
                       disabled={isSubmitting}
-                      className="block w-full rounded-sm border-luxury-border/40 bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
+                        fieldErrors.postalCode
+                          ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                      }`}
                       value={checkoutForm.postalCode}
-                      onChange={(e) =>
-                        setCheckoutForm({
-                          ...checkoutForm,
-                          postalCode: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleInputChange("postalCode", e.target.value)}
                     />
+                    {fieldErrors.postalCode && (
+                      <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.postalCode}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -620,7 +715,7 @@ const CheckoutPage = () => {
                     htmlFor="order-notice"
                     className="block text-sm font-sans font-medium text-luxury-text-primary"
                   >
-                    Order notice
+                    Order notice <span className="text-xs text-luxury-text-secondary font-normal">(optional)</span>
                   </label>
                   <div className="mt-1">
                     <textarea
@@ -630,12 +725,7 @@ const CheckoutPage = () => {
                       autoComplete="order-notice"
                       disabled={isSubmitting}
                       value={checkoutForm.orderNotice}
-                      onChange={(e) =>
-                        setCheckoutForm({
-                          ...checkoutForm,
-                          orderNotice: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleInputChange("orderNotice", e.target.value)}
                     ></textarea>
                   </div>
                 </div>
