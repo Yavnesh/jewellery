@@ -26,7 +26,16 @@ export const POST = async (request: Request) => {
       throw validationResult.error;
     }
 
-    const { email, password } = validationResult.data;
+    const { email, password, phone, name, lastname } = validationResult.data;
+
+    // Verify that the phone number was verified via OTP
+    const { isPhoneVerified, sanitizePhoneNumber } = await import("@/app/actions/otp.actions");
+    const formattedPhone = await sanitizePhoneNumber(phone);
+    const verified = await isPhoneVerified(formattedPhone, "REGISTRATION");
+
+    if (!verified) {
+      throw new AppError("Mobile number is not verified. Please verify with OTP before registering.", 400);
+    }
 
     const existingUser = await prisma.user.findFirst({ 
       where: { email } 
@@ -46,16 +55,20 @@ export const POST = async (request: Request) => {
         where: { id: existingUser.id },
         data: {
           password: hashedPassword,
+          phone: formattedPhone,
+          isPhoneVerified: true,
           role: "user",
         }
       });
       userId = updatedUser.id;
     } else {
-      // Create user with proper error handling
+      // Create user with phone and verification status
       const newUser = await prisma.user.create({
         data: {
           id: nanoid(),
           email,
+          phone: formattedPhone,
+          isPhoneVerified: true,
           password: hashedPassword,
           role: "user",
         },

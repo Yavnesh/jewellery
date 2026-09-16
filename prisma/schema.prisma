@@ -64,6 +64,8 @@ model Image {
 model User {
   id                String              @id @default(uuid())
   email             String              @unique
+  phone             String?
+  isPhoneVerified   Boolean             @default(false)
   password          String?
   role              String?             @default("user")
   sessionVersion    Int                 @default(1)
@@ -874,5 +876,24 @@ model Inventory {
   version      Int            @default(0)
   variant      ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 }
+
+// -----------------------------------------------------------------------------
+// OTP VERIFICATION ARCHITECTURE
+// -----------------------------------------------------------------------------
+
+model OtpVerification {
+  id        String   @id @default(cuid())
+  phone     String
+  otpHash   String
+  purpose   String   // "REGISTRATION" | "CHECKOUT"
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone, purpose])
+}
+
 
 

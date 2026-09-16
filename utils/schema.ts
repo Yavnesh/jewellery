@@ -5,6 +5,9 @@ import { commonValidations } from "./validation";
 export const registrationSchema = z.object({
   email: commonValidations.email,
   password: commonValidations.password,
+  phone: z.string().min(10, "Mobile number must be at least 10 digits"),
+  name: z.string().optional(),
+  lastname: z.string().optional(),
 });
 
 // Login schema (for future use)

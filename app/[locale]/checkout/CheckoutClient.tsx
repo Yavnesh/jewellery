@@ -42,6 +42,81 @@ export default function CheckoutClient() {
   const { products, total, clearCart } = useProductStore();
   const router = useRouter();
 
+  // Mobile OTP States
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendCountdown > 0) {
+      timer = setTimeout(() => setResendCountdown(prev => prev - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCountdown]);
+
+  const handleSendOtp = async () => {
+    const cleanDigits = checkoutForm.phone.replace(/\D/g, "");
+    if (cleanDigits.length < 10) {
+      toast.error("Please enter a valid 10-digit mobile number.");
+      setFieldErrors(prev => ({ ...prev, phone: "Please enter a valid 10-digit mobile number" }));
+      return;
+    }
+
+    setIsSendingOtp(true);
+
+    try {
+      const { sendOtpAction } = await import("@/app/actions/otp.actions");
+      const result = await sendOtpAction({ phone: checkoutForm.phone, purpose: "CHECKOUT" });
+      if (result.success) {
+        setIsOtpSent(true);
+        setResendCountdown(60);
+        toast.success(result.message || "OTP sent successfully!");
+        if (result.devOtp) {
+          toast(`Dev OTP: ${result.devOtp}`, { icon: "🔑", duration: 8000 });
+        }
+      } else {
+        toast.error(result.error || "Failed to send OTP.");
+      }
+    } catch (err: any) {
+      toast.error("Network error while sending OTP.");
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.trim().length !== 6) {
+      toast.error("Please enter the 6-digit OTP code.");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+
+    try {
+      const { verifyOtpAction } = await import("@/app/actions/otp.actions");
+      const result = await verifyOtpAction({ phone: checkoutForm.phone, otp, purpose: "CHECKOUT" });
+      if (result.success) {
+        setIsPhoneVerified(true);
+        setFieldErrors(prev => {
+          const next = { ...prev };
+          delete next.phone;
+          return next;
+        });
+        toast.success("Mobile number verified successfully!");
+      } else {
+        toast.error(result.error || "OTP verification failed.");
+      }
+    } catch (err: any) {
+      toast.error("Network error during verification.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
   const validateAll = () => {
     const errors: Record<string, string> = {};
 
@@ -102,6 +177,11 @@ export default function CheckoutClient() {
 
   const handleInputChange = (field: keyof typeof checkoutForm, value: string) => {
     setCheckoutForm((prev) => ({ ...prev, [field]: value }));
+    if (field === "phone") {
+      setIsPhoneVerified(false);
+      setIsOtpSent(false);
+      setOtp("");
+    }
     if (fieldErrors[field]) {
       setFieldErrors((prev) => {
         const updated = { ...prev };
@@ -130,6 +210,14 @@ export default function CheckoutClient() {
       );
       if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
       toast.error("Please correct the highlighted fields.");
+      return;
+    }
+
+    if (!isPhoneVerified && !session?.user) {
+      setFieldErrors(prev => ({ ...prev, phone: "Mobile verification required via OTP" }));
+      const phoneEl = document.getElementById("phone-input");
+      if (phoneEl) phoneEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast.error("Please verify your mobile number with OTP before placing your order.");
       return;
     }
 
@@ -188,7 +276,11 @@ export default function CheckoutClient() {
 
       if (result.clientAction && result.clientAction.type === "REDIRECT") {
         toast.success("Order created! Redirecting to secure payment...");
-        router.push(result.clientAction.redirectUrl);
+        if (result.clientAction.redirectUrl.startsWith("http://") || result.clientAction.redirectUrl.startsWith("https://")) {
+          window.location.href = result.clientAction.redirectUrl;
+        } else {
+          router.push(result.clientAction.redirectUrl);
+        }
       } else if (result.clientAction && result.clientAction.type === "SDK") {
         // Handle Razorpay
         toast.success("Order created! Opening secure payment window...");
@@ -413,38 +505,106 @@ export default function CheckoutClient() {
                 </div>
               </div>
 
-              <div className="mt-6">
-                <label
-                  htmlFor="phone-input"
-                  className="block text-sm font-sans font-medium text-luxury-text-primary"
-                >
-                  Phone number * <span className="text-xs text-luxury-text-secondary font-normal">(min 10 digits)</span>
-                </label>
-                <div className="mt-1">
-                  <input
-                    value={checkoutForm.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    type="tel"
-                    id="phone-input"
-                    name="phone-input"
-                    autoComplete="tel"
-                    required
-                    disabled={isSubmitting}
-                    className={`block w-full rounded-sm bg-transparent py-2.5 px-3 text-luxury-text-primary shadow-sm sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed transition duration-150 ${
-                      fieldErrors.phone
-                        ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
-                        : "border-luxury-border/40 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
-                    }`}
-                  />
-                  {fieldErrors.phone && (
-                    <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1 font-sans">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              {/* Phone number with OTP Verification */}
+              <div className="mt-6 p-4 bg-[#FAF8F5] border border-[#EBE3D7] rounded-sm space-y-3">
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="phone-input"
+                    className="block text-sm font-sans font-semibold text-luxury-text-primary"
+                  >
+                    Phone number * <span className="text-xs text-luxury-text-secondary font-normal">(10 digits)</span>
+                  </label>
+                  {isPhoneVerified && (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                       </svg>
-                      {fieldErrors.phone}
-                    </p>
+                      Verified
+                    </span>
                   )}
                 </div>
+
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm font-medium">
+                      +91
+                    </span>
+                    <input
+                      value={checkoutForm.phone}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                        handleInputChange("phone", val);
+                      }}
+                      type="tel"
+                      id="phone-input"
+                      name="phone-input"
+                      autoComplete="tel"
+                      placeholder="98765 43210"
+                      required
+                      disabled={isSubmitting || isPhoneVerified}
+                      className={`block w-full rounded-sm bg-white py-2.5 pl-12 pr-3 text-luxury-text-primary shadow-sm sm:text-sm transition duration-150 ${
+                        isPhoneVerified
+                          ? "bg-gray-100 text-gray-600 ring-1 ring-green-500 cursor-not-allowed"
+                          : fieldErrors.phone
+                          ? "border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500"
+                          : "border border-gray-300 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold"
+                      }`}
+                    />
+                  </div>
+
+                  {!isPhoneVerified && (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={isSendingOtp || checkoutForm.phone.replace(/\D/g, "").length < 10 || resendCountdown > 0}
+                      className="px-4 py-2.5 bg-[#8B2C33] text-white text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-[#6e2329] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0 shadow-sm"
+                    >
+                      {isSendingOtp
+                        ? "Sending..."
+                        : resendCountdown > 0
+                        ? `Resend (${resendCountdown}s)`
+                        : isOtpSent
+                        ? "Resend OTP"
+                        : "Verify OTP"}
+                    </button>
+                  )}
+                </div>
+
+                {fieldErrors.phone && (
+                  <p className="text-xs text-red-600 flex items-center gap-1 font-sans">
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {fieldErrors.phone}
+                  </p>
+                )}
+
+                {/* OTP Input Section on Checkout */}
+                {isOtpSent && !isPhoneVerified && (
+                  <div className="pt-2 border-t border-[#E3D6C5] space-y-2">
+                    <p className="text-xs text-gray-600">
+                      Enter the 6-digit verification code sent to your mobile:
+                    </p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        maxLength={6}
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                        placeholder="6-digit OTP"
+                        className="block w-full rounded-sm border border-gray-300 py-2 px-3 text-gray-900 shadow-sm tracking-widest font-mono text-center placeholder:tracking-normal placeholder:font-sans focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold sm:text-sm bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        disabled={isVerifyingOtp || otp.trim().length !== 6}
+                        className="px-4 py-2 bg-[#D1A254] text-white text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-[#b58b42] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0 shadow-sm"
+                      >
+                        {isVerifyingOtp ? "Verifying..." : "Confirm OTP"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="mt-6">
@@ -478,27 +638,6 @@ export default function CheckoutClient() {
                       {fieldErrors.email}
                     </p>
                   )}
-                </div>
-              </div>
-            </section>
-
-            {/* Payment Notice */}
-            <section className="mt-10">
-              <div className="bg-[#FFF8E7] border border-[#9C7740]/20 rounded-sm p-4">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 mt-0.5">
-                    <svg className="h-5 w-5 text-[#9C7740]" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-serif font-bold text-[#9C7740]">
-                      Payment Information
-                    </h3>
-                    <div className="mt-1 text-xs font-sans text-[#9C7740]/80">
-                      <p>Payment will be processed after order confirmation. You will be contacted for payment details.</p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </section>

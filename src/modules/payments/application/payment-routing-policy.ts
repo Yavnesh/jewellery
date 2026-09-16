@@ -28,8 +28,8 @@ export class AmountBasedPaymentRoutingPolicy implements PaymentRoutingPolicy {
       amountInUSD = amountInUSD / exchangeRate;
     }
 
-    // If the price of item when converted to dollar is more than 1000
-    if (amountInUSD >= 1000) {
+    // If the price of item when converted to dollar is more than 1000 and Skydo credentials exist
+    if (amountInUSD >= 1000 && env.SKYDO_CLIENT_ID && env.SKYDO_CLIENT_SECRET) {
       return PaymentProvider.SKYDO;
     }
 

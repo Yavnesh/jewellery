@@ -43,8 +43,7 @@ export class CheckoutService {
       cart = await prisma.cart.findFirst({
         where: {
           id: input.cartId,
-          userId: input.userId || undefined,
-          status: "ACTIVE",
+          ...(input.userId ? { userId: input.userId } : {}),
         },
         include: {
           items: {

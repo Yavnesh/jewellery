@@ -2,8 +2,11 @@ import prisma from '@/utils/db';
 import { getVariantAvailability } from '../catalog/variant.service';
 
 export async function getCartBySessionId(sessionId: string) {
-  return prisma.cart.findUnique({
-    where: { sessionId },
+  return prisma.cart.findFirst({
+    where: { 
+      sessionId,
+      status: "ACTIVE"
+    },
     include: {
       items: {
         include: {
@@ -26,8 +29,11 @@ export async function getCartBySessionId(sessionId: string) {
 }
 
 export async function getCartByUserId(userId: string) {
-  return prisma.cart.findUnique({
-    where: { userId },
+  return prisma.cart.findFirst({
+    where: { 
+      userId,
+      status: "ACTIVE"
+    },
     include: {
       items: {
         include: {
@@ -50,10 +56,76 @@ export async function getCartByUserId(userId: string) {
 }
 
 export async function createCart(sessionId: string | null, userId: string | null) {
+  // If a cart with this sessionId or userId already exists, reactivate it and clean old converted items
+  if (sessionId) {
+    const existing = await prisma.cart.findUnique({ where: { sessionId } });
+    if (existing) {
+      if (existing.status !== "ACTIVE") {
+        await prisma.cartItem.deleteMany({ where: { cartId: existing.id } });
+        return prisma.cart.update({
+          where: { id: existing.id },
+          data: { status: "ACTIVE" },
+          include: {
+            items: {
+              include: {
+                variant: {
+                  include: {
+                    product: true,
+                    optionValues: {
+                      include: {
+                        optionValue: {
+                          include: { option: true }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      return getCartBySessionId(sessionId);
+    }
+  }
+
+  if (userId) {
+    const existing = await prisma.cart.findUnique({ where: { userId } });
+    if (existing) {
+      if (existing.status !== "ACTIVE") {
+        await prisma.cartItem.deleteMany({ where: { cartId: existing.id } });
+        return prisma.cart.update({
+          where: { id: existing.id },
+          data: { status: "ACTIVE" },
+          include: {
+            items: {
+              include: {
+                variant: {
+                  include: {
+                    product: true,
+                    optionValues: {
+                      include: {
+                        optionValue: {
+                          include: { option: true }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      return getCartByUserId(userId);
+    }
+  }
+
   return prisma.cart.create({
     data: {
       sessionId,
       userId,
+      status: "ACTIVE",
     },
     include: {
       items: {

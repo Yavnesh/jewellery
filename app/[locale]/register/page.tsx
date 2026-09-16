@@ -5,22 +5,94 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { sendOtpAction, verifyOtpAction } from "@/app/actions/otp.actions";
 
 const RegisterPage = () => {
   const [error, setError] = useState("");
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
 
+  // Mobile & OTP States
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isPhoneVerifiedState, setIsPhoneVerifiedState] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
+
   useEffect(() => {
-    // chechking if user has already registered redirect to home page
     if (sessionStatus === "authenticated") {
       router.replace("/");
     }
   }, [sessionStatus, router]);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendCountdown > 0) {
+      timer = setTimeout(() => setResendCountdown(prev => prev - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCountdown]);
+
   const isValidEmail = (email: string) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     return emailRegex.test(email);
+  };
+
+  const handleSendOtp = async () => {
+    const cleanDigits = phone.replace(/\D/g, "");
+    if (cleanDigits.length < 10) {
+      toast.error("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    setIsSendingOtp(true);
+    setError("");
+
+    try {
+      const result = await sendOtpAction({ phone, purpose: "REGISTRATION" });
+      if (result.success) {
+        setIsOtpSent(true);
+        setResendCountdown(60);
+        toast.success(result.message || "OTP sent successfully!");
+        if (result.devOtp) {
+          toast(`Dev OTP: ${result.devOtp}`, { icon: "🔑", duration: 8000 });
+        }
+      } else {
+        toast.error(result.error || "Failed to send OTP.");
+        setError(result.error || "Failed to send OTP.");
+      }
+    } catch (err: any) {
+      toast.error("Network error while sending OTP.");
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otp.trim().length !== 6) {
+      toast.error("Please enter the 6-digit OTP code.");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    setError("");
+
+    try {
+      const result = await verifyOtpAction({ phone, otp, purpose: "REGISTRATION" });
+      if (result.success) {
+        setIsPhoneVerifiedState(true);
+        toast.success("Mobile number verified successfully!");
+      } else {
+        toast.error(result.error || "OTP verification failed.");
+        setError(result.error || "OTP verification failed.");
+      }
+    } catch (err: any) {
+      toast.error("Network error during verification.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
   };
   
   const handleSubmit = async (e: any) => {
@@ -34,6 +106,12 @@ const RegisterPage = () => {
     if (!isValidEmail(email)) {
       setError("Please enter a valid email address.");
       toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (!isPhoneVerifiedState) {
+      setError("Please verify your mobile number with OTP before creating your account.");
+      toast.error("Please verify your mobile number with OTP.");
       return;
     }
 
@@ -55,7 +133,7 @@ const RegisterPage = () => {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, lastname }),
+        body: JSON.stringify({ email, password, phone, name, lastname }),
       });
 
       const data = await res.json();
@@ -70,12 +148,11 @@ const RegisterPage = () => {
           setError(errorMessage);
           toast.error(errorMessage);
         } else if (res.status === 409 || data.error?.includes("exists")) {
-          // Do not reveal email existence explicitly, just say generic or "Account may already exist"
           setError("We couldn't create an account with those details.");
           toast.error("We couldn't create an account with those details.");
         } else {
-          setError(genericErrorMsg);
-          toast.error(genericErrorMsg);
+          setError(data.error || genericErrorMsg);
+          toast.error(data.error || genericErrorMsg);
         }
       }
     } catch (error) {
@@ -85,8 +162,6 @@ const RegisterPage = () => {
   };
 
   const handleOAuthLogin = (provider: string) => {
-    // Redirecting directly via NextAuth for OAuth
-    // (signIn automatically handles creation if user doesn't exist)
     import("next-auth/react").then(({ signIn }) => {
       signIn(provider, { callbackUrl: "/" });
     });
@@ -113,85 +188,173 @@ const RegisterPage = () => {
           </p>
         </div>
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-[480px]">
-          <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12 border border-gray-100">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-[500px]">
+          <div className="bg-white px-6 py-10 shadow sm:rounded-lg sm:px-10 border border-gray-100">
+            <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                    First Name
+                    First Name *
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-1.5">
                     <input
                       id="name"
                       name="name"
                       type="text"
                       required
-                      className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
+                      className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="lastname" className="block text-sm font-medium leading-6 text-gray-900">
-                    Last Name
+                    Last Name *
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-1.5">
                     <input
                       id="lastname"
                       name="lastname"
                       type="text"
                       required
-                      className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
+                      className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                     />
                   </div>
                 </div>
               </div>
 
+              {/* Mobile Number & OTP Verification Field */}
+              <div className="p-4 bg-[#FAF8F5] border border-[#EBE3D7] rounded-md space-y-3">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="phone" className="block text-sm font-semibold text-gray-900">
+                    Mobile Number *
+                  </label>
+                  {isPhoneVerifiedState && (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Verified
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-sm font-medium">
+                      +91
+                    </span>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      disabled={isPhoneVerifiedState}
+                      value={phone}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                        setPhone(val);
+                        if (isPhoneVerifiedState) setIsPhoneVerifiedState(false);
+                      }}
+                      placeholder="98765 43210"
+                      required
+                      className={`block w-full rounded-md border-0 py-2 pl-12 pr-3 text-gray-900 shadow-sm ring-1 ring-inset ${
+                        isPhoneVerifiedState 
+                          ? "bg-gray-100 text-gray-600 ring-green-500 cursor-not-allowed" 
+                          : "bg-white ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold"
+                      } sm:text-sm sm:leading-6 transition-all`}
+                    />
+                  </div>
+
+                  {!isPhoneVerifiedState && (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={isSendingOtp || phone.replace(/\D/g, "").length < 10 || resendCountdown > 0}
+                      className="px-4 py-2 bg-[#8B2C33] text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-[#6e2329] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0 shadow-sm"
+                    >
+                      {isSendingOtp 
+                        ? "Sending..." 
+                        : resendCountdown > 0 
+                        ? `Resend (${resendCountdown}s)` 
+                        : isOtpSent 
+                        ? "Resend OTP" 
+                        : "Send OTP"}
+                    </button>
+                  )}
+                </div>
+
+                {/* OTP Input Section (Shows when OTP is sent & not yet verified) */}
+                {isOtpSent && !isPhoneVerifiedState && (
+                  <div className="pt-2 border-t border-[#E3D6C5] space-y-2">
+                    <p className="text-xs text-gray-600">
+                      Enter the 6-digit verification code sent to your mobile:
+                    </p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        maxLength={6}
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                        placeholder="6-digit OTP"
+                        className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 tracking-widest font-mono text-center placeholder:tracking-normal placeholder:font-sans focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        disabled={isVerifyingOtp || otp.trim().length !== 6}
+                        className="px-4 py-2 bg-[#D1A254] text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-[#b58b42] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0 shadow-sm"
+                      >
+                        {isVerifyingOtp ? "Verifying..." : "Verify OTP"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                  Email address
+                  Email address *
                 </label>
-                <div className="mt-2">
+                <div className="mt-1.5">
                   <input
                     id="email"
                     name="email"
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
+                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                  Password
+                  Password *
                 </label>
-                <div className="mt-2">
+                <div className="mt-1.5">
                   <input
                     id="password"
                     name="password"
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
+                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="confirmpassword" className="block text-sm font-medium leading-6 text-gray-900">
-                  Confirm password
+                  Confirm password *
                 </label>
-                <div className="mt-2">
+                <div className="mt-1.5">
                   <input
                     id="confirmpassword"
                     name="confirmpassword"
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
+                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vamika-gold sm:text-sm sm:leading-6 transition-shadow"
                   />
                 </div>
               </div>

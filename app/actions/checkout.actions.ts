@@ -1,6 +1,7 @@
 "use server";
 
 import { checkoutService } from "@/src/modules/checkout/application/checkout.service";
+import { getActiveCart } from "@/app/actions/cart.actions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 import { cookies } from "next/headers";
@@ -77,7 +78,43 @@ export async function submitCheckout(inputData: CheckoutInputPayload) {
       };
     }
 
+    // Check OTP verification for guest checkout or unverified mobile numbers
+    const { isPhoneVerified, sanitizePhoneNumber } = await import("@/app/actions/otp.actions");
+    const formattedPhone = await sanitizePhoneNumber(input.phone);
+    
+    let isVerified = false;
+    if (userId) {
+      const dbUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { phone: true, isPhoneVerified: true },
+      });
+      if (dbUser?.isPhoneVerified && dbUser?.phone === formattedPhone) {
+        isVerified = true;
+      }
+    }
+
+    if (!isVerified) {
+      isVerified = await isPhoneVerified(formattedPhone, "CHECKOUT");
+    }
+
+    if (!isVerified) {
+      return {
+        success: false,
+        error: "Please verify your mobile number with OTP before placing your order.",
+        fieldErrors: { phone: "Mobile verification required via OTP." },
+      };
+    }
+
+    const cart = await getActiveCart();
+    if (!cart || !cart.items || cart.items.length === 0) {
+      return { 
+        success: false, 
+        error: "Your shopping bag is empty. Please add items to your cart before proceeding." 
+      };
+    }
+
     const { order, paymentIntent } = await checkoutService.processCheckout({
+      cartId: cart.id,
       shippingDetails: input,
       userId,
       idempotencyKey: `action_checkout_${userId || "guest"}_${Date.now()}`,
