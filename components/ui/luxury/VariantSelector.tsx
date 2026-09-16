@@ -4,7 +4,7 @@ import React, { useState, useEffect, useTransition } from "react";
 import { addToCart } from "@/app/actions/cart.actions";
 import { useProductStore } from "@/app/_zustand/store";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 
 interface VariantSelectorProps {
   options: {

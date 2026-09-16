@@ -7,17 +7,23 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
     output: "standalone",
     images: {
+        unoptimized: process.env.NODE_ENV === "development",
         formats: ["image/avif", "image/webp"],
         remotePatterns: [
           {
             protocol: 'https',
             hostname: 'placehold.co',
-            port: ""
+            pathname: '/**',
+          },
+          {
+            protocol: 'https',
+            hostname: '**.etsystatic.com',
+            pathname: '/**',
           },
           {
             protocol: 'https',
             hostname: 'i.etsystatic.com',
-            port: ""
+            pathname: '/**',
           },
         ],
       },

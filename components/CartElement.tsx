@@ -9,7 +9,7 @@
 // *********************
 
 "use client";
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import React from 'react'
 import { FaCartShopping } from 'react-icons/fa6'
 import { useProductStore } from "@/app/_zustand/store";

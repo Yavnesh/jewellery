@@ -4,7 +4,7 @@ import React, { useTransition } from "react";
 import { useProductStore } from "@/app/_zustand/store";
 import toast from "react-hot-toast";
 import Image from "next/image"
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { FaCircleQuestion, FaXmark } from "react-icons/fa6";
 import QuantityInputCart from "@/components/QuantityInputCart";
 import { sanitize } from "@/lib/sanitize";

@@ -17,18 +17,22 @@ import { revalidatePath } from "next/cache";
 const CART_SESSION_COOKIE = "cart_session_id";
 
 // Helper to get or create a cart session ID for guests
-async function getCartSessionId() {
+async function getCartSessionId(createIfMissing: boolean = false) {
   const cookieStore = await cookies();
   let sessionId = cookieStore.get(CART_SESSION_COOKIE)?.value;
   
-  if (!sessionId) {
+  if (!sessionId && createIfMissing) {
     sessionId = crypto.randomUUID();
-    cookieStore.set(CART_SESSION_COOKIE, sessionId, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30 // 30 days
-    });
+    try {
+      cookieStore.set(CART_SESSION_COOKIE, sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 30 // 30 days
+      });
+    } catch {
+      // Ignored if called during Server Component render where cookies are read-only
+    }
   }
   
   return sessionId;
@@ -47,9 +51,29 @@ export async function getActiveCart() {
     return cart;
   } else {
     // Guest user
-    const sessionId = await getCartSessionId();
+    const sessionId = await getCartSessionId(false);
+    if (!sessionId) {
+      return null;
+    }
     let cart = await getCartBySessionId(sessionId);
+    return cart;
+  }
+}
+
+// Helper to get or create the active cart during Server Actions (write operations)
+export async function getOrCreateActiveCart() {
+  const session = await getServerSession(authOptions);
+  
+  if (session?.user?.id) {
+    let cart = await getCartByUserId(session.user.id);
     if (!cart) {
+      cart = await createCart(null, session.user.id);
+    }
+    return cart;
+  } else {
+    const sessionId = await getCartSessionId(true);
+    let cart = sessionId ? await getCartBySessionId(sessionId) : null;
+    if (!cart && sessionId) {
       cart = await createCart(sessionId, null);
     }
     return cart;
@@ -58,7 +82,7 @@ export async function getActiveCart() {
 
 export async function addToCart(variantId: string, quantity: number = 1) {
   try {
-    const cart = await getActiveCart();
+    const cart = await getOrCreateActiveCart();
     if (!cart) throw new Error("Cart not found");
     await serviceAddToCart(cart.id, variantId, quantity);
     revalidatePath("/cart");
