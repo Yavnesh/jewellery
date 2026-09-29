@@ -118,6 +118,14 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <a
+            href="/api/admin/products/export"
+            download="Vamika_Jewels_Products_Database.xlsx"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-white border border-luxury-border text-vamika-charcoal hover:border-luxury-gold hover:text-luxury-gold shadow-xs transition-colors"
+          >
+            <FaFileExport size={12} className="text-luxury-gold" />
+            <span>Export Excel (.xlsx)</span>
+          </a>
           <Link
             href="/admin/products/new"
             className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-vamika-charcoal text-luxury-gold hover:bg-black shadow-xs transition-colors"

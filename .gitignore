@@ -47,3 +47,9 @@ bun.lockb
 # docs/
 
 replace_tanishq.js
+
+# Excel and data export artifacts
+*.xlsx
+*.xls
+*.csv
+/public/exports/
