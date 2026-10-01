@@ -15,8 +15,8 @@ import toast from "react-hot-toast";
 
 export default function AdminSettingsPage() {
   const [storeName, setStoreName] = useState("Vamika Luxe Haute Joaillerie");
-  const [supportEmail, setSupportEmail] = useState("concierge@vamika.com");
-  const [phone, setPhone] = useState("+91 98765 43210");
+  const [supportEmail, setSupportEmail] = useState("vamiexports@gmail.com");
+  const [phone, setPhone] = useState("+91 98296 64567");
   const [currency, setCurrency] = useState("INR");
   const [taxRate, setTaxRate] = useState("3.0"); // 3% Gold GST
   const [razorpayEnabled, setRazorpayEnabled] = useState(true);

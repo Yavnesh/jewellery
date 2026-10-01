@@ -173,8 +173,9 @@ export async function POST(req: Request) {
     if (!merchant) {
       merchant = await prisma.merchant.create({
         data: {
-          name: "Vamika Store",
-          email: "vamika@jewels.com",
+          name: "Vami Exports Haute Joaillerie",
+          email: "vamiexports@gmail.com",
+          phone: "+91 98296 64567",
           status: "APPROVED"
         }
       });

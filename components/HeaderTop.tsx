@@ -19,6 +19,7 @@ import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/routing";
 
 import { useTranslations } from "next-intl";
+import { COMPANY_EMAIL, COMPANY_PHONE, COMPANY_PHONE_FORMATTED } from "@/utils/brand";
 
 const HeaderTop = () => {
   const { data: session }: any = useSession();
@@ -42,12 +43,16 @@ const HeaderTop = () => {
       <div className="flex justify-between items-center h-full max-lg:flex-row max-w-screen-2xl mx-auto px-12 max-[573px]:px-4">
         <ul className="flex items-center h-full gap-x-6 max-[480px]:hidden">
           <li className="flex items-center gap-x-2 text-white/80 hover:text-luxury-gold transition-colors duration-200">
-            <FaHeadphones className="text-sm" />
-            <span>+381 61 123 321</span>
+            <a href={`tel:${COMPANY_PHONE}`} className="flex items-center gap-x-2 hover:text-luxury-gold">
+              <FaHeadphones className="text-sm" />
+              <span>{COMPANY_PHONE_FORMATTED}</span>
+            </a>
           </li>
           <li className="flex items-center gap-x-2 text-white/80 hover:text-luxury-gold transition-colors duration-200">
-            <FaRegEnvelope className="text-sm" />
-            <span className="lowercase">test@email.com</span>
+            <a href={`mailto:${COMPANY_EMAIL}`} className="flex items-center gap-x-2 hover:text-luxury-gold">
+              <FaRegEnvelope className="text-sm" />
+              <span className="lowercase">{COMPANY_EMAIL}</span>
+            </a>
           </li>
         </ul>
         <ul className="flex items-center gap-x-6 h-full ml-auto">

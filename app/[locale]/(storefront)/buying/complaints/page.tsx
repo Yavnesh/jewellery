@@ -10,6 +10,8 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 70, damping: 15 } }
 };
 
+import { COMPANY_EMAIL } from "@/utils/brand";
+
 export default function ComplaintsPage() {
   const t = useTranslations("ComplaintsPage");
 
@@ -89,10 +91,10 @@ export default function ComplaintsPage() {
           </p>
           <div className="pt-2">
             <a
-              href="mailto:support@vamikajewels.com"
+              href={`mailto:${COMPANY_EMAIL}`}
               className="inline-block bg-vamika-charcoal text-white hover:bg-vamika-gold-light hover:text-white transition-all duration-300 tracking-widest px-8 py-3.5 uppercase text-xs font-semibold rounded-sm shadow-sm"
             >
-              Email support@vamikajewels.com
+              Email {COMPANY_EMAIL}
             </a>
           </div>
         </motion.div>

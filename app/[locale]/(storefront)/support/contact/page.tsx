@@ -90,7 +90,7 @@ export default function ContactUsPage() {
                 </div>
                 <div>
                   <h3 className="font-serif font-medium uppercase tracking-wider text-vamika-charcoal text-sm">{t("phoneTitle")}</h3>
-                  <p className="text-xs text-stone-500 font-light mt-1">{t("phoneText")}</p>
+                  <a href="tel:+919829664567" className="text-xs text-stone-500 hover:text-vamika-gold-light font-light mt-1 block">{t("phoneText")}</a>
                 </div>
               </div>
 
