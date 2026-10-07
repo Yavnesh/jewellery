@@ -12,6 +12,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@datadog/browser-logs": "^7.7.0",
     "@datadog/browser-rum": "^7.7.0",
     "@headlessui/react": "^1.7.18",
@@ -30,6 +31,8 @@
     "dompurify": "^3.0.8",
     "express-fileupload": "^1.5.0",
     "express-rate-limit": "^8.1.0",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.5.0",
     "flowbite-react": "^0.7.2",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.27.0",

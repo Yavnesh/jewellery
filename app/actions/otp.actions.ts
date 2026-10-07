@@ -202,3 +202,52 @@ export async function isPhoneVerified(phone: string, purpose: OtpPurpose): Promi
 
   return !!verifiedRecord;
 }
+
+// Verify Firebase Phone Auth ID Token
+export async function verifyFirebasePhoneIdToken({
+  idToken,
+  purpose = "REGISTRATION",
+}: {
+  idToken: string;
+  purpose: OtpPurpose;
+}) {
+  try {
+    const { adminAuth } = await import("@/lib/firebase/firebase-admin.config");
+    const auth = adminAuth();
+
+    if (!auth) {
+      return { success: false, error: "Firebase authentication service is currently unavailable." };
+    }
+
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const phone = decodedToken.phone_number;
+
+    if (!phone) {
+      return { success: false, error: "Firebase token does not contain a verified phone number." };
+    }
+
+    const formattedPhone = cleanPhoneSync(phone);
+
+    // Save/update verified record in database
+    await prisma.otpVerification.create({
+      data: {
+        phone: formattedPhone,
+        otpHash: hashOtp("FIREBASE_VERIFIED"),
+        purpose,
+        expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000),
+        verified: true,
+        attempts: 0,
+      },
+    });
+
+    return {
+      success: true,
+      phone: formattedPhone,
+      message: "Mobile number verified via Firebase successfully.",
+    };
+  } catch (error: any) {
+    console.error("verifyFirebasePhoneIdToken error:", error);
+    return { success: false, error: error.message || "Failed to verify Firebase phone token." };
+  }
+}
+
