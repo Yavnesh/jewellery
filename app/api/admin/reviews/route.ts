@@ -10,6 +10,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || "";
     const search = searchParams.get("search")?.trim() || "";
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
 
     const where: any = {};
     if (status && status !== "ALL") {
@@ -25,15 +27,20 @@ export async function GET(request: Request) {
       ];
     }
 
-    const reviews = await prisma.review.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      include: {
-        product: { select: { id: true, title: true, mainImage: true } },
-        user: { select: { id: true, email: true, profile: true } },
-        order: { select: { id: true, total: true } },
-      },
-    });
+    const [reviews, totalCount] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          product: { select: { id: true, title: true, mainImage: true } },
+          user: { select: { id: true, email: true, profile: true } },
+          order: { select: { id: true, total: true } },
+        },
+      }),
+      prisma.review.count({ where }),
+    ]);
 
     const statusCounts = {
       all: await prisma.review.count(),
@@ -43,6 +50,12 @@ export async function GET(request: Request) {
     };
 
     return NextResponse.json({
+      pagination: {
+        page,
+        limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      },
       reviews: reviews.map((r) => ({
         id: r.id,
         rating: r.rating,

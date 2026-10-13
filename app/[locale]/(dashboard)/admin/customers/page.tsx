@@ -32,14 +32,16 @@ export default function AdminCustomersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalCustomers, setTotalCustomers] = useState(0);
 
   const fetchCustomers = async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams({
         page: page.toString(),
-        limit: "15",
+        limit: limit.toString(),
         search,
       });
 
@@ -48,6 +50,7 @@ export default function AdminCustomersPage() {
         const data = await res.json();
         setCustomers(data.customers || []);
         setTotalPages(data.pagination?.totalPages || 1);
+        setTotalCustomers(data.pagination?.total || 0);
       } else {
         toast.error("Failed to load customers");
       }
@@ -60,7 +63,7 @@ export default function AdminCustomersPage() {
 
   useEffect(() => {
     fetchCustomers();
-  }, [page]);
+  }, [page, limit]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,6 +97,23 @@ export default function AdminCustomersPage() {
           />
           <FaMagnifyingGlass className="absolute left-3 text-luxury-gold text-xs pointer-events-none" />
         </form>
+
+        {/* Page Size Selector: 20, 50, 100 */}
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-luxury-border px-2.5 py-1.5 rounded-lg text-xs">
+          <span className="text-luxury-text-secondary font-medium">Show:</span>
+          <select
+            value={limit}
+            onChange={(e) => {
+              setLimit(Number(e.target.value));
+              setPage(1);
+            }}
+            className="bg-transparent font-semibold text-vamika-charcoal focus:outline-none cursor-pointer"
+          >
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
       </div>
 
       {/* Customer Table */}
@@ -185,22 +205,33 @@ export default function AdminCustomersPage() {
         </div>
 
         {/* Pagination Bar */}
-        <div className="p-4 border-t border-luxury-border bg-luxury-bg/30 flex items-center justify-between text-xs text-luxury-text-secondary">
-          <span>
-            Page {page} of {totalPages}
-          </span>
+        <div className="p-4 border-t border-luxury-border bg-luxury-bg/30 flex flex-col sm:flex-row items-center justify-between text-xs text-luxury-text-secondary gap-3">
+          <div>
+            Showing{" "}
+            <strong>
+              {totalCustomers === 0 ? 0 : (page - 1) * limit + 1}
+            </strong>{" "}
+            to{" "}
+            <strong>
+              {Math.min(page * limit, totalCustomers)}
+            </strong>{" "}
+            of <strong>{totalCustomers.toLocaleString()}</strong> customers
+          </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors"
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
             >
               Previous
             </button>
+            <span className="px-2">
+              Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+            </span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors"
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
             >
               Next
             </button>

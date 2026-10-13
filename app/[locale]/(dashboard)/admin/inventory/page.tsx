@@ -51,6 +51,11 @@ export default function AdminInventoryPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
   // Stock Adjustment Modal
   const [selectedVariant, setSelectedVariant] = useState<InventoryItem | null>(null);
   const [adjustmentQty, setAdjustmentQty] = useState("");
@@ -61,6 +66,8 @@ export default function AdminInventoryPage() {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
+      queryParams.set("page", page.toString());
+      queryParams.set("limit", limit.toString());
       if (search) queryParams.set("search", search);
       if (filter) queryParams.set("filter", filter);
 
@@ -69,6 +76,10 @@ export default function AdminInventoryPage() {
         const data = await res.json();
         setItems(data.items || []);
         setSummary(data.summary);
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages || 1);
+          setTotalItems(data.pagination.total || 0);
+        }
       } else {
         toast.error("Failed to load inventory data");
       }
@@ -81,7 +92,7 @@ export default function AdminInventoryPage() {
 
   useEffect(() => {
     fetchInventory();
-  }, [filter]);
+  }, [page, limit, filter]);
 
   const handleAdjustStock = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -192,9 +203,12 @@ export default function AdminInventoryPage() {
           <FaMagnifyingGlass className="absolute left-3 text-luxury-gold text-xs pointer-events-none" />
         </form>
 
-        <div className="flex gap-2 w-full sm:w-auto">
+        <div className="flex gap-2 w-full sm:w-auto items-center flex-wrap">
           <button
-            onClick={() => setFilter("")}
+            onClick={() => {
+              setFilter("");
+              setPage(1);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               filter === ""
                 ? "bg-vamika-charcoal text-luxury-gold"
@@ -204,7 +218,10 @@ export default function AdminInventoryPage() {
             All Inventory
           </button>
           <button
-            onClick={() => setFilter("low")}
+            onClick={() => {
+              setFilter("low");
+              setPage(1);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               filter === "low"
                 ? "bg-amber-600 text-white"
@@ -214,7 +231,10 @@ export default function AdminInventoryPage() {
             Low Stock Only
           </button>
           <button
-            onClick={() => setFilter("out")}
+            onClick={() => {
+              setFilter("out");
+              setPage(1);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               filter === "out"
                 ? "bg-red-600 text-white"
@@ -223,6 +243,23 @@ export default function AdminInventoryPage() {
           >
             Out of Stock
           </button>
+
+          {/* Page Size Selector: 20, 50, 100 */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-luxury-border px-2.5 py-1.5 rounded-lg text-xs">
+            <span className="text-luxury-text-secondary font-medium">Show:</span>
+            <select
+              value={limit}
+              onChange={(e) => {
+                setLimit(Number(e.target.value));
+                setPage(1);
+              }}
+              className="bg-transparent font-semibold text-vamika-charcoal focus:outline-none cursor-pointer"
+            >
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -314,6 +351,40 @@ export default function AdminInventoryPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Bar */}
+        <div className="p-4 border-t border-luxury-border bg-luxury-bg/30 flex flex-col sm:flex-row items-center justify-between text-xs text-luxury-text-secondary gap-3">
+          <div>
+            Showing{" "}
+            <strong>
+              {totalItems === 0 ? 0 : (page - 1) * limit + 1}
+            </strong>{" "}
+            to{" "}
+            <strong>
+              {Math.min(page * limit, totalItems)}
+            </strong>{" "}
+            of <strong>{totalItems.toLocaleString()}</strong> SKUs
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
+            >
+              Previous
+            </button>
+            <span className="px-2">
+              Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
 

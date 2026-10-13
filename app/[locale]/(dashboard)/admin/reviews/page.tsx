@@ -30,11 +30,17 @@ export default function AdminReviewsPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalReviews, setTotalReviews] = useState(0);
 
   const fetchReviews = async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
+      queryParams.set("page", page.toString());
+      queryParams.set("limit", limit.toString());
       if (statusFilter !== "ALL") queryParams.set("status", statusFilter);
       if (search) queryParams.set("search", search);
 
@@ -43,6 +49,10 @@ export default function AdminReviewsPage() {
         const data = await res.json();
         setReviews(data.reviews || []);
         setCounts(data.statusCounts);
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages || 1);
+          setTotalReviews(data.pagination.total || 0);
+        }
       }
     } catch (err) {
       toast.error("Failed to load reviews");
@@ -53,7 +63,7 @@ export default function AdminReviewsPage() {
 
   useEffect(() => {
     fetchReviews();
-  }, [statusFilter]);
+  }, [page, limit, statusFilter]);
 
   const handleUpdateStatus = async (reviewId: string, status: string) => {
     try {
@@ -88,26 +98,48 @@ export default function AdminReviewsPage() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-2 border-b border-luxury-border pb-3 text-xs font-semibold">
-        {[
-          { label: `All Reviews (${counts.all})`, value: "ALL" },
-          { label: `Pending (${counts.pending})`, value: "PENDING" },
-          { label: `Approved (${counts.approved})`, value: "APPROVED" },
-          { label: `Rejected (${counts.rejected})`, value: "REJECTED" },
-        ].map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setStatusFilter(tab.value)}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              statusFilter === tab.value
-                ? "bg-vamika-charcoal text-luxury-gold"
-                : "text-luxury-text-secondary hover:text-vamika-charcoal bg-white border border-luxury-border"
-            }`}
+      {/* Filter Tabs & Limit Selector */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-luxury-border pb-3">
+        <div className="flex gap-2 flex-wrap text-xs font-semibold">
+          {[
+            { label: `All Reviews (${counts.all})`, value: "ALL" },
+            { label: `Pending (${counts.pending})`, value: "PENDING" },
+            { label: `Approved (${counts.approved})`, value: "APPROVED" },
+            { label: `Rejected (${counts.rejected})`, value: "REJECTED" },
+          ].map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => {
+                setStatusFilter(tab.value);
+                setPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                statusFilter === tab.value
+                  ? "bg-vamika-charcoal text-luxury-gold"
+                  : "text-luxury-text-secondary hover:text-vamika-charcoal bg-white border border-luxury-border"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Page Size Selector: 20, 50, 100 */}
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-luxury-border px-2.5 py-1.5 rounded-lg text-xs self-start sm:self-auto">
+          <span className="text-luxury-text-secondary font-medium">Show:</span>
+          <select
+            value={limit}
+            onChange={(e) => {
+              setLimit(Number(e.target.value));
+              setPage(1);
+            }}
+            className="bg-transparent font-semibold text-vamika-charcoal focus:outline-none cursor-pointer"
           >
-            {tab.label}
-          </button>
-        ))}
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
       </div>
 
       {/* Reviews Table */}
@@ -208,6 +240,40 @@ export default function AdminReviewsPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Bar */}
+        <div className="p-4 border-t border-luxury-border bg-luxury-bg/30 flex flex-col sm:flex-row items-center justify-between text-xs text-luxury-text-secondary gap-3">
+          <div>
+            Showing{" "}
+            <strong>
+              {totalReviews === 0 ? 0 : (page - 1) * limit + 1}
+            </strong>{" "}
+            to{" "}
+            <strong>
+              {Math.min(page * limit, totalReviews)}
+            </strong>{" "}
+            of <strong>{totalReviews.toLocaleString()}</strong> reviews
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
+            >
+              Previous
+            </button>
+            <span className="px-2">
+              Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </AdminAppShell>

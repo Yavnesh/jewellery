@@ -10,6 +10,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search")?.trim() || "";
     const filter = searchParams.get("filter") || "";
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
 
     const where: any = {};
     if (search) {
@@ -25,20 +27,28 @@ export async function GET(request: Request) {
       where.stockQuantity = { lte: 0 };
     }
 
-    const variants = await prisma.productVariant.findMany({
-      where,
-      orderBy: { stockQuantity: "asc" },
-      include: {
-        product: { select: { id: true, title: true, mainImage: true, category: { select: { name: true } } } },
-        inventory: true,
-        inventoryEvents: { take: 3, orderBy: { createdAt: "desc" } },
-      },
-    });
+    const [variants, totalCount, allVariantsForSummary] = await Promise.all([
+      prisma.productVariant.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { stockQuantity: "asc" },
+        include: {
+          product: { select: { id: true, title: true, mainImage: true, category: { select: { name: true } } } },
+          inventory: true,
+          inventoryEvents: { take: 3, orderBy: { createdAt: "desc" } },
+        },
+      }),
+      prisma.productVariant.count({ where }),
+      prisma.productVariant.findMany({
+        select: { stockQuantity: true, price: true },
+      }),
+    ]);
 
-    const totalStockUnits = variants.reduce((sum, v) => sum + (v.stockQuantity || 0), 0);
-    const totalStockValue = variants.reduce((sum, v) => sum + (v.stockQuantity * v.price), 0);
-    const lowStockCount = variants.filter((v) => v.stockQuantity <= 5 && v.stockQuantity > 0).length;
-    const outOfStockCount = variants.filter((v) => v.stockQuantity <= 0).length;
+    const totalStockUnits = allVariantsForSummary.reduce((sum, v) => sum + (v.stockQuantity || 0), 0);
+    const totalStockValue = allVariantsForSummary.reduce((sum, v) => sum + (v.stockQuantity * v.price), 0);
+    const lowStockCount = allVariantsForSummary.filter((v) => v.stockQuantity <= 5 && v.stockQuantity > 0).length;
+    const outOfStockCount = allVariantsForSummary.filter((v) => v.stockQuantity <= 0).length;
 
     return NextResponse.json({
       summary: {
@@ -46,7 +56,13 @@ export async function GET(request: Request) {
         totalStockValue,
         lowStockCount,
         outOfStockCount,
-        totalTrackedSkus: variants.length,
+        totalTrackedSkus: allVariantsForSummary.length,
+      },
+      pagination: {
+        page,
+        limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
       },
       items: variants.map((v) => ({
         id: v.id,

@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/routing";
 import clsx from "clsx";
 import {
   MdDashboard,
@@ -26,7 +25,10 @@ import {
   FaUpload,
   FaChevronLeft,
   FaChevronRight,
+  FaDatabase,
 } from "react-icons/fa6";
+
+import { useSession } from "next-auth/react";
 
 interface NavGroup {
   title: string;
@@ -34,8 +36,10 @@ interface NavGroup {
     name: string;
     href: string;
     icon: any;
+    hint: string;
     badge?: string | number;
     exact?: boolean;
+    superAdminOnly?: boolean;
   }[];
 }
 
@@ -43,47 +47,65 @@ const navGroups: NavGroup[] = [
   {
     title: "Overview",
     items: [
-      { name: "Dashboard", href: "/admin", icon: MdDashboard, exact: true },
-      { name: "Analytics", href: "/admin/analytics", icon: FaChartLine },
+      { name: "Dashboard", href: "/admin", icon: MdDashboard, exact: true, hint: "Revenue metrics, top products & recent orders" },
+      { name: "Analytics", href: "/admin/analytics", icon: FaChartLine, hint: "Sales charts, conversion rates & geographic insights" },
     ],
   },
   {
     title: "Sales & Fulfillment",
     items: [
-      { name: "Orders", href: "/admin/orders", icon: FaBagShopping },
-      { name: "Returns & RMA", href: "/admin/returns", icon: FaRotateLeft },
+      { name: "Orders", href: "/admin/orders", icon: FaBagShopping, hint: "Order fulfillment, shipments, labels & packing slips" },
+      { name: "Returns & RMA", href: "/admin/returns", icon: FaRotateLeft, hint: "RMA tickets, replacement requests & refund reviews" },
     ],
   },
   {
     title: "Catalog",
     items: [
-      { name: "Products", href: "/admin/products", icon: FaTable },
-      { name: "Categories", href: "/admin/categories", icon: MdOutlineCategory },
-      { name: "Reviews", href: "/admin/reviews", icon: MdOutlineReviews },
-      { name: "Bulk Import", href: "/admin/bulk-upload", icon: FaUpload },
+      { name: "Products", href: "/admin/products", icon: FaTable, hint: "Product catalog, verification queue, image galleries & inline editing" },
+      { name: "Categories", href: "/admin/categories", icon: MdOutlineCategory, hint: "Taxonomy tree, cascade editing & collection reassignments" },
+      { name: "Reviews", href: "/admin/reviews", icon: MdOutlineReviews, hint: "Customer rating moderation & featured testimonials" },
+      { name: "Bulk Import", href: "/admin/bulk-upload", icon: FaUpload, hint: "Excel & CSV batch imports with async background worker" },
     ],
   },
   {
     title: "Operations & Stock",
     items: [
-      { name: "Inventory", href: "/admin/inventory", icon: FaWarehouse },
-      { name: "Customers", href: "/admin/customers", icon: FaUsers },
-      { name: "Discounts & Promos", href: "/admin/discounts", icon: MdOutlineDiscount },
+      { name: "Inventory", href: "/admin/inventory", icon: FaWarehouse, hint: "Serialized pieces, stock adjustments & low-stock alerts" },
+      { name: "Customers", href: "/admin/customers", icon: FaUsers, hint: "Customer directory, purchase history & verification profiles" },
+      { name: "Discounts & Promos", href: "/admin/discounts", icon: MdOutlineDiscount, hint: "Checkout coupon rules, expiry dates & cart minimums" },
     ],
   },
   {
     title: "System & Governance",
     items: [
-      { name: "Audit Trail", href: "/admin/audit-logs", icon: FaScroll },
-      { name: "Store Settings", href: "/admin/settings", icon: FaGear },
+      { name: "Database Governance", href: "/admin/database", icon: FaDatabase, hint: "Dual-tier proposal review, bulk markdowns & field audits", superAdminOnly: true },
+      { name: "Audit Trail", href: "/admin/audit-logs", icon: FaScroll, hint: "Tamper-resistant compliance ledger of all administrative actions", superAdminOnly: true },
+      { name: "Store Settings", href: "/admin/settings", icon: FaGear, hint: "Store profile, payment credentials & logistics config" },
     ],
   },
 ];
 
 export const AdminSidebar = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Determine if the current logged-in user is a super admin
+  const userRole = (session?.user as any)?.role?.toLowerCase();
+  const userEmail = (session?.user as any)?.email?.toLowerCase();
+  const isSuperAdmin =
+    userRole === "superadmin" ||
+    userEmail === "admin@vamikajewels.com" ||
+    userEmail === "admin@vamiexports.com";
+
+  // Filter groups based on superAdminOnly permission
+  const visibleGroups = navGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !item.superAdminOnly || isSuperAdmin),
+    }))
+    .filter((group) => group.items.length > 0);
 
   // Close mobile sidebar on navigation
   useEffect(() => {
@@ -161,7 +183,7 @@ export const AdminSidebar = () => {
 
         {/* Nav Groups Navigation */}
         <div className="flex-1 overflow-y-auto py-2 px-3 space-y-6 scrollbar-thin scrollbar-thumb-luxury-gold/20">
-          {navGroups.map((group) => (
+          {visibleGroups.map((group) => (
             <div key={group.title} className="space-y-1">
               {!collapsed && (
                 <div className="px-3 text-[10px] uppercase font-bold tracking-widest text-luxury-ivory/40">
@@ -173,30 +195,41 @@ export const AdminSidebar = () => {
                 const Icon = item.icon;
 
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    title={collapsed ? item.name : undefined}
-                    className={clsx(
-                      "flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-xs font-medium tracking-wide transition-all group relative",
-                      isActive
-                        ? "bg-gradient-to-r from-luxury-gold/25 to-luxury-gold/10 text-luxury-gold border-l-2 border-luxury-gold font-semibold shadow-xs"
-                        : "text-luxury-ivory/70 hover:bg-white/5 hover:text-luxury-ivory"
-                    )}
-                  >
-                    <Icon
+                  <div key={item.href} className="relative group">
+                    <Link
+                      href={item.href}
                       className={clsx(
-                        "text-lg shrink-0 transition-colors",
-                        isActive ? "text-luxury-gold" : "text-luxury-ivory/50 group-hover:text-luxury-gold"
+                        "flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-xs font-medium tracking-wide transition-all relative",
+                        isActive
+                          ? "bg-gradient-to-r from-luxury-gold/25 to-luxury-gold/10 text-luxury-gold border-l-2 border-luxury-gold font-semibold shadow-xs"
+                          : "text-luxury-ivory/70 hover:bg-white/5 hover:text-luxury-ivory"
                       )}
-                    />
-                    {!collapsed && <span className="truncate">{item.name}</span>}
-                    {item.badge && !collapsed && (
-                      <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-luxury-gold text-vamika-charcoal">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
+                    >
+                      <Icon
+                        className={clsx(
+                          "text-lg shrink-0 transition-colors",
+                          isActive ? "text-luxury-gold" : "text-luxury-ivory/50 group-hover:text-luxury-gold"
+                        )}
+                      />
+                      {!collapsed && <span className="truncate">{item.name}</span>}
+                      {item.badge && !collapsed && (
+                        <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-luxury-gold text-vamika-charcoal">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+
+                    {/* Floating Luxury Hover Tooltip */}
+                    <div
+                      className={clsx(
+                        "pointer-events-none absolute z-50 left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-vamika-charcoal text-white rounded-lg shadow-xl border border-luxury-gold/30 text-[11px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 hidden lg:block",
+                        collapsed ? "w-56 whitespace-normal" : "w-64 whitespace-normal"
+                      )}
+                    >
+                      <p className="font-semibold text-luxury-gold">{item.name}</p>
+                      <p className="text-[10px] text-luxury-ivory/70 mt-0.5 leading-tight">{item.hint}</p>
+                    </div>
+                  </div>
                 );
               })}
             </div>

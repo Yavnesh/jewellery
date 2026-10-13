@@ -48,11 +48,28 @@ model Product {
   isBestseller Boolean @default(false)
   sortPriority Int     @default(0)
 
+  // Governance & Verification Fields
+  version            Int                @default(1)
+  verificationStatus VerificationStatus @default(PENDING_VERIFICATION)
+  verifiedAt         DateTime?
+  verifiedById       String?
+  verifiedBy         User?              @relation("ProductVerifiedBy", fields: [verifiedById], references: [id])
+  discountPercentage Float?             @default(0)
+  discountActive     Boolean            @default(false)
+  deletedAt          DateTime?
+
   // Variant Architecture Relations
-  variants ProductVariant[]
-  options  ProductOption[]
-  translations ProductTranslation[]
-  reviews  Review[]
+  variants           ProductVariant[]
+  options            ProductOption[]
+  translations       ProductTranslation[]
+  reviews            Review[]
+
+  // Governance Relations
+  verifications      ProductVerification[]
+  changeRequestItems ChangeRequestItem[]
+
+  @@index([verificationStatus])
+  @@index([deletedAt])
 }
 
 model Image {
@@ -81,6 +98,13 @@ model User {
   cart                    Cart?                   @relation("UserCart")
   notificationPreferences NotificationPreference?
   reviews                 Review[]
+
+  // Governance Relations
+  verifiedProducts        Product[]               @relation("ProductVerifiedBy")
+  productVerifications    ProductVerification[]
+  requestsSubmitted       ChangeRequest[]         @relation("RequestsMade")
+  requestsReviewed        ChangeRequest[]         @relation("RequestsReviewed")
+  elevatedSessions        ElevatedSession[]
 }
 
 model Customer_order {
@@ -894,6 +918,108 @@ model OtpVerification {
 
   @@index([phone, purpose])
 }
+
+// -----------------------------------------------------------------------------
+// PRODUCT VERIFICATION & DATABASE GOVERNANCE ARCHITECTURE
+// -----------------------------------------------------------------------------
+
+enum VerificationStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  CHANGES_PROPOSED
+  VERIFICATION_REQUIRED
+  REJECTED
+  ARCHIVED
+}
+
+enum ChangeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum ChangeRequestScope {
+  SINGLE_PRODUCT
+  SELECTED_PRODUCTS
+  CATEGORY_BULK
+}
+
+enum RequestActionType {
+  FIELD_UPDATE
+  SOFT_DELETE
+  RESTORE
+  BULK_DISCOUNT
+  BULK_PRICE_UPDATE
+  BULK_REVERIFICATION
+}
+
+model ProductVerification {
+  id              String             @id @default(uuid())
+  productId       String
+  product         Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  verifiedById    String
+  verifiedBy      User               @relation(fields: [verifiedById], references: [id])
+  verifiedAt      DateTime           @default(now())
+  verifiedVersion Int
+  status          VerificationStatus
+  notes           String?            @db.Text
+  diffSnapshot    String?            @db.Text
+
+  @@index([productId])
+  @@index([verifiedById])
+}
+
+model ChangeRequest {
+  id            String              @id @default(uuid())
+  requestedById String
+  requestedBy   User                @relation("RequestsMade", fields: [requestedById], references: [id])
+  requestType   RequestActionType
+  scope         ChangeRequestScope
+  status        ChangeRequestStatus @default(PENDING)
+  reason        String              @db.Text
+  submittedAt   DateTime            @default(now())
+
+  // Elevated Reviewer details
+  reviewedById  String?
+  reviewedBy    User?               @relation("RequestsReviewed", fields: [reviewedById], references: [id])
+  reviewedAt    DateTime?
+  reviewNotes   String?             @db.Text
+
+  metadata      String?             @db.Text
+  items         ChangeRequestItem[]
+
+  @@index([status])
+  @@index([requestedById])
+  @@index([reviewedById])
+}
+
+model ChangeRequestItem {
+  id              String        @id @default(uuid())
+  changeRequestId String
+  changeRequest   ChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  fieldChanges    String        @db.Text // JSON encoded: { "price": { "old": 15000, "new": 13500 } }
+  applied         Boolean       @default(false)
+
+  @@index([changeRequestId])
+  @@index([productId])
+}
+
+model ElevatedSession {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String   @unique
+  expiresAt   DateTime
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
 
 
 

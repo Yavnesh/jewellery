@@ -7,11 +7,17 @@ export async function GET(request: Request) {
   if (!auth.authorized) return auth.response;
 
   try {
-    const [auditLogs, notifications, webhooks] = await Promise.all([
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+
+    const [auditLogs, totalLogs, notifications, webhooks] = await Promise.all([
       prisma.auditLog.findMany({
-        take: 50,
+        skip: (page - 1) * limit,
+        take: limit,
         orderBy: { createdAt: "desc" },
       }),
+      prisma.auditLog.count(),
       prisma.notification.findMany({
         take: 30,
         orderBy: { createdAt: "desc" },
@@ -25,6 +31,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       auditLogs,
+      pagination: {
+        page,
+        limit,
+        total: totalLogs,
+        totalPages: Math.ceil(totalLogs / limit),
+      },
       notifications,
       webhooks,
     });

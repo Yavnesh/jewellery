@@ -48,7 +48,9 @@ export default function AdminOrdersPage() {
   const [shippingFilter, setShippingFilter] = useState("ALL");
   const [carrierFilter, setCarrierFilter] = useState("ALL");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState("");
 
@@ -57,7 +59,7 @@ export default function AdminOrdersPage() {
       setLoading(true);
       const queryParams = new URLSearchParams({
         page: page.toString(),
-        limit: "15",
+        limit: limit.toString(),
         status: statusFilter,
         paymentStatus: paymentFilter,
         shippingStatus: shippingFilter,
@@ -70,6 +72,7 @@ export default function AdminOrdersPage() {
         const data = await res.json();
         setOrders(data.orders || []);
         setTotalPages(data.pagination?.totalPages || 1);
+        setTotalOrders(data.pagination?.total || 0);
       } else {
         toast.error("Failed to load orders");
       }
@@ -83,7 +86,7 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [page, statusFilter, paymentFilter, shippingFilter, carrierFilter]);
+  }, [page, limit, statusFilter, paymentFilter, shippingFilter, carrierFilter]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -327,6 +330,23 @@ export default function AdminOrdersPage() {
               <option value="PENDING">Pending</option>
               <option value="REFUNDED">Refunded</option>
             </select>
+
+            {/* Page Size Selector: 20, 50, 100 */}
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-luxury-border px-2.5 py-1.5 rounded-lg text-xs">
+              <span className="text-luxury-text-secondary font-medium">Show:</span>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="bg-transparent font-semibold text-vamika-charcoal focus:outline-none cursor-pointer"
+              >
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -510,22 +530,33 @@ export default function AdminOrdersPage() {
         </div>
 
         {/* Pagination Bar */}
-        <div className="p-4 border-t border-luxury-border bg-luxury-bg/30 flex items-center justify-between text-xs text-luxury-text-secondary">
-          <span>
-            Page {page} of {totalPages}
-          </span>
+        <div className="p-4 border-t border-luxury-border bg-luxury-bg/30 flex flex-col sm:flex-row items-center justify-between text-xs text-luxury-text-secondary gap-3">
+          <div>
+            Showing{" "}
+            <strong>
+              {totalOrders === 0 ? 0 : (page - 1) * limit + 1}
+            </strong>{" "}
+            to{" "}
+            <strong>
+              {Math.min(page * limit, totalOrders)}
+            </strong>{" "}
+            of <strong>{totalOrders.toLocaleString()}</strong> orders
+          </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors"
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
             >
               Previous
             </button>
+            <span className="px-2">
+              Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+            </span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors"
+              className="px-3 py-1.5 rounded bg-white border border-luxury-border disabled:opacity-40 hover:bg-luxury-bg transition-colors cursor-pointer"
             >
               Next
             </button>

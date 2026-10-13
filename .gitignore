@@ -55,3 +55,11 @@ replace_tanishq.js
 *.xls
 *.csv
 /public/exports/
+
+# Database dumps, backups and archives
+*.sql
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+prod_jewellery_db.sql.gz
