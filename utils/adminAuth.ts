@@ -5,11 +5,15 @@ import { redirect } from "next/navigation";
 export async function requireAdmin() {
   const session = await getServerSession(authOptions);
   
-  if (!session) {
+  if (!session || !session.user) {
     redirect("/login");
   }
   
-  if ((session as any)?.user?.role !== "admin") {
+  const role = ((session.user as any)?.role || "").toLowerCase();
+  const email = (session.user?.email || "").toLowerCase();
+  const isSuperAdminEmail = email === "admin@vamikajewels.com" || email === "admin@vamiexports.com";
+
+  if (role !== "admin" && role !== "superadmin" && !isSuperAdminEmail) {
     redirect("/");
   }
   
@@ -18,6 +22,10 @@ export async function requireAdmin() {
 
 export async function isAdmin(): Promise<boolean> {
   const session = await getServerSession(authOptions);
-  return (session as any)?.user?.role === "admin";
+  if (!session || !session.user) return false;
+  const role = ((session.user as any)?.role || "").toLowerCase();
+  const email = (session.user?.email || "").toLowerCase();
+  const isSuperAdminEmail = email === "admin@vamikajewels.com" || email === "admin@vamiexports.com";
+  return role === "admin" || role === "superadmin" || isSuperAdminEmail;
 }
 

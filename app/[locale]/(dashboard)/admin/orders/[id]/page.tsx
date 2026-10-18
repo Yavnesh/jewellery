@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, use } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/routing";
 import { AdminAppShell } from "@/components/admin/AdminAppShell";
 import {
   FaArrowLeft,
@@ -137,9 +136,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const fetchOrderDetail = async () => {
     try {
       setLoading(true);
+      const cleanOrderId = decodeURIComponent(orderId).trim();
       const [orderRes, shipmentsRes] = await Promise.all([
-        fetch(`/api/admin/orders/${orderId}`),
-        fetch(`/api/admin/orders/${orderId}/shipments`),
+        fetch(`/api/admin/orders/${cleanOrderId}`),
+        fetch(`/api/admin/orders/${cleanOrderId}/shipments`),
       ]);
 
       if (orderRes.ok) {
@@ -158,13 +158,18 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           initialQty[p.id] = p.quantity;
         });
         setSelectedItemQuantities(initialQty);
+      } else {
+        const errData = await orderRes.json().catch(() => ({}));
+        console.error("Order fetch failed:", orderRes.status, errData);
+        toast.error(errData.error || `Failed to load order (${orderRes.status})`);
       }
 
       if (shipmentsRes.ok) {
         const shipData = await shipmentsRes.json();
         setShipments(shipData.shipments || []);
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error("Network error:", err);
       toast.error("Network error fetching order details");
     } finally {
       setLoading(false);
@@ -172,7 +177,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   useEffect(() => {
-    fetchOrderDetail();
+    if (orderId) {
+      fetchOrderDetail();
+    }
   }, [orderId]);
 
   const handleUpdate = async () => {
@@ -382,13 +389,15 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => window.print()}
+          <a
+            href={`/api/orders/${order.id}/invoice`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-white border border-luxury-border text-vamika-charcoal hover:border-luxury-gold shadow-2xs transition-colors"
           >
             <FaPrint size={12} className="text-luxury-gold" />
-            <span>Print Invoice</span>
-          </button>
+            <span>Official GST Invoice</span>
+          </a>
           <button
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-luxury-gold text-vamika-charcoal hover:bg-amber-400 shadow-xs transition-colors font-bold"

@@ -7,6 +7,14 @@ type AdminAuthResult =
   | { authorized: true; user: any; response?: undefined }
   | { authorized: false; user: any; response: NextResponse };
 
+export function safeJson(data: any): any {
+  return JSON.parse(
+    JSON.stringify(data, (_, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    )
+  );
+}
+
 export async function verifyAdminAuth(): Promise<AdminAuthResult> {
   const session = await getServerSession(authOptions);
   
@@ -18,8 +26,12 @@ export async function verifyAdminAuth(): Promise<AdminAuthResult> {
     };
   }
 
-  const role = (session.user as any)?.role;
-  if (role !== "admin") {
+  const role = ((session.user as any)?.role || "").toLowerCase();
+  const email = (session.user?.email || "").toLowerCase();
+  const isSuperAdminEmail =
+    email === "admin@vamikajewels.com" || email === "admin@vamiexports.com";
+
+  if (role !== "admin" && role !== "superadmin" && !isSuperAdminEmail) {
     return {
       authorized: false,
       response: NextResponse.json({ error: "Forbidden: Admin privileges required" }, { status: 403 }),

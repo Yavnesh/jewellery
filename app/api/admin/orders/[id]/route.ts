@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/utils/db";
-import { verifyAdminAuth, recordAuditLog } from "@/lib/adminAuthHelper";
+import { verifyAdminAuth, recordAuditLog, safeJson } from "@/lib/adminAuthHelper";
 
 export async function GET(
   request: Request,
@@ -10,7 +10,12 @@ export async function GET(
   if (!auth.authorized) return auth.response;
 
   try {
-    const { id } = await params;
+    const rawParams = await params;
+    const id = rawParams?.id ? decodeURIComponent(rawParams.id).trim() : "";
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing order ID" }, { status: 400 });
+    }
 
     const order = await prisma.customer_order.findUnique({
       where: { id },
@@ -84,10 +89,12 @@ export async function GET(
       };
     }
 
-    return NextResponse.json({
-      order,
-      customerStats,
-    });
+    return NextResponse.json(
+      safeJson({
+        order,
+        customerStats,
+      })
+    );
   } catch (error: any) {
     console.error("Order detail error:", error);
     return NextResponse.json({ error: error.message || "Failed to load order details" }, { status: 500 });

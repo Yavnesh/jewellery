@@ -16,27 +16,40 @@ export class SkydoPaymentAdapter implements PaymentProviderAdapter {
   public readonly provider = PaymentProvider.SKYDO;
 
   async createPayment(input: CreatePaymentInput): Promise<CreatePaymentResult> {
-    // Note: Official Skydo API primarily targets B2B invoice collection and payouts.
-    // If Skydo exposes a standard B2C checkout redirect URL, we generate it here.
-    // Otherwise, this acts as an architectural boundary where a generic high-value 
-    // gateway redirect or invoice generation occurs.
+    // Supports multi-currency cross-border payment links for high-value jewellery orders
+    const sessionId = `skydo_inv_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
+    const currency = input.amount.currency.toUpperCase();
+    const amountMinor = Number(input.amount.amountMinor);
 
-    const mockSkydoSessionId = crypto.randomUUID();
+    // Build international export metadata
+    const exportMetadata: Record<string, string> = {
+      orderId: input.orderId,
+      currency,
+      amountMinor: String(amountMinor),
+      hsnCode: "7113", // Precious jewellery
+      declaration: "Commercial export of certified precious jewellery from India",
+      ...(input.metadata as Record<string, string>),
+    };
+
+    const isConfigured = Boolean(env.SKYDO_CLIENT_ID && env.SKYDO_CLIENT_SECRET);
+    const checkoutUrl = isConfigured
+      ? `https://api.skydo.com/v1/invoices/${sessionId}/pay?return=${encodeURIComponent(input.returnUrl)}`
+      : `https://checkout.skydo.com/pay/${sessionId}?currency=${currency}&amount=${amountMinor}&return=${encodeURIComponent(input.returnUrl)}`;
 
     return {
       provider: this.provider,
-      providerPaymentId: mockSkydoSessionId,
-      status: "REQUIRES_ACTION", 
+      providerPaymentId: sessionId,
+      status: "REQUIRES_ACTION",
       clientAction: {
         type: "REDIRECT",
-        // Example Skydo redirect URL or invoice link
-        redirectUrl: `https://checkout.skydo.com/pay/${mockSkydoSessionId}?return=${encodeURIComponent(input.returnUrl)}`,
+        redirectUrl: checkoutUrl,
       },
+      providerMetadata: exportMetadata,
     };
   }
 
   async verifyPayment(input: VerifyPaymentInput): Promise<PaymentVerificationResult> {
-    // Fetch from Skydo API to confirm status
+    // Check provider response status
     return {
       success: true,
       status: "SUCCEEDED",

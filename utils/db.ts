@@ -16,11 +16,14 @@ const prismaClientSingleton = () => {
         console.log(`🔒 SSL Mode: ${url.searchParams.get('sslmode') || 'not specified'}`);
     }
 
+    // Support pooled connection URL or standard database URL
+    const connectionUrl = process.env.DATABASE_POOL_URL || process.env.DATABASE_URL;
+
     return new PrismaClient({
-        // Add logging for debugging
+        datasourceUrl: connectionUrl,
         log: process.env.NODE_ENV === "development" 
-            ? ['query', 'info', 'warn', 'error']
-            : ['error', 'warn'],
+            ? ['error', 'warn']
+            : ['error'],
     });
 }
 

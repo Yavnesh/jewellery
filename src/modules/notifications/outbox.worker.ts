@@ -30,6 +30,16 @@ export async function processOutboxEvents() {
       if (event.eventType === 'ORDER_PAID') {
         const payload = event.payload as { orderId: string };
         await sendOrderConfirmation(payload.orderId);
+      } else if (event.eventType === 'ORDER_SHIPPED' || event.eventType === 'ORDER_DELIVERED') {
+        const payload = typeof event.payload === 'string' ? JSON.parse(event.payload) : (event.payload as any);
+        if (payload?.phone) {
+          const { smsService } = await import('./application/sms.service');
+          const messageText = event.eventType === 'ORDER_SHIPPED'
+            ? `Your Vamika Jewels order #${(payload.orderId || '').slice(0, 8).toUpperCase()} has shipped via ${payload.carrier || 'our courier'}. Tracking AWB: ${payload.trackingNumber || 'Available in account'}.`
+            : `Your Vamika Jewels order #${(payload.orderId || '').slice(0, 8).toUpperCase()} has been successfully delivered. Thank you for choosing Vamika.`;
+
+          await smsService.get().sendSms(payload.phone, messageText);
+        }
       }
 
       // Mark as completed

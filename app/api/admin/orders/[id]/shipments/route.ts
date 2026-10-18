@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/utils/db";
-import { verifyAdminAuth, recordAuditLog } from "@/lib/adminAuthHelper";
+import { verifyAdminAuth, recordAuditLog, safeJson } from "@/lib/adminAuthHelper";
 import { ShippingService } from "@/src/modules/logistics/application/shipping.service";
 import { LogisticsProvider } from "@/src/modules/logistics/domain/logistics.types";
 
@@ -12,7 +12,8 @@ export async function GET(
   if (!auth.authorized) return auth.response;
 
   try {
-    const { id } = await params;
+    const rawParams = await params;
+    const id = rawParams?.id ? decodeURIComponent(rawParams.id).trim() : "";
 
     const shipments = await prisma.orderShipment.findMany({
       where: { orderId: id },
@@ -40,9 +41,11 @@ export async function GET(
       humanStatus: shippingService.getHumanStatusDescription(s.status),
     }));
 
-    return NextResponse.json({
-      shipments: enrichedShipments,
-    });
+    return NextResponse.json(
+      safeJson({
+        shipments: enrichedShipments,
+      })
+    );
   } catch (error: any) {
     console.error("Fetch shipments error:", error);
     return NextResponse.json(

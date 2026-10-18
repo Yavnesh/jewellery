@@ -1,5 +1,5 @@
 "use client";
-import { CustomButton, SectionTitle } from "@/components";
+import { CustomButton } from "@/components";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -177,7 +177,6 @@ const RegisterPage = () => {
   
   return (
     <div className="bg-white">
-      <SectionTitle title="Register" path="Home | Register" />
       <div className="flex min-h-[70vh] flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-white">
         <div className="flex justify-center flex-col items-center">
           <h2 className="mt-6 text-center text-3xl font-medium tracking-tight text-gray-900">

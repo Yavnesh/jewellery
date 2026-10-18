@@ -2,8 +2,13 @@ import { NextResponse } from 'next/server';
 import prisma from '@/utils/db';
 import { logger } from '@/src/lib/logger/logger';
 import { PaymentStatus } from '@prisma/client';
+import { verifyCronSecret } from '@/lib/auth/cronAuth';
+import { RazorpayPaymentAdapter } from '@/src/modules/payments/infrastructure/razorpay/razorpay-payment.adapter';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = verifyCronSecret(request);
+  if (!auth.authorized) return auth.response!;
+
   try {
     // 1. Fetch pending orders older than 10 minutes
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
@@ -19,12 +24,21 @@ export async function GET() {
 
     for (const order of unreconciledOrders) {
       try {
-        // In production, we query the gateway using the adapter pattern:
-        // const gatewayTx = await razorpayAdapter.queryTransaction(order.id);
-        // If the gateway reports success, auto-reconcile to prevent orphan orders:
-        
-        // Mock reconciliation check:
-        const gatewayConfirmedPaid = false; // Mock flag
+        // Query payments associated with the order
+        const paymentRecord = await prisma.payment.findFirst({
+          where: { orderId: order.id },
+          orderBy: { createdAt: "desc" },
+        });
+
+        let gatewayConfirmedPaid = false;
+
+        if (paymentRecord?.providerPaymentId) {
+          const razorpayAdapter = new RazorpayPaymentAdapter();
+          const rzpPayment = await razorpayAdapter.fetchPayment(paymentRecord.providerPaymentId);
+          if (rzpPayment && (rzpPayment.status === "captured" || rzpPayment.status === "authorized")) {
+            gatewayConfirmedPaid = true;
+          }
+        }
 
         if (gatewayConfirmedPaid) {
           logger.warn({ orderId: order.id }, 'Discrepancy detected during reconciliation run. Auto-correcting order status to PAID.');
@@ -37,6 +51,13 @@ export async function GET() {
                 status: 'PAID'
               }
             });
+
+            if (paymentRecord) {
+              await tx.payment.update({
+                where: { id: paymentRecord.id },
+                data: { status: PaymentStatus.SUCCEEDED },
+              });
+            }
 
             await tx.auditLog.create({
               data: {

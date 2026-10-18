@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/utils/db';
 import { logger } from '@/src/lib/logger/logger';
+import { verifyCronSecret } from '@/lib/auth/cronAuth';
 
 // Mock Resend/Email service wrapper
 async function sendEmailNotification(email: string, eventType: string, payload: any) {
@@ -11,7 +12,10 @@ async function sendEmailNotification(email: string, eventType: string, payload: 
   return true;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = verifyCronSecret(request);
+  if (!auth.authorized) return auth.response!;
+
   try {
     // 1. Fetch pending outbox events in FIFO order
     const pendingEvents = await prisma.outboxEvent.findMany({

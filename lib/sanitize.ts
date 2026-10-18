@@ -8,9 +8,17 @@ import DOMPurify from 'dompurify';
 export function sanitize(text: string | null | undefined): string {
   if (!text) return '';
   
+  // Normalize common HTML entities that might be stored in the DB (e.g. &amp;)
+  const normalized = text
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#x27;|&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>');
+
   // For client-side, use DOMPurify with strict settings
   if (typeof window !== 'undefined') {
-    return DOMPurify.sanitize(text, { 
+    return DOMPurify.sanitize(normalized, { 
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
       KEEP_CONTENT: true,
@@ -19,16 +27,8 @@ export function sanitize(text: string | null | undefined): string {
     });
   }
   
-  // For server-side, use comprehensive escaping
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;')
-    .replace(/`/g, '&#x60;')
-    .replace(/=/g, '&#x3D;');
+  // For server-side, strip HTML tags (React safely escapes text in JSX)
+  return normalized.replace(/<[^>]*>/g, '');
 }
 
 /**

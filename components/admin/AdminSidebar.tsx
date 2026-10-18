@@ -26,6 +26,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaDatabase,
+  FaHeartPulse,
 } from "react-icons/fa6";
 
 import { useSession } from "next-auth/react";
@@ -79,6 +80,7 @@ const navGroups: NavGroup[] = [
     title: "System & Governance",
     items: [
       { name: "Database Governance", href: "/admin/database", icon: FaDatabase, hint: "Dual-tier proposal review, bulk markdowns & field audits", superAdminOnly: true },
+      { name: "Observability", href: "/admin/observability", icon: FaHeartPulse, hint: "Live queue health, outbox retries, webhooks & DB latency" },
       { name: "Audit Trail", href: "/admin/audit-logs", icon: FaScroll, hint: "Tamper-resistant compliance ledger of all administrative actions", superAdminOnly: true },
       { name: "Store Settings", href: "/admin/settings", icon: FaGear, hint: "Store profile, payment credentials & logistics config" },
     ],

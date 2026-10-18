@@ -226,6 +226,20 @@ const Header = () => {
                   ) : (
                     <>
                       <div className="px-4 py-2 text-xs text-gray-500 font-sans truncate">{session.user?.email}</div>
+                      {(() => {
+                        const role = ((session.user as any)?.role || "").toLowerCase();
+                        const email = (session.user?.email || "").toLowerCase();
+                        const isAdministrator = role === "admin" || role === "superadmin" || email === "admin@vamikajewels.com" || email === "admin@vamiexports.com";
+                        return isAdministrator ? (
+                          <Link
+                            href="/admin"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex items-center px-4 py-3 rounded-lg bg-luxury-gold/15 text-luxury-gold font-sans text-sm font-semibold hover:bg-luxury-gold hover:text-vamika-charcoal transition-colors mb-2"
+                          >
+                            🛡️ Admin Panel
+                          </Link>
+                        ) : null;
+                      })()}
                       <button 
                         onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
                         className="w-full flex items-center px-4 py-3 rounded-lg hover:bg-red-50 text-red-500 font-sans text-sm font-medium transition-colors text-left"

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { AdminAppShell } from "@/components/admin/AdminAppShell";
 import {
   FaMagnifyingGlass,
@@ -431,15 +431,25 @@ export default function AdminOrdersPage() {
                         className="rounded border-luxury-border text-luxury-gold focus:ring-luxury-gold"
                       />
                     </td>
-                    <td className="py-4 px-4 font-mono font-bold text-vamika-charcoal">
+                    <td className="py-4 px-4">
                       <Link
                         href={`/admin/orders/${order.id}`}
-                        className="hover:text-luxury-gold transition-colors"
+                        className="font-mono font-bold text-vamika-charcoal hover:text-luxury-gold transition-colors inline-block"
                       >
                         #{order.id.slice(0, 8)}...
                       </Link>
-                      <div className="text-[10px] font-sans text-luxury-text-secondary font-normal">
+                      <div className="text-[10px] text-luxury-gold font-medium mt-0.5">
                         ₹{order.total.toLocaleString("en-IN")} • {order.itemCount} item(s)
+                      </div>
+                      <div className="text-[10px] text-luxury-text-secondary mt-0.5 flex items-center gap-1 font-mono">
+                        {order.dateTime ? new Date(order.dateTime).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        }) : "—"}
                       </div>
                     </td>
                     <td className="py-4 px-4">

@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server';
 import prisma from '@/utils/db';
 import { logger } from '@/src/lib/logger/logger';
 import { PaymentStatus } from '@prisma/client';
+import { verifyCronSecret } from '@/lib/auth/cronAuth';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = verifyCronSecret(request);
+  if (!auth.authorized) return auth.response!;
+
   try {
     // 1. Fetch pending webhook events in FIFO order
     const pendingEvents = await prisma.incomingWebhookEvent.findMany({

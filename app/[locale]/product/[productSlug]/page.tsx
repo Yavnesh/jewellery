@@ -182,7 +182,12 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
             <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Styling Available</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {crossSellProducts.map((item) => (
-                <a href={`/product/${item.slug}`} key={item.id} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors block">
+                <a 
+                  href={`/product/${item.slug}`} 
+                  key={item.id} 
+                  className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors block relative"
+                  title={sanitize(item.title)}
+                >
                   <div className="aspect-square relative mb-4">
                     <Image 
                       src={item.mainImage || "/placeholder.jpg"} 
@@ -191,7 +196,9 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
                       className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
-                  <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">{sanitize(item.title)}</h4>
+                  <div>
+                    <h4 className="font-serif text-sm text-[#333333] mb-1 truncate hover:text-luxury-gold transition-colors">{sanitize(item.title)}</h4>
+                  </div>
                   <p className="font-serif font-bold text-[#333333]">₹ {item.price.toLocaleString("en-IN")}</p>
                 </a>
               ))}
@@ -205,7 +212,12 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
             <h2 className="font-serif text-2xl text-center text-[#333333] mb-8">Customers Also Viewed</h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {relatedProducts.map((item) => (
-                <a href={`/product/${item.slug}`} key={item.id} className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors block">
+                <a 
+                  href={`/product/${item.slug}`} 
+                  key={item.id} 
+                  className="bg-[#F9F9F9] p-4 text-center group cursor-pointer border border-transparent hover:border-gray-100 transition-colors block relative"
+                  title={sanitize(item.title)}
+                >
                   <div className="aspect-square relative mb-4">
                     <Image 
                       src={item.mainImage || "/placeholder.jpg"} 
@@ -214,7 +226,9 @@ const SingleProductPage = async ({ params }: SingleProductPageProps) => {
                       className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
-                  <h4 className="font-serif text-sm text-[#333333] mb-1 line-clamp-1">{sanitize(item.title)}</h4>
+                  <div>
+                    <h4 className="font-serif text-sm text-[#333333] mb-1 truncate hover:text-luxury-gold transition-colors">{sanitize(item.title)}</h4>
+                  </div>
                   <p className="font-serif font-bold text-[#333333]">₹ {item.price.toLocaleString("en-IN")}</p>
                 </a>
               ))}

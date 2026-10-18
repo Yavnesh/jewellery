@@ -102,10 +102,19 @@ export class RazorpayPaymentAdapter implements PaymentProviderAdapter {
     const payload = JSON.parse(rawBody);
 
     return {
-      eventId: payload.id ?? crypto.randomUUID(), // Extract real ID if exists
+      eventId: payload.id ?? crypto.randomUUID(),
       type: payload.event,
       payload: payload,
       provider: this.provider,
     };
+  }
+
+  async fetchPayment(paymentId: string) {
+    try {
+      return await this.client.payments.fetch(paymentId);
+    } catch (error) {
+      console.error("Razorpay fetch payment error:", error);
+      return null;
+    }
   }
 }

@@ -4,6 +4,14 @@ import prisma from '@/utils/db';
 import { logger } from '@/src/lib/logger/logger';
 
 export async function POST(req: Request) {
+  // In production, mock webhook simulation MUST be disabled
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Endpoint disabled in production. Use provider-specific webhook routes (e.g. /api/webhooks/razorpay).' },
+      { status: 404 }
+    );
+  }
+
   const rawBody = await req.text();
   const signature = req.headers.get('stripe-signature') || req.headers.get('x-provider-signature') || '';
 

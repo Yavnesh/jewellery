@@ -75,7 +75,7 @@ const WishItem = ({
         </button>
       </td>
       <td className="py-4 flex justify-center">
-        <Link href={`/product/${slug}`} className="block w-20 h-20 bg-luxury-ivory rounded p-1 border border-luxury-border/40">
+        <Link href={`/product/${slug}`} title={sanitize(title)} className="block w-20 h-20 bg-luxury-ivory rounded p-1 border border-luxury-border/40 hover:border-luxury-gold/60 transition-colors">
           <Image
             src={getImagePath(image)}
             width={80}
@@ -86,7 +86,7 @@ const WishItem = ({
         </Link>
       </td>
       <td className="py-4 font-serif font-light text-base uppercase tracking-wider text-left">
-        <Link href={`/product/${slug}`} className="hover:text-luxury-gold transition-colors duration-200">
+        <Link href={`/product/${slug}`} title={sanitize(title)} className="hover:text-luxury-gold transition-colors duration-200">
           {sanitize(title)}
         </Link>
       </td>

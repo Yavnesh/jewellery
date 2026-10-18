@@ -3,8 +3,7 @@ export const dynamic = 'force-dynamic';
 import prisma from "@/utils/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.vamika.example.com'
-  const locales = ['en', 'hi'];
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.vamika.example.com';
 
   // Fetch all products with translations
   const products = await prisma.product.findMany({
@@ -37,42 +36,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Generate static pages sitemap
   for (const page of staticPages) {
-    for (const locale of locales) {
-      sitemapEntries.push({
-        url: `${baseUrl}/${locale}${page}`,
-        lastModified: new Date(),
-        changeFrequency: 'daily' as const,
-        priority: page === '' ? 1.0 : 0.9,
-      });
-    }
+    sitemapEntries.push({
+      url: `${baseUrl}${page}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: page === '' ? 1.0 : 0.9,
+    });
   }
 
-  // Generate localized Category URLs
+  // Generate Category URLs
   for (const category of categories) {
-    for (const locale of locales) {
-      const trans = category.translations.find(t => t.locale === locale);
-      const catName = trans ? trans.name : category.name;
-      sitemapEntries.push({
-        url: `${baseUrl}/${locale}/shop/${catName.toLowerCase()}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      });
-    }
+    sitemapEntries.push({
+      url: `${baseUrl}/shop/${category.name.toLowerCase()}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    });
   }
 
-  // Generate localized Product URLs
+  // Generate Product URLs
   for (const product of products) {
-    for (const locale of locales) {
-      const trans = product.translations.find(t => t.locale === locale);
-      const slug = trans ? trans.slug : product.slug;
-      sitemapEntries.push({
-        url: `${baseUrl}/${locale}/product/${slug}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      });
-    }
+    sitemapEntries.push({
+      url: `${baseUrl}/product/${product.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    });
   }
 
   return sitemapEntries;

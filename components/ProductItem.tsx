@@ -28,7 +28,11 @@ const ProductItem = ({
 
   return (
     <div className="flex flex-col items-center w-full max-w-sm group border border-luxury-border/40 p-4 bg-white rounded transition-all duration-300 hover:shadow-md hover:border-luxury-gold/40">
-      <Link href={`/product/${product.slug}`} className="w-full overflow-hidden flex justify-center items-center h-[260px] bg-luxury-ivory rounded mb-4">
+      <Link 
+        href={`/product/${product.slug}`} 
+        className="w-full relative overflow-hidden flex justify-center items-center h-[260px] bg-luxury-ivory rounded mb-4"
+        title={sanitize(product?.title)}
+      >
         <Image
           src={getImagePath(product.mainImage)}
           width="0"
@@ -38,12 +42,16 @@ const ProductItem = ({
           alt={sanitize(product?.title) || "Product image"}
         />
       </Link>
-      <Link
-        href={`/product/${product.slug}`}
-        className="text-sm text-luxury-text-primary font-serif font-light uppercase tracking-wider text-center line-clamp-2 min-h-[40px] px-2 hover:text-luxury-gold transition-colors duration-200"
-      >
-        {sanitize(product.title)}
-      </Link>
+
+      <div className="w-full text-center">
+        <Link
+          href={`/product/${product.slug}`}
+          className="text-sm text-luxury-text-primary font-serif font-light uppercase tracking-wider text-center truncate block px-2 hover:text-luxury-gold transition-colors duration-200"
+          title={sanitize(product.title)}
+        >
+          {sanitize(product.title)}
+        </Link>
+      </div>
       <p className="text-sm font-sans text-luxury-gold font-semibold tracking-widest mt-2">
         ₹ {product.price.toLocaleString('en-IN')}
       </p>

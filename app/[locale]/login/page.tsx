@@ -1,5 +1,5 @@
 "use client";
-import { CustomButton, SectionTitle } from "@/components";
+import { CustomButton } from "@/components";
 import { isValidEmailAddressFormat } from "@/lib/utils";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -84,7 +84,6 @@ const LoginPage = () => {
   
   return (
     <div className="bg-white">
-      <SectionTitle title="Login" path="Home | Login" />
       <div className="flex min-h-[70vh] flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8 bg-white">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <h2 className="mt-6 text-center text-3xl font-medium tracking-tight text-gray-900">

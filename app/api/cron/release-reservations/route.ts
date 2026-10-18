@@ -1,14 +1,12 @@
 import prisma from "@/utils/db";
 import { NextResponse } from "next/server";
+import { verifyCronSecret } from "@/lib/auth/cronAuth";
 
 export const GET = async (request: Request) => {
-  try {
-    // Check authorization for cron job (optional if using Vercel Cron)
-    const authHeader = request.headers.get('authorization');
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return new NextResponse('Unauthorized', { status: 401 });
-    }
+  const auth = verifyCronSecret(request);
+  if (!auth.authorized) return auth.response!;
 
+  try {
     // Find orders stuck in PENDING_PAYMENT for more than 15 minutes
     const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
     

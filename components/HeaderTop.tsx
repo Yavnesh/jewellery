@@ -13,7 +13,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 import toast from "react-hot-toast";
-import { FaHeadphones, FaRegEnvelope, FaRegUser } from "react-icons/fa6";
+import { FaHeadphones, FaRegEnvelope, FaRegUser, FaShieldHalved } from "react-icons/fa6";
 
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/routing";
@@ -30,7 +30,9 @@ const HeaderTop = () => {
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const nextLocale = e.target.value;
-    router.push(pathname, { locale: nextLocale });
+    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    router.replace(pathname, { locale: nextLocale });
+    router.refresh();
   };
 
   const handleLogout = () => {
@@ -73,6 +75,22 @@ const HeaderTop = () => {
             </>
           ) : (
             <>
+              {(() => {
+                const role = ((session.user as any)?.role || "").toLowerCase();
+                const email = (session.user?.email || "").toLowerCase();
+                const isAdministrator = role === "admin" || role === "superadmin" || email === "admin@vamikajewels.com" || email === "admin@vamiexports.com";
+                return isAdministrator ? (
+                  <li className="flex items-center">
+                    <Link
+                      href="/admin"
+                      className="flex items-center gap-x-1.5 px-2.5 py-1 rounded bg-luxury-gold text-vamika-charcoal font-bold text-[11px] hover:bg-amber-400 transition-colors shadow-2xs tracking-wider"
+                    >
+                      <FaShieldHalved className="text-xs" />
+                      <span>Admin Panel</span>
+                    </Link>
+                  </li>
+                ) : null;
+              })()}
               <span className="text-white/70 normal-case hidden sm:inline">{session.user?.email}</span>
               <li className="flex items-center">
                 <button onClick={handleLogout} className="flex items-center gap-x-2 text-white/85 hover:text-luxury-gold transition-colors duration-200">
@@ -90,11 +108,9 @@ const HeaderTop = () => {
               className="bg-transparent text-white/85 text-[11px] font-sans outline-none cursor-pointer hover:text-luxury-gold uppercase border-none focus:ring-0 focus:outline-none"
             >
               <option value="en" className="bg-[#2E2E2D] text-white">EN</option>
-              <option value="hi" className="bg-[#2E2E2D] text-white">HI</option>
               <option value="es" className="bg-[#2E2E2D] text-white">ES</option>
               <option value="fr" className="bg-[#2E2E2D] text-white">FR</option>
               <option value="de" className="bg-[#2E2E2D] text-white">DE</option>
-              <option value="ar" className="bg-[#2E2E2D] text-white">AR</option>
             </select>
           </li>
         </ul>

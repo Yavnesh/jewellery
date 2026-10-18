@@ -74,7 +74,10 @@ export class PaymentWebhookProcessor {
       if (newOrderStatus) {
         await tx.customer_order.update({
           where: { id: payment.orderId },
-          data: { status: newOrderStatus as string }, // Coerce string if enum not yet fully migrated
+          data: {
+            status: newOrderStatus as string,
+            paymentStatus: newPaymentStatus,
+          },
         });
       }
 

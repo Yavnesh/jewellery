@@ -19,7 +19,7 @@ export const AdminHeader = () => {
   const [seeding, setSeeding] = useState(false);
 
   // Generate dynamic breadcrumb elements
-  const pathSegments = pathname.replace(/^\/[a-z]{2}\/admin/, "").split("/").filter(Boolean);
+  const pathSegments = pathname.replace(/^(\/[a-z]{2})?\/admin/, "").split("/").filter(Boolean);
 
   const handleSeedData = async () => {
     setSeeding(true);

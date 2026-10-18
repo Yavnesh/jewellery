@@ -108,7 +108,40 @@ export async function GET(request: Request) {
     });
 
     const filterObj = buildSafeFilterObject(filterArray);
-    let whereClause = { ...filterObj };
+    let whereClause: any = { ...filterObj };
+
+    // Direct Jewellery Facet Filters
+    const metalType = searchParams.get("metalType");
+    if (metalType) whereClause.metalType = { contains: metalType };
+
+    const purity = searchParams.get("purity");
+    if (purity) whereClause.purity = { contains: purity };
+
+    const gender = searchParams.get("gender");
+    if (gender) whereClause.gender = { equals: gender };
+
+    const occasion = searchParams.get("occasion");
+    if (occasion) whereClause.occasion = { contains: occasion };
+
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    if (minPrice || maxPrice) {
+      whereClause.price = {
+        ...(whereClause.price || {}),
+        ...(minPrice ? { gte: parseInt(minPrice) } : {}),
+        ...(maxPrice ? { lte: parseInt(maxPrice) } : {}),
+      };
+    }
+
+    const searchQuery = searchParams.get("q") || searchParams.get("search");
+    if (searchQuery) {
+      whereClause.OR = [
+        { title: { contains: searchQuery } },
+        { description: { contains: searchQuery } },
+        { metalType: { contains: searchQuery } },
+        { collection: { contains: searchQuery } },
+      ];
+    }
 
     if (filterObj.category && filterObj.category.equals) {
       delete whereClause.category;
@@ -127,6 +160,9 @@ export async function GET(request: Request) {
         break;
       case "highPrice":
         sortObj = { price: "desc" };
+        break;
+      default:
+        sortObj = { sortPriority: "desc" };
         break;
     }
 
