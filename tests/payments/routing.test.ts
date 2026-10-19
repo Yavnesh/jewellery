@@ -4,7 +4,9 @@ import { PaymentProvider } from "../../src/modules/payments/domain/payment-provi
 
 vi.mock("@/lib/env", () => ({
   env: {
-    PAYMENT_ROUTING_CURRENCY: "USD"
+    PAYMENT_ROUTING_CURRENCY: "USD",
+    SKYDO_CLIENT_ID: "mock_client_id",
+    SKYDO_CLIENT_SECRET: "mock_client_secret"
   }
 }));
 
