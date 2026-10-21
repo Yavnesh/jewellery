@@ -20,6 +20,24 @@ const LoginPage = () => {
       setError("Your session has expired. Please log in again.");
       toast.error("Your session has expired. Please log in again.");
     }
+
+    // Handle OAuth provider errors or missing production credentials gracefully
+    const oauthError = searchParams.get('error');
+    if (oauthError) {
+      if (oauthError === "OAuthSignin" || oauthError === "OAuthCallback" || oauthError === "Configuration") {
+        const msg = "Social login with this provider is currently undergoing scheduled maintenance. Please sign in with your email or mobile OTP.";
+        setError(msg);
+        toast.error(msg, { duration: 5000 });
+      } else if (oauthError === "OAuthAccountNotVerified") {
+        const msg = "Your social account email is not verified by the provider. For your security, please sign in with your email and password or mobile OTP.";
+        setError(msg);
+        toast.error(msg, { duration: 6000 });
+      } else {
+        const msg = "Unable to sign in with social provider at this moment. Please use email or phone login.";
+        setError(msg);
+        toast.error(msg);
+      }
+    }
     
     // if user has already logged in redirect to home page
     if (sessionStatus === "authenticated") {
