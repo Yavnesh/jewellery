@@ -85,26 +85,56 @@ export const authOptions: NextAuthOptions = {
             return true;
           }
 
-          // 2. Check if a user exists with this email
-          // We assume OAuth providers like Google and Apple provide verified emails
-          // (Wait, Apple proxy emails might be tricky, but we proceed cautiously)
+          // 2. Check if the OAuth identity email is verified by the provider
+          // Google and Apple provide email verification flags in profile.
+          const isEmailVerified = Boolean(
+            profile?.email_verified || 
+            (account.provider === "apple" && profile?.sub) ||
+            profile?.verified
+          );
+
+          if (!user.email) {
+            console.error(`[OAuth] Rejected login from ${account.provider}: missing email address`);
+            return false;
+          }
+
+          // 3. Check if a user exists with this email
           let existingUser = await prisma.user.findFirst({
-            where: { email: user.email! }
+            where: { email: user.email.toLowerCase().trim() }
           });
+
+          // Prevent insecure account takeover: if user exists but email is not verified by provider, reject linking
+          if (existingUser && !isEmailVerified) {
+            console.warn(`[OAuth] Insecure linking blocked: ${account.provider} email is not verified.`);
+            return "/login?error=OAuthAccountNotVerified";
+          }
 
           if (!existingUser) {
             // Create a new user since one doesn't exist
             existingUser = await prisma.user.create({
               data: {
                 id: nanoid(),
-                email: user.email!,
+                email: user.email.toLowerCase().trim(),
                 role: "user",
                 password: null, // OAuth users don't have passwords
+                sessionVersion: 1,
               },
+            });
+
+            // Extract name from provider profile (Google given_name, Apple name, or user.name)
+            const firstName = profile?.given_name || (user.name ? user.name.split(" ")[0] : "Customer");
+            const lastName = profile?.family_name || (user.name && user.name.split(" ").length > 1 ? user.name.split(" ").slice(1).join(" ") : null);
+
+            await prisma.customerProfile.create({
+              data: {
+                userId: existingUser.id,
+                firstName: firstName || null,
+                lastName: lastName || null,
+              }
             });
           }
 
-          // 3. Link the OAuth account to the existing (or newly created) user
+          // 4. Link the OAuth account to the existing (or newly created) user
           await prisma.account.create({
             data: {
               userId: existingUser.id,
