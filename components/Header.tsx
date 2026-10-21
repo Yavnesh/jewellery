@@ -98,7 +98,17 @@ const Header = () => {
             <div className="flex-1 max-w-xl mx-auto">
               <SearchInput />
             </div>
-            <div className="flex gap-x-8 items-center shrink-0">
+            <div className="flex gap-x-6 items-center shrink-0">
+              <Link
+                href="/account"
+                className="relative flex items-center justify-center p-2 rounded-full text-luxury-text-primary hover:text-luxury-gold hover:bg-luxury-ivory transition-colors"
+                title={session ? "My Account & Orders" : "Sign In to Account"}
+              >
+                <span className="sr-only">Account</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </Link>
               <NotificationBell />
               <HeartElement wishQuantity={wishQuantity} />
               <CartElement />
@@ -123,7 +133,16 @@ const Header = () => {
               </Link>
 
               {/* Actions */}
-              <div className="flex gap-x-3 items-center">
+              <div className="flex gap-x-2 items-center">
+                <Link
+                  href="/account"
+                  className="p-1.5 text-luxury-text-primary hover:text-luxury-gold"
+                  title="My Account"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </Link>
                 <HeartElement wishQuantity={wishQuantity} />
                 <CartElement />
               </div>
@@ -226,6 +245,13 @@ const Header = () => {
                   ) : (
                     <>
                       <div className="px-4 py-2 text-xs text-gray-500 font-sans truncate">{session.user?.email}</div>
+                      <Link 
+                        href="/account" 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center px-4 py-3 rounded-lg bg-gray-50 hover:bg-luxury-gold/15 text-luxury-text-primary hover:text-luxury-gold font-sans text-sm font-medium transition-colors mb-2"
+                      >
+                        👤 My Account (Orders & Addresses)
+                      </Link>
                       {(() => {
                         const role = ((session.user as any)?.role || "").toLowerCase();
                         const email = (session.user?.email || "").toLowerCase();

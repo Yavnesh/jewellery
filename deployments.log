@@ -2,3 +2,4 @@
 2026-10-21T12:02:05Z | v1.2.0 | fc8dc0c1 | Fix customer session persistence and scope inactivity timeout to admin
 2026-10-21T12:18:26Z | v1.3.0 | 3ba5899e | Add customer saved addresses CRUD and interactive management UI
 2026-10-21T12:38:31Z | v1.4.0 | e72ccb36 | Harden OAuth account linking and show graceful maintenance message on unavailable providers
+2026-10-21T13:16:09Z | v1.5.0 | d3f2849a | Add My Account CTAs to desktop topbar, main header and mobile drawer

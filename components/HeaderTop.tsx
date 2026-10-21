@@ -91,10 +91,19 @@ const HeaderTop = () => {
                   </li>
                 ) : null;
               })()}
-              <span className="text-white/70 normal-case hidden sm:inline">{session.user?.email}</span>
               <li className="flex items-center">
-                <button onClick={handleLogout} className="flex items-center gap-x-2 text-white/85 hover:text-luxury-gold transition-colors duration-200">
-                  <FaRegUser className="text-xs" />
+                <Link
+                  href="/account"
+                  className="flex items-center gap-x-1.5 text-white/90 hover:text-luxury-gold transition-colors font-medium normal-case"
+                  title="Open Customer Dashboard, Orders & Saved Addresses"
+                >
+                  <FaRegUser className="text-xs text-luxury-gold" />
+                  <span>My Account</span>
+                  <span className="text-white/60 text-[11px] hidden md:inline">({session.user?.email})</span>
+                </Link>
+              </li>
+              <li className="flex items-center">
+                <button onClick={handleLogout} className="flex items-center gap-x-1 text-white/80 hover:text-luxury-gold transition-colors duration-200">
                   <span>{t("logout")}</span>
                 </button>
               </li>
