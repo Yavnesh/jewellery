@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
 import "../globals.css";
 import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/utils/authOptions";
 import SessionProvider from "@/utils/SessionProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -58,7 +59,7 @@ export default async function RootLayout({
   setRequestLocale(locale);
 
   const messages = await getMessages();
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
   
   return (

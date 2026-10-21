@@ -3,8 +3,9 @@
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useRef } from "react";
 
-// Production timeout: 15 minutes
-const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
+// Inactivity timeout for elevated administrative roles only (15 minutes).
+// Customers have standard persistent 30-day sessions without client-side inactivity timeouts.
+const ADMIN_INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
 
 export function useSessionTimeout() {
   const { data: session, status } = useSession();
@@ -14,20 +15,25 @@ export function useSessionTimeout() {
     // Only run on client side
     if (typeof window === 'undefined') return;
     
-    if (status === "authenticated" && session) {
+    // Check if the user is authenticated and holds an elevated role
+    const userRole = ((session?.user as any)?.role || "").toLowerCase();
+    const isAdmin = userRole === "admin" || userRole === "superadmin";
+
+    // Only apply inactivity auto-logout to administrative accounts
+    if (status === "authenticated" && session && isAdmin) {
       const startTimeout = () => {
         // Clear existing timeout
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
         
-        // Set new timeout
+        // Set new timeout for admin inactivity
         timeoutRef.current = setTimeout(() => {
           signOut({ 
             callbackUrl: "/login?expired=true",
             redirect: true 
           });
-        }, SESSION_TIMEOUT);
+        }, ADMIN_INACTIVITY_TIMEOUT);
       };
 
       // Start the initial timeout
